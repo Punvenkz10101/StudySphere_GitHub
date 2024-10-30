@@ -32,30 +32,28 @@ export default function Example() {
             </span>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex flex-1 justify-center space-x-6 ml-7">
+          {/* Centered Desktop Navigation Links */}
+          <div className="hidden lg:flex justify-center space-x-6 flex-1">
             {navigation.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold text-[#E0E0E0] hover:text-[#00CCCC] transition-colors duration-300 transform hover:scale-105 whitespace-nowrap flex-shrink-0"
+                className="text-sm font-semibold text-[#E0E0E0] hover:text-[#00CCCC] transition-colors duration-300 transform hover:scale-105"
               >
                 {item.name}
               </a>
             ))}
           </div>
 
-          {/* Desktop Search Bar */}
-          <div className="hidden lg:flex flex-1 justify-center mr-3">
+          {/* Move Search Bar and Login Button Together */}
+          <div className="hidden lg:flex items-center space-x-4 mr-4 ">
+            {" "}
+            {/* Removed flex-1 */}
             <input
               type="text"
               placeholder="Search for rooms..."
               className="px-4 py-2 w-[250px] h-[40px] bg-[#2A2A2A] text-[#E0E0E0] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007373]"
             />
-          </div>
-
-          {/* Desktop Login Button */}
-          <div className="hidden lg:flex flex-1 justify-end mr-4">
             <a
               href="#"
               className="text-sm font-semibold text-white bg-[#008080] px-4 py-2 rounded-md shadow-lg transition duration-300 hover:bg-[#006666] hover:shadow-xl transform hover:scale-105"
