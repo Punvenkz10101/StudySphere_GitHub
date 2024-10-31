@@ -117,7 +117,7 @@ export default function HeroSectionWithHeader() {
       </header>
 
       {/* Hero Content */}
-      <div className="flex flex-col items-center justify-center text-center flex-grow text-[#F2F2F2] z-10 space-y-8 pt-28 md:pt-36 animate-slideUp -mt-12"> {/* Adjusted padding to move up */}
+      <div className="flex flex-col items-center justify-center text-center flex-grow text-[#F2F2F2] z-10 space-y-8 pt-28 md:pt-36 animate-slideUp -mt-19"> {/* Adjusted padding to move up */}
         <h1 className="text-5xl md:text-6xl font-bold">Welcome to StudySphere</h1>
         <p className="text-2xl md:text-3xl font-medium">Discover and Connect with Study Rooms</p>
 
