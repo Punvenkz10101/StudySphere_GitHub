@@ -1,18 +1,32 @@
 // tailwind.config.js
 module.exports = {
   content: [
-    "./index.html",              // The main HTML file in the root of the project
-    "./src/**/*.{js,jsx,ts,tsx}", // All JS, JSX, TS, and TSX files in `src` folder and subfolders
+    "./index.html",              
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        CardGray: '#1C1C1C',
-        FeatureGray:'#2A2A2A',
-        IconEffect:'#00CCCC',
+        // Primary Colors
+        navyBlue: '#002244',
+        darkCyan: '#005577',
+        mutedTeal: '#0088AA',
+
+        // Supporting Neutrals
+        darkGray: '#1A1A1A',
+        midGray: '#4C4C4C',
+        lightGray: '#CCCCCC',
+        offWhite: '#F2F2F2',
+
+        // Complementary Colors
+        brightCyan: '#00CCCC',
+        mutedGold: '#FFCC33',
+
+        // Background Shades
+        darkenedBlue: '#001122',
+        overlayBlue: 'rgba(0, 34, 68, 0.8)',
       },
     },
   },
   plugins: [],
 };
-
