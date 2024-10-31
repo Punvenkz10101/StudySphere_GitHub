@@ -8,7 +8,7 @@ const navigation = [
   { name: "Contact Us", href: "#" },
 ];
 
-export default function Example() {
+export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
