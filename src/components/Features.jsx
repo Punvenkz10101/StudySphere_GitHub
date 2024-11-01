@@ -23,7 +23,7 @@ function Features() {
   ];
 
   return (
-    <div className="flex flex-wrap justify-center bg-FeatureGray items-center gap-5 sm:gap-10 p-4 sm:p-8 max-sm:flex-col ">
+    <div className="flex flex-wrap justify-center bg-darkGray items-center gap-5 sm:gap-10 p-4 sm:p-8 max-sm:flex-col ">
       {featuresData.map((item, idx) => (
         <FeatureCard key={idx} title={item.title} desc={item.description} icon={item.icon} />
       ))}
