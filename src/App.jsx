@@ -12,6 +12,10 @@ function App() {
 // Here yoyu will get a hero section
 }
       <Features />
+      <div className="min-h-screen bg-gray-50">
+      <DeveloperSection />
+    </div>
+      <Footer />
     </div>
   );
 }
