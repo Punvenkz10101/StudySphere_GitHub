@@ -25,6 +25,11 @@ module.exports = {
         // Background Shades
         darkenedBlue: '#001122',
         overlayBlue: 'rgba(0, 34, 68, 0.8)',
+
+        // Custom colors for CTA section
+        darkTeal: '#00334D',
+        tealHover: '#007373',
+        brightTeal: '#008080',
       },
       spacing: {
         // Custom spacing values
@@ -37,6 +42,20 @@ module.exports = {
         19: '4.75rem',  // 76px
         20: '5rem',     // 80px
         // Add more as needed
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.5s ease-in-out',
+        slideUp: 'slideUp 0.5s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
       },
     },
   },
