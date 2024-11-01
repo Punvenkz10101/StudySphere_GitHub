@@ -3,8 +3,8 @@ import React from 'react';
 import './app.css';
 import Header from './components/Header';
 import Features from './components/Features';
-import DeveloperSection from '../src/component/DeveleporSection';
-import Footer from './component/Footer';
+import DeveloperSection from './components/DeveleporSection';
+import Footer from './components/Footer';
 
 
 function App() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import DeveloperCard from '../component/DeveleporCard';
+import DeveloperCard from './DeveleporCard';
 import puneethImage from '../assets/puneeth.jpeg'
 import BharathImage from '../assets/Bharath.jpeg'
 
