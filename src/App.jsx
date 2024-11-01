@@ -1,23 +1,23 @@
 // App.js
 import React from 'react';
 import './app.css';
-import Header from './components/Header';
+import Hero from './components/Hero';
 import Features from './components/Features';
 import DeveloperSection from './components/DeveleporSection';
 import Footer from './components/Footer';
+
+
 
 
 function App() {
   return (
     <div>
       <Header />
-{
-// Here yoyu will get a hero section
-}
-      <Features />
+      <Hero/>
+      <Features/>
       <div className="min-h-screen bg-gray-50">
       <DeveloperSection />
-    </div>
+      </div>
       <Footer />
     </div>
   );
