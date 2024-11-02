@@ -3,7 +3,7 @@ import React from 'react';
 
 const CTA_Section = () => {
   return (
-    <div className="bg-[#F2F2F2] py-3md:py-10 flex flex-col md:flex-row items-center justify-center"> {/* Adjusted padding */}
+    <div id='Signin' className="bg-[#F2F2F2] py-3md:py-10 flex flex-col md:flex-row items-center justify-center"> 
       <div className="mx-auto max-w-6xl md:text-left md:w-1/2 px-4 md:px-0">
         <h2 className="text-xl md:text-3xl lg:text-[38px] font-bold text-[#00334D] sm:text-4xl animate-fadeIn mt-[-10px] leading-snug ml-5">
           Transform Your Study Experience with StudySphere!
