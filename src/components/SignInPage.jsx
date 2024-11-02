@@ -69,3 +69,4 @@ const SigninPage = () => {
 // content-->
 // we might have to use ract routes and switch to link them
 export default SigninPage;
+
