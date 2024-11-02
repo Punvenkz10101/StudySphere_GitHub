@@ -25,24 +25,20 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="bg-[#00334D] py-16 relative"> {/* Changed to solid color */}
+    <section className="bg-[#00334D] py-16 relative">
       <div className="max-w-6xl mx-auto px-4 text-center mb-12">
-  {/* Decorative Element */}
-  <div className="mb-8"> {/* Adjusted bottom margin */}
-    <span className="inline-block h-1 w-24 bg-white rounded-full mb-5"style={{ position: 'relative', top: '-12px' }} ></span> {/* Reduced margin to create space */}
-    <h2 className="text-[47px] font-bold text-white mb-2 drop-shadow-lg transition duration-300 hover:scale-105 -mt-7">
-      What Makes StudySphere Unique?
-    </h2>
-    <p className="text-[18px] font-semibold text-white mb-7 flex justify-center items-center">
-      Dive into the innovative features designed to transform your study sessions into engaging and productive experiences!
-    </p>
-    <span className="inline-block h-1 w-24 bg-white rounded-full mb-6"style={{ position: 'relative', top: '4px' }} ></span> {/* Adjusted bottom margin */}
-  </div>
-</div>
+        <div className="mb-8">
+          <span className="inline-block h-1 w-24 bg-white rounded-full mb-5" style={{ position: 'relative', top: '-12px' }}></span>
+          <h2 className="text-[47px] font-bold text-white mb-2 drop-shadow-lg transition duration-300 hover:scale-105 -mt-7">
+            What Makes StudySphere Unique?
+          </h2>
+          <p className="text-[18px] font-semibold text-white mb-7 flex justify-center items-center">
+            Dive into the innovative features designed to transform your study sessions into engaging and productive experiences!
+          </p>
+          <span className="inline-block h-1 w-24 bg-white rounded-full mb-6" style={{ position: 'relative', top: '4px' }}></span>
+        </div>
+      </div>
 
-      
-      
-      {/* Features List */}
       <div className="space-y-12">
         {features.map((feature, index) => (
           <div
@@ -54,16 +50,17 @@ export default function FeaturesSection() {
               <img
                 src={feature.image}
                 alt={feature.title}
-                className="transition-transform duration-300 transform hover:scale-105 mt-[-120px] ml-[120px]"
+                className={`transition-transform duration-300 transform hover:scale-105 ${index === 1 ? 'mt-[-130px] ml-[110px] mr-[10px]' : 'mt-[-120px] ml-[120px]'}`}
+                style={{ width: '410px', height: 'auto' }} // Adjust width and height as needed
               />
             </div>
 
             {/* Text Section */}
-            <div className="md:w-1/2 p-4 mt-[-110px] mr-[90px]"> {/* Added negative margins to move the text card up and right */}
-        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:bg-white">
-          <h3 className="text-3xl font-bold text-[#00334D] mb-4 text-center">{feature.title}</h3>
-          <p className="text-lg font-semibold text-[#00334D]">{feature.description}</p>
-        </div>
+            <div className={`md:w-1/2 p-4 ${index === 1 ? 'mt-[-90px] mr-[30px]' : 'mt-[-110px] mr-[90px]'}`}>
+              <div className="bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:bg-white">
+                <h3 className="text-[32px] font-bold text-[#00334D] mb-4 text-center">{feature.title}</h3>
+                <p className="text-[17px] font-semibold text-[#00334D]">{feature.description}</p>
+              </div>
             </div>
           </div>
         ))}
