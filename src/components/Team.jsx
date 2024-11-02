@@ -1,7 +1,4 @@
 import React from "react";
-
-
-
 const Team = () => {
   return (
     <section className="pb-8 pt-10 bg-white lg:pb-12 lg:pt-10">
@@ -9,7 +6,7 @@ const Team = () => {
         <div className="flex flex-wrap -mx-4">
           <div className="w-full px-4 text-center">
             <div className="mx-auto mb-8 max-w-[450px]">
-              <span className="block text-base text-[45px] font-bold text-[#00334D] mb-5"> {/* Increased mb-4 here */}
+              <span className="block text-base text-[43px] font-bold text-[#00334D] mb-5"> {/* Increased mb-4 here */}
                 Our Team
               </span>
               <h2 className="text-3xl font-bold text-[#00334D] mb-4 sm:text-[40px]">

@@ -8,14 +8,21 @@ import Team from './components/Team';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 
+
+
 function App() {
   return (
     <div>
       <Hero />
+      <div className="bg-gray-400 h-[10px] w-full" />
       <CTA_Section /> 
+      <div className="bg-gray-400 h-[10px] w-full" />
       <Features />
+      <div className="bg-gray-400 h-[10px] w-full" />
       <Team />
+      <div className="bg-gray-400 h-[10px] w-full" />
       <FAQSection/>
+      <div className="bg-gray-400 h-[10px] w-full" />
       <Footer />
       
 
