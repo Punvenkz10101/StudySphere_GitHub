@@ -12,7 +12,7 @@ export default function FeaturesSection() {
     },
     {
       title: "Pomodoro Timer",
-      description: "Staying on track is easy with StudySphere’s built-in Pomodoro Timer. Structure your study sessions using customizable time intervals, perfect for balancing focused work and well-timed breaks. Monitor your progress throughout the day and keep your energy levels high, all while getting more done.",
+      description: "Staying on track is easy with StudySphere’s built-in Pomodoro Timer. Structure your study sessions using customizable time intervals, perfect for balancing focused work and well-timed breaks. Monitor your progress throughout the day to stay energized and productive, session by session.",
       image: featureImage2,
       reverse: true,
     },
@@ -35,7 +35,7 @@ export default function FeaturesSection() {
           <p className="text-[18px] font-semibold text-white mb-7 flex justify-center items-center">
             Dive into the innovative features designed to transform your study sessions into engaging and productive experiences!
           </p>
-          <span className="inline-block h-1 w-24 bg-white rounded-full mb-6" style={{ position: 'relative', top: '4px' }}></span>
+          <span className="inline-block h-1 w-24 bg-white rounded-full mb-8" style={{ position: 'relative', top: '4px' }}></span>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ export default function FeaturesSection() {
               <img
                 src={feature.image}
                 alt={feature.title}
-                className={`transition-transform duration-300 transform hover:scale-105 ${index === 1 ? 'mt-[-130px] ml-[110px] mr-[10px]' : 'mt-[-120px] ml-[120px]'}`}
+                className={`transition-transform duration-300 transform hover:scale-105 ${index === 1 ? 'mt-[-140px] ml-[110px] mb-[5px]' : 'mt-[-130px] ml-[120px]'}`}
                 style={{ width: '410px', height: 'auto' }} // Adjust width and height as needed
               />
             </div>
