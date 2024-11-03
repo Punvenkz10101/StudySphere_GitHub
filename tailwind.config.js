@@ -11,6 +11,7 @@ module.exports = {
         navyBlue: '#002244',
         darkCyan: '#005577',
         mutedTeal: '#0088AA',
+        primary: "#000000",
 
         // Supporting Neutrals
         darkGray: '#1A1A1A',
