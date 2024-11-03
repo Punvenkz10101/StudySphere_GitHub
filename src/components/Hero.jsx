@@ -34,7 +34,7 @@ export default function HeroSectionWithHeader() {
       <header className="absolute top-0 inset-x-0 z-50">
         <nav className="flex items-center justify-between p-4 lg:p-6 bg-opacity-0 bg-[#001122]">
           <div className="flex flex-1 items-center">
-            <span className="text-white text-5xl lg:text-[36px] font-bold ml-12 transition-transform duration-300 hover:scale-110 mt-1">
+            <span className="text-white text-5xl lg:text-[34px] font-bold ml-12 transition-transform duration-300 hover:scale-110 mt-1">
               StudySphere
             </span>
           </div>
@@ -44,7 +44,7 @@ export default function HeroSectionWithHeader() {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-base lg:text-[17px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105"
+                className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105"
               >
                 {item.name}
               </a>
@@ -55,11 +55,11 @@ export default function HeroSectionWithHeader() {
             <input
               type="text"
               placeholder="Search for rooms..."
-              className="px-4 py-2 w-[350px] md:w-[350px] h-[48px] md:h-[48px] bg-[#1A1A1A] text-white text-[17px] md:text-[17px] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007A99] mt-3"
+              className="px-4 py-2 w-[350px] md:w-[350px] h-[44px] md:h-[44px] bg-[#1A1A1A] text-white text-[16px] md:text-[16px] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007A99] mt-3"
             />
             <a
               href="#"
-              className="text-base md:text-[17px] font-semibold text-white bg-[#00334D] px-4 py-2 md:px-6 md:py-3 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105 mt-2"
+              className="text-base md:text-[16px] font-semibold text-white bg-[#00334D] px-4 py-2 md:px-6 md:py-2.5 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105 mt-2"
             >
               Log in
             </a>
@@ -124,13 +124,13 @@ export default function HeroSectionWithHeader() {
         <div className="space-x-4 relative" style={{ top: '25px' }}>
           <a
             href="#"
-            className="inline-block px-8 py-3.5 text-[18px] md:text-[18px] font-semibold text-white bg-[#00334D] rounded-md shadow-lg transition duration-300 hover:bg-white hover:text-[#00334D] hover:shadow-xl transform hover:scale-105"
+            className="inline-block px-8 py-3.5 text-[16px] md:text-[16px] font-semibold text-white bg-[#00334D] rounded-md shadow-lg transition duration-300 hover:bg-white hover:text-[#00334D] hover:shadow-xl transform hover:scale-105"
           >
             Create Room
           </a>
           <a
             href="#"
-            className="inline-block px-8 py-3.5 text-[18px] md:text-[18px] font-semibold text-[#00334D] bg-white rounded-md shadow-lg transition duration-300 hover:bg-[#00334D] hover:text-white hover:shadow-xl transform hover:scale-105"
+            className="inline-block px-8 py-3.5 text-[16x] md:text-[16px] font-semibold text-[#00334D] bg-white rounded-md shadow-lg transition duration-300 hover:bg-[#00334D] hover:text-white hover:shadow-xl transform hover:scale-105"
           >
             Join Room
           </a>
