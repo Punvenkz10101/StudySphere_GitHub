@@ -6,7 +6,7 @@ const Team = () => {
         <div className="flex flex-wrap -mx-4">
           <div className="w-full px-4 text-center">
             <div className="mx-auto mb-8 max-w-[450px]">
-              <span className="block text-base text-[42px] font-bold text-[#00334D] mb-5"> {/* Increased mb-4 here */}
+              <span className="block text-base text-[43px] font-bold text-[#00334D] mb-5"> {/* Increased mb-4 here */}
                 Our Team
               </span>
               <h2 className="text-3xl font-bold text-[#00334D] mb-4 sm:text-[40px]">
@@ -23,7 +23,7 @@ const Team = () => {
         <div className="flex justify-center -mx-4 space-x-4">
           <TeamCard
             name="Puneeth Venkat"
-            profession="Web Developer"
+            profession="Team Lead/Web Developer"
             description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. Her technical expertise ensures a smooth user experience."
             imageSrc="src/assets/puneeth.jpeg"
           />
