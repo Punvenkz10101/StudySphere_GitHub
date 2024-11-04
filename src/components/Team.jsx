@@ -1,19 +1,22 @@
 import React from "react";
 const Team = () => {
   return (
-    <section className="pb-8 pt-10 bg-white lg:pb-12 lg:pt-10">
+    <section className="pb-4 pt-10 bg-white lg:pb-11 lg:pt-3">
       <div className="container mx-auto">
         <div className="flex flex-wrap -mx-4">
           <div className="w-full px-4 text-center">
             <div className="mx-auto mb-8 max-w-[450px]">
-              <span className="block text-base text-[43px] font-bold text-[#00334D] mb-5"> {/* Increased mb-4 here */}
+              <span className="block text-[43px] lg:text-[43px] font-bold text-[#00334D] mb-0">
                 Our Team
               </span>
+
               <h2 className="text-3xl font-bold text-[#00334D] mb-4 sm:text-[40px]">
                 Our Creative Minds
               </h2>
               <p className="text-base font-medium text-[#00334D] text-[18px]">
-                Meet the talented professionals behind StudySphere. Each member brings unique skills and perspectives to elevate your study experience.
+                Meet the talented professionals behind StudySphere. Each member
+                brings unique skills and perspectives to elevate your study
+                experience.
               </p>
             </div>
           </div>
@@ -50,24 +53,30 @@ export default Team;
 const TeamCard = ({ imageSrc, name, profession, description }) => {
   return (
     <div className="w-full max-w-[300px] transform transition-transform duration-300 hover:scale-105">
-      <div className="mx-auto mb-8 rounded-lg overflow-hidden shadow-md group">
+      <div className="mx-auto mb-0 rounded-lg overflow-hidden shadow-md group">
         <img
           src={imageSrc}
           alt={name}
           className="w-full h-72 object-cover transition-opacity duration-300 group-hover:opacity-90"
         />
         <div className="text-center p-4 bg-[#00334D] transition-colors duration-300 hover:bg-[#00263d]">
-          <h3 className="text-[20px] font-semibold text-white mb-1 transition-transform duration-300 group-hover:translate-y-1">
+          <h3 className="text-[19px] font-semibold text-white mb-1 transition-transform duration-300 group-hover:translate-y-1">
             {name}
           </h3>
-          <p className="text-[15px] font-medium text-gray-200 mb-2">{profession}</p>
-          <p className="text-[13.5px] text-gray-200 opacity-90 group-hover:opacity-100 transition-opacity duration-300 mb-2">
+          <p className="text-[14px] font-medium text-gray-200 mb-2">
+            {profession}
+          </p>
+          <p className="text-[13px] text-gray-200 opacity-90 group-hover:opacity-100 transition-opacity duration-300 mb-2">
             {description}
           </p>
 
           {/* Social Icons */}
           <div className="flex justify-center space-x-3 mt-2">
-            <a href="#" className="text-white hover:text-gray-400" aria-label="LinkedIn">
+            <a
+              href="#"
+              className="text-white hover:text-gray-400"
+              aria-label="LinkedIn"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -78,7 +87,11 @@ const TeamCard = ({ imageSrc, name, profession, description }) => {
                 <path d="M22.23 0H1.77C.79 0 0 .774 0 1.729V22.27C0 23.226.79 24 1.77 24h20.46c.98 0 1.77-.774 1.77-1.729V1.73C24 .774 23.21 0 22.23 0zM7.08 20.452H3.55V9.05h3.53v11.402zM5.316 7.538A2.07 2.07 0 015.31 3.4a2.07 2.07 0 110 4.138zm15.07 12.914h-3.53v-5.884c0-1.4-.027-3.197-1.95-3.197-1.953 0-2.25 1.526-2.25 3.103v5.978H9.622V9.05h3.39v1.563h.047c.47-.89 1.617-1.83 3.33-1.83 3.56 0 4.215 2.347 4.215 5.395v6.275z" />
               </svg>
             </a>
-            <a href="#" className="text-white hover:text-gray-400" aria-label="GitHub">
+            <a
+              href="#"
+              className="text-white hover:text-gray-400"
+              aria-label="GitHub"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
