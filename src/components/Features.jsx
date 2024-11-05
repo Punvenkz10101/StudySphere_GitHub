@@ -46,7 +46,7 @@ export default function FeaturesSection() {
             className={`flex flex-col md:flex-row items-center my-9 ${feature.reverse ? 'md:flex-row-reverse' : ''}`}
           >
             {/* Image Section */}
-            <div className="md:w-1/2 p-2">
+            <div className="md:w-1/2 p-2 ">
               <img
                 src={feature.image}
                 alt={feature.title}

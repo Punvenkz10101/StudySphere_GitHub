@@ -6,14 +6,14 @@ const Team = () => {
         <div className="flex flex-wrap -mx-4">
           <div className="w-full px-4 text-center">
             <div className="mx-auto mb-8 max-w-[450px]">
-              <span className="block text-[43px] lg:text-[43px] font-bold text-[#00334D] mb-0">
+              <span className="block text-[33px] lg:text-[33px] font-bold text-[#00334D] mb-0">
                 Our Team
               </span>
 
-              <h2 className="text-3xl font-bold text-[#00334D] mb-4 sm:text-[40px]">
+              <h2 className="text-3xl font-bold text-[#00334D] mb-4 sm:text-[36px]">
                 Our Creative Minds
               </h2>
-              <p className="text-base font-medium text-[#00334D] text-[18px]">
+              <p className="text-base text-[15px] font-medium text-[#00334D] ">
                 Meet the talented professionals behind StudySphere. Each member
                 brings unique skills and perspectives to elevate your study
                 experience.
