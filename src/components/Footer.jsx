@@ -2,12 +2,12 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/f
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-white py-6"> {/* Reduced padding here */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-white text-white py-5"> {/* Reduced padding here */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
           {/* Logo and Description */}
           <div className="md:w-1/3 text-center md:text-left">
-            <h3 className="text-3xl text-[#00334D] font-bold mb-2">StudySphere</h3>
+            <h3 className="text-3xl text-[#00334D] font-bold mb-1">StudySphere</h3>
             <p className="text-[#00334D] text-base max-w-xs font-semibold">
             Transforming Study Time into Success.
             </p>
