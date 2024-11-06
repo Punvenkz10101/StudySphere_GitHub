@@ -16,7 +16,7 @@ export default function Header() {
 
   return (
     <header className="absolute top-0 z-50 w-[calc(100%-17px)] max-w-full">
-      <nav className="flex items-center justify-between p-4 lg:p-6 bg-[#001022]/70 backdrop-blur-sm shadow-lg">
+      <nav className="flex items-center justify-between p-4 lg:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg">
         <div className="flex flex-1 items-center">
           <span className="text-white text-5xl lg:text-[34px] font-bold ml-12 transition-transform duration-300 hover:scale-110 mt-1">
             StudySphere
