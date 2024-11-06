@@ -1,25 +1,23 @@
 // App.js
 import React from 'react';
 import './app.css';
-import Header from './components/Header';
-import Features from './components/Features';
-import DeveloperSection from './components/DeveleporSection';
-import Footer from './components/Footer';
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SignInPage from './components/SignInPage'; 
+import SignUpPage from './components/SignUpPage'; // Ensure path is correct
 
 function App() {
   return (
-    <div>
-      <Header />
-{
-// Here yoyu will get a hero section
-}
-      <Features />
-      <div className="min-h-screen bg-gray-50">
-      <DeveloperSection />
-    </div>
-      <Footer />
-    </div>
+   <>
+      <Router>
+      <Routes>
+        {/* Default route to redirect from "/" to "/signin" */}
+        <Route path="/" element={<Navigate to="/signin" />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+      </Routes>
+    </Router>
+   </>
+     
   );
 }
 
