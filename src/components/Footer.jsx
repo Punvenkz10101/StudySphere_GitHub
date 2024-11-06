@@ -5,6 +5,7 @@ export default function Footer() {
     <footer className="bg-white text-white py-3 md:py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0">
+          
           {/* Logo and Description */}
           <div className="md:w-1/3 text-center md:text-left">
             <h3 className="text-xl md:text-2xl text-[#00334D] font-bold mb-1">StudySphere</h3>
@@ -23,7 +24,8 @@ export default function Footer() {
                 <li className="transition">Progress Tracker</li>
               </ul>
             </div>
-            <div className="space-y-1 md:space-y-2 mt-4 md:mt-0">
+            {/* Hide Resources on smaller screens */}
+            <div className="hidden md:block space-y-1 md:space-y-2 mt-4 md:mt-0">
               <h4 className="font-semibold text-[15px] md:text-[17px] text-[#00334D]">Resources</h4>
               <ul className="text-[#00334D] text-xs md:text-sm space-y-1 font-normal">
                 <li className="transition">Blog</li>
