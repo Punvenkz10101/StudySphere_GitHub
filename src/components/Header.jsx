@@ -15,15 +15,16 @@ export default function Header() {
   };
 
   return (
-    <header className="absolute top-0 z-50 w-[calc(100%-17px)] max-w-full">
-      <nav className="flex items-center justify-between p-4 lg:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg">
-        <div className="flex flex-1 items-center">
-          <span className="text-white text-5xl lg:text-[34px] font-bold ml-12 transition-transform duration-300 hover:scale-110 mt-1">
+    <header className="absolute top-0 z-50 w-full max-w-full">
+      <nav className="flex items-center justify-between p-4 md:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg">
+        <div className="flex items-center flex-1">
+          <span className="text-white text-3xl md:text-5xl lg:text-[34px] font-bold ml-4 md:ml-12 transition-transform duration-300 hover:scale-110 mt-1">
             StudySphere
           </span>
         </div>
 
-        <div className="hidden lg:flex justify-center space-x-8 flex-1 mr-12 mx-auto mt-2">
+        {/* Desktop navigation */}
+        <div className="hidden lg:flex justify-center space-x-4 lg:space-x-8 flex-1 mx-auto mt-2">
           {navigation.map((item) => (
             <a
               key={item.name}
@@ -35,20 +36,22 @@ export default function Header() {
           ))}
         </div>
 
-        <div className="hidden lg:flex items-center space-x-4 mr-4">
+        {/* Desktop Search and Login */}
+        <div className="hidden lg:flex items-center space-x-2 md:space-x-4 mr-4">
           <input
             type="text"
             placeholder="Search for rooms..."
-            className="px-4 py-2 w-[350px] md:w-[350px] h-[44px] md:h-[44px] bg-[#1A1A1A]/80 text-white text-[16px] md:text-[16px] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007A99] mt-3"
+            className="px-3 md:px-4 py-2 w-[250px] md:w-[350px] h-[40px] md:h-[44px] bg-[#1A1A1A]/80 text-white text-sm md:text-[16px] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007A99] mt-3"
           />
           <a
             href="#"
-            className="text-base md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-4 py-2 md:px-6 md:py-2.5 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105 mt-2"
+            className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-3 md:px-6 py-2 md:py-2.5 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105 mt-2"
           >
             Log in
           </a>
         </div>
 
+        {/* Mobile menu button */}
         <div className="flex lg:hidden ml-4">
           <button
             onClick={toggleMenu}
@@ -72,6 +75,7 @@ export default function Header() {
         </div>
       </nav>
 
+      {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden bg-[#001022]/85 backdrop-blur-md p-4 rounded-b-md shadow-lg transition-all duration-300">
           <div className="flex flex-col items-center space-y-4">

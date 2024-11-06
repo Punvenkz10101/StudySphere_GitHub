@@ -1,4 +1,5 @@
 import React from "react";
+
 const Team = () => {
   return (
     <section className="pb-4 pt-10 bg-white lg:pb-11 lg:pt-3">
@@ -23,23 +24,23 @@ const Team = () => {
         </div>
 
         {/* Centered Row with Three Cards */}
-        <div className="flex justify-center -mx-4 space-x-4">
+        <div className="flex justify-center flex-wrap gap-4 -mx-4">
           <TeamCard
             name="Puneeth Venkat"
             profession="Team Lead/Web Developer"
-            description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. Her technical expertise ensures a smooth user experience."
+            description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. His technical expertise ensures a smooth user experience."
             imageSrc="src/assets/puneeth.jpeg"
           />
           <TeamCard
             name="Bharath"
             profession="UI/UX Designer"
-            description="Bharath eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
+            description="Bharath's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
             imageSrc=""
           />
           <TeamCard
             name="Harsha Kumar"
             profession="Web Developer"
-            description="Harsha keeps everything on track with her keen organizational skills and strategic planning. Her dedication ensures that each project meets its goals efficiently."
+            description="Harsha keeps everything on track with his keen organizational skills and strategic planning. His dedication ensures that each project meets its goals efficiently."
             imageSrc=""
           />
         </div>
@@ -66,7 +67,8 @@ const TeamCard = ({ imageSrc, name, profession, description }) => {
           <p className="text-[14px] font-medium text-gray-200 mb-2">
             {profession}
           </p>
-          <p className="text-[13px] text-gray-200 opacity-90 group-hover:opacity-100 transition-opacity duration-300 mb-2">
+          {/* Description - hidden on small screens */}
+          <p className="text-[13px] text-gray-200 opacity-90 group-hover:opacity-100 transition-opacity duration-300 mb-2 hidden md:block">
             {description}
           </p>
 

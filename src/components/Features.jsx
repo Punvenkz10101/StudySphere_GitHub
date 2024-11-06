@@ -25,41 +25,41 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="bg-[#00334D] relative pt-10 pb-1">
+    <section className="bg-[#00334D] relative pt-10 pb-5">
       <div className="max-w-5xl mx-auto px-4 text-center mb-8">
         <div className="mb-6">
           <span className="inline-block h-1 w-16 bg-white rounded-full mb-4"></span>
-          <h2 className="text-[38px] font-bold text-white mb-2 drop-shadow-lg transition duration-300 hover:scale-105">
+          <h2 className="text-2xl md:text-[38px] font-bold text-white mb-2 drop-shadow-lg transition duration-300 hover:scale-105">
             What Makes StudySphere Unique?
           </h2>
-          <p className="text-[16px] font-medium text-white mb-5">
+          <p className="text-sm md:text-[16px] font-medium text-white mb-5">
             Dive into the innovative features designed to transform your study sessions into engaging and productive experiences!
           </p>
           <span className="inline-block h-1 w-16 bg-white rounded-full mt-4"></span>
         </div>
       </div>
 
-      <div className="space-y-7">
+      <div className="space-y-7 px-2 md:px-0">
         {features.map((feature, index) => (
           <div
             key={index}
             className={`flex flex-col md:flex-row items-center my-9 ${feature.reverse ? 'md:flex-row-reverse' : ''}`}
           >
             {/* Image Section */}
-            <div className="md:w-1/2 p-2 ">
+            <div className="md:w-1/2 p-2 flex justify-center md:justify-start">
               <img
                 src={feature.image}
                 alt={feature.title}
-                className={`transition-transform duration-300 transform hover:scale-105 ${index === 1 ? 'mt-[-120px] ml-[95px]' : 'mt-[-86px] ml-[155px]'}`}
-                style={{ width: '375px', height: 'auto' }}
+                className={`transition-transform duration-300 transform hover:scale-105 ${index === 1 ? 'mt-[-20px] md:mt-[-120px] md:ml-[95px]' : 'mt-[-20px] md:mt-[-86px] md:ml-[155px]'}`}
+                style={{ width: '100%', maxWidth: '375px', height: 'auto' }}
               />
             </div>
 
             {/* Text Section */}
-            <div className={`md:w-1/2 p-2 ${index === 1 ? 'mt-[-60px] ml-[90px]' : 'mt-[-75px] mr-[150px]'}`}>
+            <div className={`md:w-1/2 p-2 text-center md:text-left ${index === 1 ? 'mt-0 md:mt-[-60px] md:ml-[90px]' : 'mt-0 md:mt-[-75px] md:mr-[150px]'}`}>
               <div className="bg-white p-4 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                <h3 className="text-[26px] font-bold text-[#00334D] mb-3 text-center">{feature.title}</h3>
-                <p className="text-[15.5px] font-medium text-[#00334D]">{feature.description}</p>
+                <h3 className="text-lg md:text-[26px] font-bold text-[#00334D] mb-3">{feature.title}</h3>
+                <p className="text-[15px] md:text-[15.5px] font-medium text-[#00334D]">{feature.description}</p>
               </div>
             </div>
           </div>
