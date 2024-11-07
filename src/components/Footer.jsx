@@ -2,6 +2,15 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/f
 
 export default function Footer() {
   return (
+<<<<<<< HEAD
+    <footer className="bg-gray-900 text-gray-300 py-4">
+      <div className="container mx-auto text-center">
+        <p className="text-sm">&copy; 2024. All rights reserved.</p>
+        <div className="flex justify-center space-x-6 mt-2">
+          <a href="#privacy" className="hover:underline">Privacy Policy</a>
+          <a href="#terms" className="hover:underline">Terms of Service</a>
+          <a href="#contact" className="hover:underline">Contact Us</a>
+=======
     <footer className="bg-white text-white py-3 md:py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0">
@@ -55,6 +64,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-5 md:mt-6 text-center text-[#00334D] text-[11px] md:text-xs font-medium">
           &copy; {new Date().getFullYear()} StudySphere. All rights reserved.
+>>>>>>> 552686cd1657d070e9b8d8027d1af7a7a78392cb
         </div>
       </div>
     </footer>
