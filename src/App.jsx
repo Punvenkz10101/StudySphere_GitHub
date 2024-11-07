@@ -8,16 +8,7 @@ import SignUpPage from './components/SignUpPage'; // Ensure path is correct
 
 function App() {
   return (
-   <>
-      <Router>
-      <Routes>
-        {/* Default route to redirect from "/" to "/signin" */}
-        <Route path="/" element={<Navigate to="/signin" />} />
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-      </Routes>
-    </Router>
-   </>
+   
      
 =======
 import Header from './components/Header';
@@ -60,7 +51,7 @@ function App() {
 
       <Footer />
     </div>
->>>>>>> 552686cd1657d070e9b8d8027d1af7a7a78392cb
+
   );
 }
 
