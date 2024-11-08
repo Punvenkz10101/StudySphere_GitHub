@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className='h-screen w-screen overflow-x-hidden'>
+    <div className='overflow-x-hidden'>
       <Header /> {/* Header moved outside HeroSection */}
 
       <section id="hero">
