@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { auth } from "./Firebase/firebase"; // Firebase configuration
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { ImCross } from "react-icons/im";
-import googleLogo from '../assets/gmail.jpeg'; // Path to your Google logo image
 
-const SigninPage = ({ onClose }) => {
+const SigninPage = ({ onClose, toggleSignupOverlay }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -40,20 +39,6 @@ const SigninPage = ({ onClose }) => {
       } else {
         setError("An error occurred. Please try again.");
       }
-    }
-  };
-
-  // Handle Google sign-in
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log("Google User:", user);
-      onClose(); // Close overlay after successful Google sign-in
-    } catch (error) {
-      console.error("Error signing in with Google:", error);
-      setError(error.message);
     }
   };
 
@@ -93,20 +78,20 @@ const SigninPage = ({ onClose }) => {
         Sign In
       </button>
 
-      <button
-        type="button"
-        onClick={handleGoogleSignIn}
-        className="w-full py-3 mt-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 flex items-center justify-center"
-      >
-        <img src={googleLogo} alt="Google Logo" className="w-5 h-5 mr-2" />
-        Sign in with Google
-      </button>
+      <p className="text-center mt-4">
+        Don't have an account?{" "}
+        <button
+          onClick={() => {
+            onClose(); // Close the sign-in overlay
+            toggleSignupOverlay(); // Open the sign-up overlay
+          }}
+          className="text-blue-500 hover:underline"
+        >
+          Create Account
+        </button>
+      </p>
     </div>
   );
 };
 
 export default SigninPage;
-
-
-
-
