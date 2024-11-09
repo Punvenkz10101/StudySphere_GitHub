@@ -16,7 +16,7 @@ const CTA_Section = () => {
             href="#"
             className="rounded-md bg-[#00334D] px-6 py-2 md:px-7 md:py-2 text-[16px] font-semibold text-white shadow-md hover:bg-[#004466] transition duration-300 transform hover:scale-105"
           >
-            Sign Up
+            Sign Up 
           </a>
           <a
             href="#"
