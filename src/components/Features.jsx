@@ -58,7 +58,7 @@ export default function FeaturesSection() {
             {/* Text Section */}
             <div className={`md:w-1/2 p-2 text-center md:text-left ${index === 1 ? 'mt-0 md:mt-[-60px] md:ml-[90px]' : 'mt-0 md:mt-[-75px] md:mr-[150px]'}`}>
               <div className="bg-white p-4 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105">
-                <h3 className="text-lg md:text-[26px] font-bold text-[#00334D] mb-3">{feature.title}</h3>
+                <h3 className="text-lg text-center md:text-[26px] font-bold text-[#00334D] mb-3">{feature.title}</h3>
                 <p className="text-[15px] md:text-[15.5px] font-medium text-[#00334D]">{feature.description}</p>
               </div>
             </div>
