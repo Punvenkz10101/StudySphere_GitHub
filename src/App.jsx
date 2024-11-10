@@ -8,7 +8,7 @@ import CTA_Section from './components/CTA_Section';
 import Team from './components/Team';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
-import SigninPage from './components/SigninPage';
+import SigninPage from './components/SignInPage';
 import SignupPage from './components/SignUpPage';
 
 function App() {
