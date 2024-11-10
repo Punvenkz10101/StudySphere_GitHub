@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaBars } from 'react-icons/fa';
 
 const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   const userNameInitial = user
     ? (user.displayName ? user.displayName[0] : user.email[0]).toUpperCase()
     : null;
@@ -10,6 +13,24 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  // Close dropdown when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const navigation = [
     { name: "Product", href: "#" },
@@ -20,7 +41,7 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
 
   return (
     <header className="fixed top-0 z-50 w-full">
-      <nav className="flex items-center justify-between p-4 md:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg">
+      <nav className="flex items-center justify-between p-4 md:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg h-[88px]">
         
         {/* Logo Section */}
         <div className="flex items-center space-x-4 ml-6 flex-none">
@@ -47,36 +68,49 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
           />
         </div>
 
-        {/* Login and Sign Out Section */}
-        <div className="hidden lg:flex items-center mr-6 space-x-4">
+        {/* User Icon and Dropdown */}
+        <div className="relative hidden lg:flex items-center space-x-4 mr-8">
           {user ? (
-            <>
+            <div className="relative">
+              {/* User Icon */}
               <div
-                className="w-12 h-12 rounded-full bg-[#00334D] text-white flex items-center justify-center font-semibold text-lg mr-2"
+                className="w-12 h-12 rounded-full bg-[#00334D] text-white flex items-center justify-center font-semibold text-lg cursor-pointer"
+                onClick={toggleDropdown}
                 title={user.email}
               >
                 {userNameInitial}
               </div>
-              <button
-                onClick={onSignOut}
-                className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-3 md:px-7 py-2 md:py-[11px] rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105 "
-              >
-                Sign Out
-              </button>
-            </>
+
+              {/* Dropdown Menu */}
+              {showDropdown && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 mt-2 w-64 bg-[#1A1A1A] rounded-lg shadow-xl py-4 z-50 border border-gray-700"
+                >
+                  <div className="px-4 py-2 text-[#E6E6E6] text-lg font-semibold border-b border-gray-600">
+                    <div>{user.displayName || "User"}</div>
+                    <div className="text-sm text-gray-400 truncate max-w-full">{user.email}</div>
+                  </div>
+                  <button
+                    onClick={onSignOut}
+                    className="w-full px-4 py-2 text-left text-[#FF4D4F] font-semibold text-base hover:bg-[#3A3A3A] transition-colors duration-300 mt-2 rounded-b-lg"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <button
                 onClick={onLoginClick}
-                style={{ marginLeft: '16px' }}  // Inline style to move this button only
-                className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-3 md:px-7 py-2 md:py-[11px] rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105"
+                className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-4 py-2 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105"
               >
                 Log in
               </button>
               <button
                 onClick={onSignUpClick}
-                style={{ marginLeft: '8px' }}  // Inline style to move this button only
-                className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-3 md:px-7 py-2 md:py-[11px] rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105"
+                className="text-sm md:text-[16px] font-semibold text-white bg-[#00334D]/80 px-4 py-2 rounded-md shadow-lg transition duration-300 hover:bg-[#004466] hover:shadow-xl transform hover:scale-105"
               >
                 Create an Account
               </button>
