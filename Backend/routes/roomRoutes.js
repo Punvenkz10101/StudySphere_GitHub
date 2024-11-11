@@ -22,6 +22,7 @@ router.post('/create', async (req, res) => {
     await newRoom.save(); // Save to MongoDB
 
     res.json({ success: true, room: newRoom });
+    console.log("Room created:", newRoom);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
