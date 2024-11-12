@@ -1,6 +1,5 @@
-// App.jsx
-import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom'; // Import Routes and Route for routing
+import React, { useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic routing
 import './app.css';
 import HeroSection from './components/HeroSection';
 import Features from './components/Features';
@@ -11,17 +10,21 @@ import Footer from './components/Footer';
 import Overlay from './components/Overlay';
 import CreateRoomModal from './components/CreateRoomModal'; // Import CreateRoomModal
 import RoomPage from './components/RoomPage';
+
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false); // State for showing Create Room modal
- const toggleCreateRoomModal = () => {
+  const navigate = useNavigate(); // Get the navigate function to redirect after room creation
+
+  const toggleCreateRoomModal = () => {
     setShowCreateRoom(!showCreateRoom);
   };
+
   return (
     <div className="overflow-x-hidden">
-      <Overlay/>
+      <Overlay />
       {/* Create Room Modal */}
       {showCreateRoom && (
-        <CreateRoomModal onClose={toggleCreateRoomModal} />
+        <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} /> // Pass navigate to modal
       )}
 
       <Routes>
@@ -50,7 +53,7 @@ function App() {
             <Footer />
           </>
         } />
-        <Route path="/rooms" element={<RoomPage />} /> {/* Add RoomPage route */}
+        <Route path="/rooms/:roomKey" element={<RoomPage />} /> {/* RoomPage with dynamic roomKey */}
       </Routes>
     </div>
   );
