@@ -1,76 +1,22 @@
-// src/App.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import './app.css';
-import { auth } from './components/Firebase/firebase'; // Import Firebase authentication
-import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import Features from './components/Features';
 import CTA_Section from './components/CTA_Section';
 import Team from './components/Team';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
-import SigninPage from './components/SignInPage';
-import SignupPage from './components/SignUpPage';
+import Overlay from './components/Overlay';
 import CreateRoomModal from './components/CreateRoomModal'; // Import CreateRoomModal
 
 function App() {
-  const [user, setUser] = useState(null); // User state
-  const [showSignin, setShowSignin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
   const [showCreateRoom, setShowCreateRoom] = useState(false); // State for showing Create Room modal
-
-  // Listen to Firebase auth state changes
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(setUser);
-    return () => unsubscribe(); 
-  }, []);
-
-  const toggleSigninOverlay = () => {
-    setShowSignin(!showSignin);
-    setShowSignup(false); 
-  };
-
-  const toggleSignupOverlay = () => {
-    setShowSignup(!showSignup);
-    setShowSignin(false); 
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut(); 
-      setUser(null); 
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
-  const toggleCreateRoomModal = () => {
+ const toggleCreateRoomModal = () => {
     setShowCreateRoom(!showCreateRoom);
   };
-
   return (
     <div className="overflow-x-hidden">
-      <Header 
-        onLoginClick={toggleSigninOverlay} 
-        onSignUpClick={toggleSignupOverlay} 
-        user={user} // Pass the user state to Header
-        onSignOut={handleSignOut} 
-      />
-
-      {/* Signin Overlay */}
-      {showSignin && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <SigninPage onClose={toggleSigninOverlay} />
-        </div>
-      )}
-
-      {/* Signup Overlay */}
-      {showSignup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <SignupPage onClose={toggleSignupOverlay} />
-        </div>
-      )}
-
+      <Overlay/>
       {/* Create Room Modal */}
       {showCreateRoom && (
         <CreateRoomModal onClose={toggleCreateRoomModal} />
