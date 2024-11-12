@@ -1,15 +1,28 @@
-// frontend/components/CreateRoomModal.jsx
+// CreateRoomModal.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const CreateRoomModal = ({ onClose }) => {
+  /**
+   * CreateRoomModal component
+   * 
+   * Handles creating a new room and submitting it to the backend
+   * 
+   * @param {function} onClose - function to close the modal
+   * @returns {React.Component} - the CreateRoomModal component
+   */
   const [creator, setCreator] = useState('');
   const [topic, setTopic] = useState('');
-  const [participantsLimit, setParticipantsLimit] = useState('');
-
-
+  const [participantsLimit, setParticipantsLimit] = useState(1);
+  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    /**
+     * Handle form submission
+     * @param {Event} e - the form submission event
+     */
     e.preventDefault();
 
     try {
@@ -22,6 +35,7 @@ const CreateRoomModal = ({ onClose }) => {
       if (res.data.success) {
         console.log("Room created:", res.data.room);
         onClose(); // Close modal after successful creation
+        navigate(`/rooms/${res.data.room.roomKey}`); // Navigate to RoomPage with roomKey
       } else {
         console.error("Failed to create room");
       }
@@ -42,6 +56,7 @@ const CreateRoomModal = ({ onClose }) => {
               value={creator} 
               onChange={(e) => setCreator(e.target.value)} 
               required 
+              placeholder="Enter creator name" 
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
@@ -52,16 +67,18 @@ const CreateRoomModal = ({ onClose }) => {
               value={topic} 
               onChange={(e) => setTopic(e.target.value)} 
               required 
+              placeholder="Enter room topic" 
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
           <label>
-            Participants Limit:
+            Participants Limit (1-10):
             <input 
               type="number" 
               value={participantsLimit} 
-              onChange={(e) => setParticipantsLimit(e.target.value)} 
+              onChange={(e) => setParticipantsLimit(Math.min(10, Math.max(1, e.target.value)))} 
               required 
+              placeholder="Set limit (1-10)"
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </label>
