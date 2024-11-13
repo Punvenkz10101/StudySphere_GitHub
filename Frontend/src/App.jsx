@@ -26,30 +26,19 @@ function App() {
       {showCreateRoom && (
         <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} /> // Pass navigate to modal
       )}
-
       <Routes>
         <Route path="/" element={
-          <>
-            <section id="hero">
-              <HeroSection onCreateRoomClick={toggleCreateRoomModal} />
-            </section>
-            <div className="bg-gray-400 h-[6px] w-full" />
-            <section id="cta">
-              <CTA_Section />
-            </section>
-            <div className="bg-gray-400 h-[6px] w-full" />
-            <section id="features">
-              <Features />
-            </section>
-            <div className="bg-gray-400 h-[6px] w-full" />
-            <section id="team">
-              <Team />
-            </section>
-            <div className="bg-gray-400 h-[6px] w-full" />
-            <section id="faq">
+          <>         
+              <HeroSection onCreateRoomClick={toggleCreateRoomModal} />           
+            <div className="bg-gray-400 h-[3px] w-full" />           
+              <CTA_Section />          
+            <div className="bg-gray-400 h-[3px] w-full" />          
+              <Features />           
+            <div className="bg-gray-400 h-[3px] w-full" />           
+              <Team />          
+            <div className="bg-gray-400 h-[3px] w-full" />           
               <FAQSection />
-            </section>
-            <div className="bg-gray-400 h-[6px] w-full" />
+            <div className="bg-gray-400 h-[3px] w-full" />
             <Footer />
           </>
         } />
