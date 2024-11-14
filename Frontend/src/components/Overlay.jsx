@@ -44,14 +44,14 @@ const Overlay = () => {
       {/* Signin Overlay */}
       {showSignin && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <SigninPage onClose={toggleSigninOverlay} />
+          <SigninPage onClose={toggleSigninOverlay} toggleSignupOverlay={toggleSignupOverlay} />
         </div>
       )}
 
       {/* Signup Overlay */}
       {showSignup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <SignupPage onClose={toggleSignupOverlay} />
+          <SignupPage onClose={toggleSignupOverlay} toggleSigninOverlay={toggleSigninOverlay} />
         </div>
       )}
 
