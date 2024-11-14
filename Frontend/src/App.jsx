@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic routing
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'; // <-- Correct import
 import './app.css';
 import HeroSection from './components/HeroSection';
 import Features from './components/Features';
@@ -8,41 +8,46 @@ import Team from './components/Team';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import Overlay from './components/Overlay';
-import CreateRoomModal from './components/CreateRoomModal'; // Import CreateRoomModal
+import CreateRoomModal from './components/CreateRoomModal';
 import RoomPage from './components/RoomPage';
 
 function App() {
-  const [showCreateRoom, setShowCreateRoom] = useState(false); // State for showing Create Room modal
-  const navigate = useNavigate(); // Get the navigate function to redirect after room creation
+  const [showCreateRoom, setShowCreateRoom] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // <-- useLocation hook
 
   const toggleCreateRoomModal = () => {
     setShowCreateRoom(!showCreateRoom);
   };
 
+  // Check if the current route is NOT the RoomPage
+  const isRoomPage = location.pathname.startsWith('/rooms/');
+
   return (
     <div className="overflow-x-hidden">
-      <Overlay />
-      {/* Create Room Modal */}
+      {/* Render Overlay only if it's not the RoomPage */}
+      {!isRoomPage && <Overlay />}
+      
+      {/* Conditional rendering for Create Room Modal */}
       {showCreateRoom && (
-        <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} /> // Pass navigate to modal
+        <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} />
       )}
+
       <Routes>
-        <Route path="/" element={
-          <>         
-              <HeroSection onCreateRoomClick={toggleCreateRoomModal} />           
-            <div className="bg-gray-400 h-[3px] w-full" />           
-              <CTA_Section />          
-            <div className="bg-gray-400 h-[3px] w-full" />          
-              <Features />           
-            <div className="bg-gray-400 h-[3px] w-full" />           
-              <Team />          
-            <div className="bg-gray-400 h-[3px] w-full" />           
+        <Route 
+          path="/" 
+          element={
+            <>
+              <HeroSection onCreateRoomClick={toggleCreateRoomModal} />
+              <CTA_Section />
+              <Features />
+              <Team />
               <FAQSection />
-            <div className="bg-gray-400 h-[3px] w-full" />
-            <Footer />
-          </>
-        } />
-        <Route path="/rooms/:roomKey" element={<RoomPage />} /> {/* RoomPage with dynamic roomKey */}
+              <Footer />
+            </>
+          } 
+        />
+        <Route path="/rooms/:roomKey" element={<RoomPage />} />
       </Routes>
     </div>
   );
