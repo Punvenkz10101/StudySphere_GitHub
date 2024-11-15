@@ -20,6 +20,8 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
+
+
 // Routes
 app.use("/api/rooms", roomRoutes); // Use the room routes
 
