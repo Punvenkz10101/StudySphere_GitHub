@@ -32,7 +32,6 @@ function App() {
       {showCreateRoom && (
         <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} />
       )}
-
       <Routes>
         <Route
           path="/"
