@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'; // <-- Correct import
-import './app.css';
+import './App.css';
 import HeroSection from './components/HeroSection';
 import Features from './components/Features';
 import CTA_Section from './components/CTA_Section';
