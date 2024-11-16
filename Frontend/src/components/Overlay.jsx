@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../components/Firebase/firebase';
-import Header from '../components/Header';
-import SigninPage from '../components/SignInPage';
-import SignupPage from '../components/SignUpPage';
+import { auth } from '../components/Firebase/firebase.js';
+import Header from '../components/Header.jsx';
+import SigninPage from '../components/SignInPage.jsx';
+import SignupPage from '../components/SignUpPage.jsx';
 const Overlay = () => {
   const [user, setUser] = useState(null); // User state
   const [showSignin, setShowSignin] = useState(false);

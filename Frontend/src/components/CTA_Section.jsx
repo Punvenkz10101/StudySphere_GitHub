@@ -29,7 +29,7 @@ const CTA_Section = () => {
 
       <div className="mt-6 md:mt-0 md:w-1/2 flex justify-center">
         <img 
-          src="./src/assets/image(1).png" // Replace with the actual image path
+          src="./src/assets/Images/HomePage/CTA.png" // Replace with the actual image path
           alt="Study Room"
           className="w-[280px] md:w-[360px] lg:w-[380px] transform transition-transform duration-300 hover:scale-105" // Increased image size for better visibility
         />

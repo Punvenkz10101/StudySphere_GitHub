@@ -1,6 +1,6 @@
-import featureImage1 from '../assets/Group discussion (8).gif';
-import featureImage2 from '../assets/Work time (1).gif';
-import featureImage3 from '../assets/Team work (1).gif';
+import featureImage1 from '../assets/Images/HomePage/GroupStudy.gif';
+import featureImage2 from '../assets/Images/HomePage/Pomodoro.gif';
+import featureImage3 from '../assets/Images/HomePage/Progress.gif';
 
 export default function FeaturesSection() {
   const features = [

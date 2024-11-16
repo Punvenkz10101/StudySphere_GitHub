@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"; // <-- Correct import
 import "./App.css";
-import HeroSection from "./components/HeroSection";
-import Features from "./components/Features";
-import CTA_Section from "./components/CTA_Section";
-import Team from "./components/Team";
-import FAQSection from "./components/FAQSection";
-import Footer from "./components/Footer";
-import Overlay from "./components/Overlay";
-import CreateRoomModal from "./components/CreateRoomModal";
-import RoomPage from "./components/RoomPage";
+import HeroSection from "./components/HeroSection.jsx";
+import Features from "./components/Features.jsx";
+import CTA_Section from "./components/CTA_Section.jsx";
+import Team from "./components/Team.jsx";
+import FAQSection from "./components/FAQSection.jsx";
+import Footer from "./components/Footer.jsx";
+import Overlay from "./components/Overlay.jsx";
+import CreateRoomModal from "./components/CreateRoomModal.jsx";
+import RoomPage from "./components/RoomPage.jsx";
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);

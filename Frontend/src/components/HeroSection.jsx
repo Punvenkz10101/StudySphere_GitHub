@@ -1,6 +1,6 @@
 // src/components/HeroSection.jsx
 import React from 'react';
-import backgroundImage from '../assets/Hero_Image.jpg';
+import backgroundImage from '../assets/Images/HomePage/Hero_Image.jpg';
 
 export default function HeroSection({ onCreateRoomClick }) {
   return (

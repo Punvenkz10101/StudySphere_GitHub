@@ -1,6 +1,6 @@
 // backend/routes/roomRoutes.js
 const express = require('express');
-const Room = require('../models/Room');
+const Room = require('../models/Room.js');
 const crypto = require('crypto'); // For generating a unique roomKey
 const router = express.Router();
 

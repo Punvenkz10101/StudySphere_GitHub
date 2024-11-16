@@ -1,12 +1,12 @@
 import React from 'react';
 import DeveloperCard from './DeveleporCard';
-import puneethImage from '../assets/puneeth.jpeg'
+import puneethImage from '../assets/Images/HomePage/Puneeth.jpeg'
 import BharathImage from '../assets/Bharath.jpeg'
 
 const DeveloperSection = () => {
   const developers = [
-    { image: puneethImage, name: 'Puneeth Venkat',description: 'FrontEnd Devele', github: 'https://github.com/Punvenkz10101', linkedin: 'www.linkedin.com/in/puneeth-venkat-7731b5293' },
-    { image: BharathImage, name: 'Bharath P',description: 'Backend Develpr', github: 'https://github.com/Bharathpothula205', linkedin: 'http://linkedin.com/in/bharath-pothula' },
+    { image: puneethImage, name: 'Puneeth Venkat',description: 'FrontEnd Developer', github: 'https://github.com/Punvenkz10101', linkedin: 'www.linkedin.com/in/puneeth-venkat-7731b5293' },
+    { image: BharathImage, name: 'Bharath P',description: 'Backend Developer', github: 'https://github.com/Bharathpothula205', linkedin: 'http://linkedin.com/in/bharath-pothula' },
     { image: 'HarshImage', name: 'Harsha SM',description: 'Full Stack', github: 'https://github.com/charlie', linkedin: 'https://linkedin.com/in/charlie' },
     { image:'jjImage', name: 'D',description: 'CEO' ,github: 'https://github.com/diana', linkedin: 'https://linkedin.com/in/diana' },
   ];

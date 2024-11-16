@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { auth } from "./Firebase/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ImCross } from "react-icons/im";
-import googleLogo from '../assets/gmail.jpeg'; // Path to your Google logo image
+import googleLogo from '../assets/Images/HomePage/gmail.jpeg'; // Path to your Google logo image
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Import GoogleAuthProvider
 
 const SignupPage = ({ onClose, toggleSigninOverlay }) => {
