@@ -24,7 +24,7 @@ const CreateRoomModal = ({ onClose }) => {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/rooms/create', {
+      const res = await axios.post('https://studysphere-github.onrender.com/api/rooms/create', {
         creator,
         topic,
         participantsLimit,

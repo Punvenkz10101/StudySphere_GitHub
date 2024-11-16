@@ -15,7 +15,7 @@ const JoinRoomModal = ({ onClose }) => {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/rooms/join', { roomKey });
+      const res = await axios.post('https://studysphere-github.onrender.com', { roomKey });
 
       if (res.data.success) {
         navigate(`/rooms/${roomKey}`);
