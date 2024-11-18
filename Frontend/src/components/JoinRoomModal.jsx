@@ -1,4 +1,3 @@
-// frontend/components/JoinRoomModal.js
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -15,8 +14,8 @@ const JoinRoomModal = ({ onClose }) => {
     setError("");
 
     try {
-      // Update the API URL to point to your Render backend
-      const res = await axios.post("https://studysphere-github.onrender.com", { roomKey });
+      // Use the correct endpoint with full path
+      const res = await axios.post("https://studysphere-github.onrender.com/api/rooms/join", { roomKey });
 
       if (res.data.success) {
         navigate(`/rooms/${roomKey}`);
