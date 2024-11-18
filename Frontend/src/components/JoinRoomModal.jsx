@@ -1,30 +1,30 @@
 // frontend/components/JoinRoomModal.js
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const JoinRoomModal = ({ onClose }) => {
-  const [roomKey, setRoomKey] = useState('');
-  const [error, setError] = useState('');
+  const [roomKey, setRoomKey] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleJoin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const res = await axios.post('https://studysphere-github.onrender.com', { roomKey });
+      const res = await axios.post("http://localhost:5000", { roomKey });
 
       if (res.data.success) {
         navigate(`/rooms/${roomKey}`);
         onClose();
       } else {
-        setError('Room not found or incorrect code.');
+        setError("Room not found or incorrect code.");
       }
     } catch (err) {
-      setError('An error occurred while joining the room.');
+      setError("An error occurred while joining the room.");
     } finally {
       setLoading(false);
     }
@@ -50,10 +50,15 @@ const JoinRoomModal = ({ onClose }) => {
             className="w-full py-3 text-white bg-[#00334D] rounded-md shadow-md hover:bg-[#002533]"
             disabled={loading}
           >
-            {loading ? 'Joining...' : 'Join Room'}
+            {loading ? "Joining..." : "Join Room"}
           </button>
         </form>
-        <button onClick={onClose} className="mt-4 text-gray-500 hover:text-black">Close</button>
+        <button
+          onClick={onClose}
+          className="mt-4 text-gray-500 hover:text-black"
+        >
+          Close
+        </button>
       </div>
     </div>
   );

@@ -1,30 +1,30 @@
 // frontend/components/CreateRoomModal.js
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CreateRoomModal = ({ onClose }) => {
-  const [creator, setCreator] = useState('');
-  const [topic, setTopic] = useState('');
+  const [creator, setCreator] = useState("");
+  const [topic, setTopic] = useState("");
   const [participantsLimit, setParticipantsLimit] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!creator || !topic || participantsLimit < 1 || participantsLimit > 10) {
-      setError('Please fill in all fields correctly.');
+      setError("Please fill in all fields correctly.");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const res = await axios.post('https://studysphere-github.onrender.com/api/rooms/create', {
+      const res = await axios.post("http://localhost:5000/api/rooms/create", {
         creator,
         topic,
         participantsLimit,
@@ -34,10 +34,10 @@ const CreateRoomModal = ({ onClose }) => {
         navigate(`/rooms/${res.data.room.roomKey}`);
         onClose();
       } else {
-        setError('Failed to create room');
+        setError("Failed to create room");
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,11 @@ const CreateRoomModal = ({ onClose }) => {
           <input
             type="number"
             value={participantsLimit}
-            onChange={(e) => setParticipantsLimit(Math.min(10, Math.max(1, parseInt(e.target.value))))}
+            onChange={(e) =>
+              setParticipantsLimit(
+                Math.min(10, Math.max(1, parseInt(e.target.value)))
+              )
+            }
             required
             placeholder="Set limit (1-10)"
             className="w-full p-2 border border-gray-300 rounded-md"
@@ -84,10 +88,15 @@ const CreateRoomModal = ({ onClose }) => {
             className="w-full py-3 text-white bg-[#00334D] rounded-md shadow-md hover:bg-[#002533]"
             disabled={loading}
           >
-            {loading ? 'Creating...' : 'Create Room'}
+            {loading ? "Creating..." : "Create Room"}
           </button>
         </form>
-        <button onClick={onClose} className="mt-4 text-gray-500 hover:text-black">Close</button>
+        <button
+          onClick={onClose}
+          className="mt-4 text-gray-500 hover:text-black"
+        >
+          Close
+        </button>
       </div>
     </div>
   );
