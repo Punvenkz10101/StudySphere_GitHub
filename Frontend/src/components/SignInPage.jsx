@@ -50,7 +50,7 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       >
         <ImCross />
       </button>
-      <h2 className="text-2xl font-semibold text-center mb-6">Sign In</h2>
+      <h2 className="text-2xl bg-black font-semibold text-center mb-6">Sign In</h2>
 
       <input
         type="email"

@@ -55,7 +55,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
       >
         <ImCross />
       </button>
-      <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+      <h2 className="text-2xl bg-black font-semibold text-center mb-6">Sign Up</h2>
 
       <input
         type="text"
