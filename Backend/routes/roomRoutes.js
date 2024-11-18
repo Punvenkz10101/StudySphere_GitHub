@@ -1,46 +1,52 @@
-// backend/routes/roomRoutes.js
-const express = require('express');
-const Room = require('../models/Room');
-const crypto = require('crypto'); // For generating a unique roomKey
+const express = require("express");
+const Room = require("../models/Room");
+const crypto = require("crypto");
 const router = express.Router();
 
 // Create a room
-router.post('/create', async (req, res) => {
+router.post("/create", async (req, res) => {
   const { creator, topic, participantsLimit } = req.body;
+  const roomKey = crypto.randomBytes(4).toString("hex");
 
-  // Generate a unique roomKey using crypto
-  const roomKey = crypto.randomBytes(4).toString('hex'); // Generates a 8-character hex string
+  // Validate participants limit
+  if (participantsLimit < 1 || participantsLimit > 10) {
+    return res.status(400).json({
+      success: false,
+      message: "Participant limit must be between 1 and 10",
+    });
+  }
 
   try {
-    const newRoom = new Room({
-      creator,
-      topic,
-      participantsLimit,
-      roomKey, // Save the generated roomKey
-    });
+    const newRoom = new Room({ creator, topic, participantsLimit, roomKey });
+    await newRoom.save();
 
-    await newRoom.save(); // Save to MongoDB
+    console.log(`Room created: ${JSON.stringify(newRoom, null, 2)}`);
 
-    res.json({ success: true, room: newRoom });
-    console.log("Room created:", newRoom);
+    res.status(201).json({ success: true, room: newRoom });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Error creating room:', error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 // Join a room using a roomKey
-router.post('/join', async (req, res) => {
+router.post("/join", async (req, res) => {
   const { roomKey } = req.body;
-  
+
   try {
+    // Find the room by its unique key
     const room = await Room.findOne({ roomKey });
+
     if (!room) {
+      console.log(`Failed join attempt: Room with key ${roomKey} not found`);
       return res.status(404).json({ success: false, message: 'Room not found' });
     }
-    
+
+    console.log(`Room joined: ${JSON.stringify(room, null, 2)}`);
     res.json({ success: true, room });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Error joining room:', error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
