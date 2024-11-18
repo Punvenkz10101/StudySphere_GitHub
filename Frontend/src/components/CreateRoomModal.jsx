@@ -1,5 +1,4 @@
-// frontend/components/CreateRoomModal.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +10,15 @@ const CreateRoomModal = ({ onClose }) => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Lock scroll when modal is open
+    document.body.style.overflow = "hidden";
+    return () => {
+      // Reset scroll when modal is closed
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +32,7 @@ const CreateRoomModal = ({ onClose }) => {
     setError("");
 
     try {
-      // Update the API URL to point to your Render backend
+      // Update the API URL to point to your backend
       const res = await axios.post("https://studysphere-github.onrender.com/api/rooms/create", {
         creator,
         topic,
