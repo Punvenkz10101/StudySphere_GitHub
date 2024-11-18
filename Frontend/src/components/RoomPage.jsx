@@ -62,7 +62,7 @@ export default function RoomPage() {
       <Overlay /> {/* Overlay remains fixed and provides header separation */}
 
       <div className="content-wrapper flex pt-24 pb-8 mx-auto max-w-screen-xl h-full w-full">
-        <div className="grid grid-cols-3 gap-8 w-full h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full h-full">
           {/* Left Column - Team and Sessions */}
           <div className="flex flex-col justify-between p-6 bg-[#002233]/75 rounded-lg h-full">
             <div className="team-section mb-6">
