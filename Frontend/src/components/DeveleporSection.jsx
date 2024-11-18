@@ -4,7 +4,7 @@ import DeveloperCard from './DeveloperCard';
 const DeveloperSection = () => {
   const developers = [
     {
-      image: '/Puneeth.jpeg', // Image path in the public folder
+      image: '/Puneeth.jpg', // Image path in the public folder
       name: 'Puneeth Venkat',
       description: 'FrontEnd Developer',
       github: 'https://github.com/Punvenkz10101',

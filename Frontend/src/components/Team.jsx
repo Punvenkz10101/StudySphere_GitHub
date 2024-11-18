@@ -29,7 +29,7 @@ const Team = () => {
             name="Puneeth Venkat"
             profession="Team Lead/Web Developer"
             description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. His technical expertise ensures a smooth user experience."
-            imageSrc="src/assets/puneeth.jpeg"
+            imageSrc="/Puneeth.jpg"
           />
           <TeamCard
             name="Bharath"
