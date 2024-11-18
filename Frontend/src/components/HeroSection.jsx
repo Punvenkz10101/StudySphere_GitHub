@@ -1,13 +1,11 @@
-// frontend/components/HeroSection.jsx
 import React from 'react';
-import backgroundImage from '../assets/Images/HomePage/Hero_Image.jpg';
 
 export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
   return (
     <section
       className="relative h-screen flex flex-col items-center justify-center text-center bg-cover bg-center text-white animate-fadeIn"
       style={{
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url("/Hero_Image.jpg")`, // Updated URL for image in the public folder
         backgroundColor: '#001D33',
       }}
     >

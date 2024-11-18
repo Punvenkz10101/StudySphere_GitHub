@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { auth } from "./Firebase/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Combined imports
 import { ImCross } from "react-icons/im";
-import googleLogo from '../assets/Images/HomePage/gmail.jpeg'; // Path to your Google logo image
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Import GoogleAuthProvider
 
 const SignupPage = ({ onClose, toggleSigninOverlay }) => {
   const [name, setName] = useState("");
@@ -104,7 +102,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         onClick={handleGoogleSignIn}
         className="w-full py-3 mt-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 flex items-center justify-center"
       >
-        <img src={googleLogo} alt="Google Logo" className="w-5 h-5 mr-2" />
+        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" /> {/* Updated to use direct URL path */}
         Sign up with Google
       </button>
 

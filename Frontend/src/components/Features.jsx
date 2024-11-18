@@ -1,25 +1,21 @@
-import featureImage1 from '../assets/Images/HomePage/GroupStudy.gif';
-import featureImage2 from '../assets/Images/HomePage/Pomodoro.gif';
-import featureImage3 from '../assets/Images/HomePage/Progress.gif';
-
 export default function FeaturesSection() {
   const features = [
     {
       title: "Group Study Meet",
       description: "Experience the benefits of group study, no matter the distance. StudySphere's Group Study Meet brings together users with similar goals or subjects. Share ideas, support each other, and deepen your understanding through collaboration. Perfect for tackling tough subjects, group projects, or revising together for exams. Connect seamlessly and make studying a shared journey.",
-      image: featureImage1,
+      image: '/GroupStudy.gif', // Use the direct URL path for the public folder
       reverse: false,
     },
     {
       title: "Pomodoro Timer",
       description: "Staying on track is easy with StudySphere’s built-in Pomodoro Timer. Structure your study sessions using customizable time intervals, perfect for balancing focused work and well-timed breaks. Monitor your progress throughout the day to stay energized and productive, session by session. Enjoy the flexibility to adapt each session to your unique needs, ensuring you make the most of every study moment.",
-      image: featureImage2,
+      image: '/Pomodoro.gif', // Direct URL path for public folder image
       reverse: true,
     },
     {
       title: "Progress Tracker",
       description: "Gain insights into your study habits with StudySphere’s Progress Tracker. Set group or individual goals, visualize your completion rate, and celebrate small wins as you go. Our analytics dashboard makes it easy to see your study patterns, helping you adjust your approach and reach your academic goals faster. Stay motivated with clear milestones guiding your journey.",
-      image: featureImage3,
+      image: '/Progress.gif', // Direct URL path for public folder image
       reverse: false,
     },
   ];

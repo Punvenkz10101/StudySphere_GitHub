@@ -1,14 +1,36 @@
 import React from 'react';
-import DeveloperCard from './DeveleporCard';
-import puneethImage from '../assets/Images/HomePage/Puneeth.jpeg'
-import BharathImage from '../assets/Bharath.jpeg'
+import DeveloperCard from './DeveloperCard';
 
 const DeveloperSection = () => {
   const developers = [
-    { image: puneethImage, name: 'Puneeth Venkat',description: 'FrontEnd Developer', github: 'https://github.com/Punvenkz10101', linkedin: 'www.linkedin.com/in/puneeth-venkat-7731b5293' },
-    { image: BharathImage, name: 'Bharath P',description: 'Backend Developer', github: 'https://github.com/Bharathpothula205', linkedin: 'http://linkedin.com/in/bharath-pothula' },
-    { image: 'HarshImage', name: 'Harsha SM',description: 'Full Stack', github: 'https://github.com/charlie', linkedin: 'https://linkedin.com/in/charlie' },
-    { image:'jjImage', name: 'D',description: 'CEO' ,github: 'https://github.com/diana', linkedin: 'https://linkedin.com/in/diana' },
+    {
+      image: '/Puneeth.jpeg', // Image path in the public folder
+      name: 'Puneeth Venkat',
+      description: 'FrontEnd Developer',
+      github: 'https://github.com/Punvenkz10101',
+      linkedin: 'https://www.linkedin.com/in/puneeth-venkat-7731b5293',
+    },
+    {
+      image: '/Bharath.jpeg', // Image path in the public folder
+      name: 'Bharath P',
+      description: 'Backend Developer',
+      github: 'https://github.com/Bharathpothula205',
+      linkedin: 'http://linkedin.com/in/bharath-pothula',
+    },
+    {
+      image: '/HarshImage.jpg', // Image path in the public folder
+      name: 'Harsha SM',
+      description: 'Full Stack Developer',
+      github: 'https://github.com/charlie',
+      linkedin: 'https://linkedin.com/in/charlie',
+    },
+    {
+      image: '/jjImage.jpg', // Image path in the public folder
+      name: 'D',
+      description: 'CEO',
+      github: 'https://github.com/diana',
+      linkedin: 'https://linkedin.com/in/diana',
+    },
   ];
 
   return (

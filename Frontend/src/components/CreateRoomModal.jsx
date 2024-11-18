@@ -46,43 +46,49 @@ const CreateRoomModal = ({ onClose }) => {
 
   return (
     <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="modal-content bg-white p-8 rounded-md shadow-lg w-1/3">
-        <h2 className="text-2xl font-semibold mb-4">Create Room</h2>
-        {error && <div className="text-red-600 mb-4">{error}</div>}
+      <div className="modal-content bg-white p-6 md:p-8 rounded-md shadow-lg w-11/12 sm:w-3/4 md:w-1/3 lg:w-1/4">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Create Room</h2>
+        {error && <div className="text-red-600 mb-4 text-center">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <label>Creator:</label>
-          <input
-            type="text"
-            value={creator}
-            onChange={(e) => setCreator(e.target.value)}
-            required
-            placeholder="Enter creator name"
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
+          <div>
+            <label>Creator:</label>
+            <input
+              type="text"
+              value={creator}
+              onChange={(e) => setCreator(e.target.value)}
+              required
+              placeholder="Enter creator name"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
 
-          <label>Topic:</label>
-          <input
-            type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            required
-            placeholder="Enter room topic"
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
+          <div>
+            <label>Topic:</label>
+            <input
+              type="text"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              required
+              placeholder="Enter room topic"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
 
-          <label>Participants Limit (1-10):</label>
-          <input
-            type="number"
-            value={participantsLimit}
-            onChange={(e) =>
-              setParticipantsLimit(
-                Math.min(10, Math.max(1, parseInt(e.target.value)))
-              )
-            }
-            required
-            placeholder="Set limit (1-10)"
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
+          <div>
+            <label>Participants Limit (1-10):</label>
+            <input
+              type="number"
+              value={participantsLimit}
+              onChange={(e) =>
+                setParticipantsLimit(
+                  Math.min(10, Math.max(1, parseInt(e.target.value)))
+                )
+              }
+              required
+              placeholder="Set limit (1-10)"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
 
           <button
             type="submit"
@@ -94,7 +100,7 @@ const CreateRoomModal = ({ onClose }) => {
         </form>
         <button
           onClick={onClose}
-          className="mt-4 text-gray-500 hover:text-black"
+          className="mt-4 text-gray-500 hover:text-black block w-full text-center"
         >
           Close
         </button>

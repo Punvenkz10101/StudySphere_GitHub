@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Overlay from './Overlay.jsx';
-import backgroundImage from '../assets/Images/RoomPage/Night5.jpg';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -54,7 +53,7 @@ export default function RoomPage() {
     <div
       className="room-page flex flex-col h-screen text-white"
       style={{
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url('/Night5.jpg')`, // Using direct URL from public folder
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
