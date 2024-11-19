@@ -40,7 +40,9 @@ const CreateRoomModal = ({ onClose }) => {
       });
 
       if (res.data.success) {
-        navigate(`/rooms/${res.data.room.roomKey}`);
+        navigate(`/rooms/${res.data.room.roomKey}`, {
+          state: { creator: creator },
+        });
         onClose();
       } else {
         setError("Failed to create room");
