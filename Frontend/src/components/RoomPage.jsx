@@ -9,7 +9,6 @@ export default function RoomPage() {
   const creator = state?.creator || state?.username;
   const [isPomodoroRunning, setPomodoroRunning] = useState(false);
   const [time, setTime] = useState(25 * 60);
-  const [isOverlayVisible, setOverlayVisible] = useState(false);
   const meetingContainerRef = useRef(null);
 
   useEffect(() => {
@@ -55,8 +54,14 @@ export default function RoomPage() {
     alert("Room key copied to clipboard!");
   };
 
-  const toggleOverlay = () => setOverlayVisible((prev) => !prev);
 
+// added FULL SCREEN FEATURES
+{
+  /**
+   * requestFullscreen: Standard method to request fullscreen mode for an element.
+   * and other for safari and edge browsers
+   */
+}
   const enterFullscreen = () => {
     if (meetingContainerRef.current.requestFullscreen) {
       meetingContainerRef.current.requestFullscreen();
@@ -65,7 +70,7 @@ export default function RoomPage() {
     } else if (meetingContainerRef.current.msRequestFullscreen) {
       meetingContainerRef.current.msRequestFullscreen();
     }
-    setOverlayVisible(false);
+
   };
 
   return (
@@ -130,17 +135,7 @@ export default function RoomPage() {
               ⛶ Full Screen
             </button>
 
-            {/* Full-screen Overlay */}
-            {isOverlayVisible && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <button
-                  onClick={toggleOverlay}
-                  className="text-white text-xl bg-[#00334D] py-2 px-4 rounded-md"
-                >
-                  Close Overlay
-                </button>
-              </div>
-            )}
+           
           </div>
         </div>
       </div>
