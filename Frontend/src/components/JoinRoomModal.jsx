@@ -29,7 +29,7 @@ const JoinRoomModal = ({ onClose }) => {
       );
 
       if (res.data.success) {
-        navigate(`/rooms/${roomKey}`);
+        navigate(`/rooms/${roomKey}`, { state: { username }});
         onClose();
       } else {
         setError("Room not found or incorrect code.");

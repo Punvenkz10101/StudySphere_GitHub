@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 export default function RoomPage() {
   const { roomKey } = useParams();
   const { state } = useLocation();
-  const creator = state?.creator || "Guest";
+  const creator = state?.creator || state?.username;  
   const [isPomodoroRunning, setPomodoroRunning] = useState(false);
   const [time, setTime] = useState(25 * 60);
   const [isOverlayVisible, setOverlayVisible] = useState(false);
