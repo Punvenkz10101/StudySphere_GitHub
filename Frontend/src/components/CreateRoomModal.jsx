@@ -12,10 +12,8 @@ const CreateRoomModal = ({ onClose }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Lock scroll when modal is open
     document.body.style.overflow = "hidden";
     return () => {
-      // Reset scroll when modal is closed
       document.body.style.overflow = "auto";
     };
   }, []);
@@ -32,20 +30,18 @@ const CreateRoomModal = ({ onClose }) => {
     setError("");
 
     try {
-      // Update the API URL to point to your backend
-      const res = await axios.post("https://studysphere-github.onrender.com/api/rooms/create", {
-        creator,
-        topic,
-        participantsLimit,
-      });
+      const res = await axios.post(
+        "https://studysphere-github.onrender.com/api/rooms/create",
+        { creator, topic, participantsLimit }
+      );
 
       if (res.data.success) {
         navigate(`/rooms/${res.data.room.roomKey}`, {
-          state: { creator: creator },
+          state: { creator },
         });
         onClose();
       } else {
-        setError("Failed to create room");
+        setError("Failed to create room.");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -71,7 +67,6 @@ const CreateRoomModal = ({ onClose }) => {
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <div>
             <label>Topic:</label>
             <input
@@ -83,7 +78,6 @@ const CreateRoomModal = ({ onClose }) => {
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <div>
             <label>Participants Limit (1-10):</label>
             <input
@@ -91,15 +85,13 @@ const CreateRoomModal = ({ onClose }) => {
               value={participantsLimit}
               onChange={(e) =>
                 setParticipantsLimit(
-                  Math.min(10, Math.max(1, parseInt(e.target.value)))
+                  Math.min(10, Math.max(1, parseInt(e.target.value) || 1))
                 )
               }
               required
-              placeholder="Set limit (1-10)"
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <button
             type="submit"
             className="w-full py-3 text-white bg-[#00334D] rounded-md shadow-md hover:bg-[#002533]"
@@ -120,3 +112,4 @@ const CreateRoomModal = ({ onClose }) => {
 };
 
 export default CreateRoomModal;
+

@@ -4,15 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 const JoinRoomModal = ({ onClose }) => {
   const [roomKey, setRoomKey] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Lock scroll when modal is open
     document.body.style.overflow = "hidden";
     return () => {
-      // Reset scroll when modal is closed
       document.body.style.overflow = "auto";
     };
   }, []);
@@ -23,8 +23,10 @@ const JoinRoomModal = ({ onClose }) => {
     setError("");
 
     try {
-      // Use the correct endpoint with full path
-      const res = await axios.post("https://studysphere-github.onrender.com/api/rooms/join", { roomKey });
+      const res = await axios.post(
+        "https://studysphere-github.onrender.com/api/rooms/join",
+        { roomKey, username }
+      );
 
       if (res.data.success) {
         navigate(`/rooms/${roomKey}`);
@@ -46,17 +48,27 @@ const JoinRoomModal = ({ onClose }) => {
         {error && <div className="text-red-600 mb-4 text-center">{error}</div>}
         <form onSubmit={handleJoin} className="space-y-4">
           <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              placeholder="Enter your name"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <div>
             <label>Room Key:</label>
             <input
               type="text"
               value={roomKey}
               onChange={(e) => setRoomKey(e.target.value)}
               required
-              placeholder="Enter room code"
+              placeholder="Enter room key"
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <button
             type="submit"
             className="w-full py-3 text-white bg-[#00334D] rounded-md shadow-md hover:bg-[#002533]"
