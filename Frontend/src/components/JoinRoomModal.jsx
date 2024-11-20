@@ -25,6 +25,8 @@ const JoinRoomModal = ({ onClose }) => {
     try {
       // Use the correct endpoint with full path
       const res = await axios.post("https://studysphere-github.onrender.com/api/rooms/join", { roomKey });
+      // const res = await axios.post("http://localhost:5000/api/rooms/join", { roomKey });
+
 
       if (res.data.success) {
         navigate(`/rooms/${roomKey}`);

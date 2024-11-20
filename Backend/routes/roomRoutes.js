@@ -3,6 +3,8 @@ const Room = require("../models/Room");
 const crypto = require("crypto");
 const router = express.Router();
 
+console.log("Room routes loaded");
+
 // Create a room
 router.post("/create", async (req, res) => {
   const { creator, topic, participantsLimit } = req.body;
@@ -18,13 +20,13 @@ router.post("/create", async (req, res) => {
 
   try {
     const newRoom = new Room({ creator, topic, participantsLimit, roomKey });
-    await newRoom.save();
-
+    const response = await newRoom.save();
+    loh(`Room saved: ${JSON.stringify(response, null, 2)}`);
     console.log(`Room created: ${JSON.stringify(newRoom, null, 2)}`);
 
     res.status(201).json({ success: true, room: newRoom });
   } catch (error) {
-    console.error('Error creating room:', error.message);
+    console.error("Error creating room:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -39,13 +41,15 @@ router.post("/join", async (req, res) => {
 
     if (!room) {
       console.log(`Failed join attempt: Room with key ${roomKey} not found`);
-      return res.status(404).json({ success: false, message: 'Room not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Room not found" });
     }
 
     console.log(`Room joined: ${JSON.stringify(room, null, 2)}`);
     res.json({ success: true, room });
   } catch (error) {
-    console.error('Error joining room:', error.message);
+    console.error("Error joining room:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });
