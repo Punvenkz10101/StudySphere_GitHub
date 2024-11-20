@@ -21,7 +21,6 @@ router.post("/create", async (req, res) => {
   try {
     const newRoom = new Room({ creator, topic, participantsLimit, roomKey });
     const response = await newRoom.save();
-    loh(`Room saved: ${JSON.stringify(response, null, 2)}`);
     console.log(`Room created: ${JSON.stringify(newRoom, null, 2)}`);
 
     res.status(201).json({ success: true, room: newRoom });
