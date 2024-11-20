@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 export default function RoomPage() {
   const { roomKey } = useParams();
   const { state } = useLocation();
-  const creator = state?.creator || state?.username;  
+  const creator = state?.creator || state?.username;
   const [isPomodoroRunning, setPomodoroRunning] = useState(false);
   const [time, setTime] = useState(25 * 60);
   const [isOverlayVisible, setOverlayVisible] = useState(false);
@@ -56,6 +56,17 @@ export default function RoomPage() {
   };
 
   const toggleOverlay = () => setOverlayVisible((prev) => !prev);
+
+  const enterFullscreen = () => {
+    if (meetingContainerRef.current.requestFullscreen) {
+      meetingContainerRef.current.requestFullscreen();
+    } else if (meetingContainerRef.current.webkitRequestFullscreen) {
+      meetingContainerRef.current.webkitRequestFullscreen();
+    } else if (meetingContainerRef.current.msRequestFullscreen) {
+      meetingContainerRef.current.msRequestFullscreen();
+    }
+    setOverlayVisible(false);
+  };
 
   return (
     <div
@@ -110,6 +121,14 @@ export default function RoomPage() {
           {/* Video Conference Container */}
           <div className="relative w-full h-[500px]">
             <div ref={meetingContainerRef} className="w-full h-full"></div>
+
+            {/* Full-screen Button */}
+            <button
+              onClick={enterFullscreen}
+              className="absolute top-4 right-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
+            >
+              ⛶ Full Screen
+            </button>
 
             {/* Full-screen Overlay */}
             {isOverlayVisible && (
