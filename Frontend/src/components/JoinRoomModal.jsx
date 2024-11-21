@@ -27,9 +27,10 @@ const JoinRoomModal = ({ onClose }) => {
         "https://studysphere-github.onrender.com/api/rooms/join",
         { roomKey, username }
       );
-
+      
       if (res.data.success) {
-        navigate(`/rooms/${roomKey}`, { state: { username }});
+        const { topic } = res.data.room;
+        navigate(`/rooms/${roomKey}`, { state: { username,topic }});
         onClose();
       } else {
         setError("Room not found or incorrect code.");
