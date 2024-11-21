@@ -37,7 +37,7 @@ const CreateRoomModal = ({ onClose }) => {
 
       if (res.data.success) {
         navigate(`/rooms/${res.data.room.roomKey}`, {
-          state: { creator },
+          state: { creator ,topic },
         });
         onClose();
       } else {

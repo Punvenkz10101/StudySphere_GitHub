@@ -7,6 +7,7 @@ export default function RoomPage() {
   const { roomKey } = useParams();
   const { state } = useLocation();
   const creator = state?.creator || state?.username;
+  const Topic=state?.topic;
 
   const [time, setTime] = useState(0); // Timer in seconds
   const [isPomodoroRunning, setPomodoroRunning] = useState(false);
@@ -83,6 +84,7 @@ export default function RoomPage() {
   };
 
   return (
+
     <div
       className="room-page flex flex-col items-center justify-center min-h-screen w-full text-white"
       style={{
@@ -110,7 +112,7 @@ export default function RoomPage() {
               </p>
 
               {/* Time Options */}
-              <div className="flex space-x-3 ml-2 mt-2">
+              <div className="flex space-x-3 ml-4 mt-2">
                 {[10, 15, 25, 60].map((minutes) => (
                   <button
                     key={minutes}
@@ -165,6 +167,9 @@ export default function RoomPage() {
               </button>
             </div>
           </div>
+<hr />
+
+<div className=" text-center w-full font-bold m-3 size-4 ">TOPIC: {Topic}</div>
 <hr />
           {/* Video Conference Container */}
           <div className="relative w-full h-[400px]">
