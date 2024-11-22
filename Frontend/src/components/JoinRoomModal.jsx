@@ -23,11 +23,14 @@ const JoinRoomModal = ({ onClose }) => {
     setError("");
 
     try {
+
       const res = await axios.post(
         "https://studysphere-github.onrender.com/api/rooms/join",
         { roomKey, username }
       );
       
+
+
       if (res.data.success) {
         const { topic } = res.data.room;
         navigate(`/rooms/${roomKey}`, { state: { username,topic }});
