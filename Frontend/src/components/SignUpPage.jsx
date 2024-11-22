@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth } from "./Firebase/firebase";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Combined imports
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { ImCross } from "react-icons/im";
 
 const SignupPage = ({ onClose, toggleSigninOverlay }) => {
@@ -21,29 +21,43 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
     }
 
     try {
-      setError(""); 
+      setError("");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("User registered:", user);
-      onClose(); // Close overlay on successful signup
+      onClose();
     } catch (error) {
       setError(error.message);
     }
   };
 
-  // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log("Google User:", user);
-      onClose(); // Close overlay after successful Google sign-in
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      setError(error.message);
+      setError("An error occurred during Google Sign-In.");
     }
   };
+
+  useEffect(() => {
+    const fetchRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+          console.log("Google User (via redirect):", user);
+          onClose();
+        }
+      } catch (error) {
+        console.error("Error getting redirect result:", error);
+        setError("An error occurred after Google Sign-In.");
+      }
+    };
+
+    fetchRedirectResult();
+  }, []);
 
   return (
     <div className="bg-white rounded-lg p-8 shadow-lg w-80 max-w-md">
@@ -53,7 +67,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
       >
         <ImCross />
       </button>
-      <h2 className="text-2xl bg-black font-semibold text-center mb-6">Sign Up</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
 
       <input
         type="text"
@@ -102,7 +116,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         onClick={handleGoogleSignIn}
         className="w-full py-3 mt-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 flex items-center justify-center"
       >
-        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" /> {/* Updated to use direct URL path */}
+        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" />
         Sign up with Google
       </button>
 
@@ -110,8 +124,8 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         Already have an account?{" "}
         <button
           onClick={() => {
-            onClose(); // Close the sign-up overlay
-            toggleSigninOverlay(); // Open the sign-in overlay
+            onClose();
+            toggleSigninOverlay();
           }}
           className="text-blue-500 hover:underline"
         >
