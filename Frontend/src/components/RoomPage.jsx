@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
+import { IoMdArrowRoundBack } from "react-icons/io";
+
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -95,11 +97,11 @@ export default function RoomPage() {
       }}
     >
       <div className="content-wrapper flex flex-col items-center justify-center h-full w-full">
-        <div className="flex flex-col px-3 rounded-lg w-full leading-none">
-          {/* Pomodoro Timer and Room Key Section */}
+        <div className="flex flex-col px-3 rounded-lg w-full leading-none ">
+          {/* Pomodoro Timer and Room Key , Progress, Notes Section */}
           <div className="flex justify-between items-center w-full mb-6 ">
             {/* Pomodoro Timer */}
-            <div className="flex flex-col items-start text-white  rounded-lg w-1/5 h-1/3 ">
+            <div className="flex flex-col items-start text-white  rounded-lg w-1/5 h-1/3 max-sm:w-7">
               <h2 className="text-xl font-semibold pl-7">Pomodoro Timer</h2>
 
               {/* Timer Display */}
@@ -154,9 +156,13 @@ export default function RoomPage() {
               </div>
               <div className=" pt-4 pl-4 ">Sessions Completed:{sessioncount}</div>
             </div>
+            {/* {PROGRESS SECTION} */}
+            <div className="bg-red-800 h-1/3">d</div>
 
             {/* Room Key */}
-            <div className="flex flex-col items-end text-white p-4 rounded-lg w-1/3">
+           
+          
+            <div className="flex flex-col items-end text-white  rounded-lg w-1/3">
               <h2 className="text-xl font-semibold">Room Key</h2>
               <p className="text-sm mb-2">Share this key to invite others.</p>
               <button

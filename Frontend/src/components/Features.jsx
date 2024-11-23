@@ -21,7 +21,7 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="bg-[#00334D] relative pt-10 pb-5">
+    <section id="features" className="bg-[#00334D] relative pt-10 pb-5">
       <div className="max-w-5xl mx-auto px-4 text-center mb-8">
         <div className="mb-6">
           <span className="inline-block h-1 w-16 bg-white rounded-full mb-4"></span>

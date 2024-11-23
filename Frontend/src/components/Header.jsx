@@ -33,9 +33,9 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
   }, []);
 
   const navigation = [
-    { name: "Product", href: "#" },
-    { name: "Features", href: "#" },
-    { name: "Support", href: "#" },
+    { name: "Product", href: "#product" },
+    { name: "Features", href: "#features" },
+    { name: "Support", href: "#support" },
     { name: "Contact Us", href: "#" },
   ];
 

@@ -21,3 +21,7 @@
 .animate-slideUp {
   animation: slideUp 1s ease-out;
 }
+
+html{
+  scroll-behavior: smooth;
+}
