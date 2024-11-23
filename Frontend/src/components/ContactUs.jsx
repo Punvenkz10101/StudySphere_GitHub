@@ -1,6 +1,8 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
-const ContactUs = () => {
+const ContactUs = () => { 
   return (
     <div className="bg-gray-100 py-12 px-6 sm:px-12">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 sm:p-12">
@@ -65,21 +67,29 @@ const ContactUs = () => {
         <div className="mt-10 text-center">
           <p className="text-gray-600">Or reach us at:</p>
           <p className="text-gray-800 font-medium">
-            Phone: <a href="tel:+1234567890" className="text-blue-500 hover:underline">+1 234 567 890</a>
+            Phone: <a href="tel:+1234567890" className="text-blue-500 hover:underline">9059909791</a>
           </p>
           <p className="text-gray-800 font-medium">
-            Email: <a href="mailto:info@example.com" className="text-blue-500 hover:underline">info@example.com</a>
+            Email: <a href="StudySphere@gmail.com" className="text-blue-500 hover:underline">StudySphere@gmail.com</a>
           </p>
           <p className="text-gray-800 font-medium">
-            Address: 123 Main Street, City, Country
+            Address: Reva University,Yelahanka
           </p>
         </div>
 
         <div className="mt-6 flex justify-center space-x-4">
-          <a href="#" className="text-gray-500 hover:text-blue-500">Facebook</a>
-          <a href="#" className="text-gray-500 hover:text-blue-500">Twitter</a>
-          <a href="#" className="text-gray-500 hover:text-blue-500">Instagram</a>
-          <a href="#" className="text-gray-500 hover:text-blue-500">LinkedIn</a>
+          <a href="#" className="text-gray-500 hover:text-blue-500">
+            <FontAwesomeIcon icon={faFacebook} size="2x" />
+          </a>
+          <a href="#" className="text-gray-500 hover:text-blue-500">
+            <FontAwesomeIcon icon={faTwitter} size="2x" />
+          </a>
+          <a href="#" className="text-gray-500 hover:text-blue-500">
+            <FontAwesomeIcon icon={faInstagram} size="2x" />
+          </a>
+          <a href="#" className="text-gray-500 hover:text-blue-500">
+            <FontAwesomeIcon icon={faLinkedin} size="2x" />
+          </a>
         </div>
       </div>
     </div>
