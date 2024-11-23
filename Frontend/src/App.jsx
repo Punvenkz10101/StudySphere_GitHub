@@ -12,6 +12,7 @@ import Overlay from './components/Overlay.jsx';
 import CreateRoomModal from './components/CreateRoomModal.jsx';
 import JoinRoomModal from './components/JoinRoomModal.jsx';
 import RoomPage from './components/RoomPage.jsx';
+import ContactUs from './components/ContactUs.jsx';
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -52,6 +53,7 @@ function App() {
           }
         />
         <Route path="/rooms/:roomKey" element={<RoomPage />} />
+        <Route path="/contact-us" element={<ContactUs />} />
       </Routes>
     </div>
   );
