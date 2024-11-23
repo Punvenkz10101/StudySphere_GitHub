@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBars } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
+const navigate =useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -33,10 +36,10 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
   }, []);
 
   const navigation = [
-    { name: "Product", href: "#product" },
-    { name: "Features", href: "#features" },
-    { name: "Support", href: "#support" },
-    { name: "Contact Us", href: "#" },
+    { name: "Product", path:"/" },
+    { name: "Features", path:"/" },
+    { name: "Support", path:"/" },
+    { name: "Contact Us", path:"/contact-us" },
   ];
 
   return (
@@ -53,13 +56,13 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
         {/* Navigation Links and Search Bar for Desktop */}
         <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center mx-8">
           {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
-            >
-              {item.name}
-            </a>
+           <button
+           key={item.name}
+           onClick={() => navigate(item.path)}
+           className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
+         >
+           {item.name}
+         </button>
           ))}
           <input
             type="text"
@@ -139,13 +142,13 @@ const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
         <div className="lg:hidden bg-[#001022]/85 backdrop-blur-md p-4 rounded-b-md shadow-lg">
           <div className="flex flex-col items-center space-y-4">
             {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-base font-semibold text-white hover:text-[#00B2A9] transition-colors duration-300 transform hover:scale-105"
-              >
-                {item.name}
-              </a>
+             <button
+             key={item.name}
+             onClick={() => navigate(item.path)}
+             className="text-base font-semibold text-white hover:text-[#00B2A9] transition-colors duration-300 transform hover:scale-105"
+           >
+             {item.name}
+           </button>
             ))}
             <input
               type="text"
