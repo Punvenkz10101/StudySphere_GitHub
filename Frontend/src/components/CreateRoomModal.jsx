@@ -36,9 +36,19 @@ const CreateRoomModal = ({ onClose }) => {
       );
 
       if (res.data.success) {
-        navigate(`/rooms/${res.data.room.roomKey}`, {
-          state: { creator ,topic },
-        });
+        const roomKey = res.data.room.roomKey;
+
+        // Persist room data in local storage for refresh support
+        localStorage.setItem(
+          "roomData",
+          JSON.stringify({
+            creator,
+            topic,
+            roomKey,
+          })
+        );
+
+        navigate(`/rooms/${roomKey}`, { state: { creator, topic } });
         onClose();
       } else {
         setError("Failed to create room.");
@@ -53,11 +63,13 @@ const CreateRoomModal = ({ onClose }) => {
   return (
     <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="modal-content bg-white p-6 md:p-8 rounded-md shadow-lg w-11/12 sm:w-3/4 md:w-1/3 lg:w-1/4">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Create Room</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center text-[#00334D]">
+          Create Room
+        </h2>
         {error && <div className="text-red-600 mb-4 text-center">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label>Creator:</label>
+            <label className="block font-medium text-gray-700">Creator:</label>
             <input
               type="text"
               value={creator}
@@ -68,7 +80,7 @@ const CreateRoomModal = ({ onClose }) => {
             />
           </div>
           <div>
-            <label>Topic:</label>
+            <label className="block font-medium text-gray-700">Topic:</label>
             <input
               type="text"
               value={topic}
@@ -79,7 +91,9 @@ const CreateRoomModal = ({ onClose }) => {
             />
           </div>
           <div>
-            <label>Participants Limit (1-10):</label>
+            <label className="block font-medium text-gray-700">
+              Participants Limit (1-10):
+            </label>
             <input
               type="number"
               value={participantsLimit}
@@ -112,4 +126,3 @@ const CreateRoomModal = ({ onClose }) => {
 };
 
 export default CreateRoomModal;
-
