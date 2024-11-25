@@ -27,14 +27,21 @@ const ContactUs = () => {
       const response = await axios.post('http://localhost:5001/api/contacts', formData);
       console.log('Response:', response); 
       alert('Message sent successfully!');
+      setFormData({
+    name:'',
+    email:'',
+    subject:'',
+    message:""
+      });
     } catch (error) {
       console.error('Error sending message:', error);
     }
   };
 
   return (
-    <div className="bg-gray-100 py-12 px-6 sm:px-12">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 sm:p-12">
+    <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(CTA.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+  
+      <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
         <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
         <p className="text-gray-600 text-center mt-2">We'd love to hear from you. Fill out the form below or contact us directly.</p>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -59,7 +66,7 @@ const ContactUs = () => {
           <button type="submit" className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition">Send Message</button>
         </form>
         <div className="mt-10 text-center">
-          <p className="text-gray-600">Or reach us at:</p>
+          <p className="text-2xl font-bold text-customBlue">Or reach us at:</p>
           <p className="text-gray-800 font-medium">
             Phone: <a href="tel:+1234567890" className="text-blue-500 hover:underline">9059909791</a>
           </p>
