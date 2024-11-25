@@ -13,7 +13,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.CORS_ORIGIN 
+      : ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -30,7 +32,10 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected successfully!"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Exit if database connection fails
+  });
 
 // Routes
 app.use("/api/rooms", roomRoutes);
@@ -248,4 +253,15 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Add basic error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled Rejection:', error);
+  process.exit(1);
 });
