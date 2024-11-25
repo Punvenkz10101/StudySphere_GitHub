@@ -13,8 +13,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend URL
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -260,10 +261,14 @@ io.on("connection", (socket) => {
     if (roomPomodoros.has(roomKey)) {
       const pomodoro = roomPomodoros.get(roomKey);
       pomodoro.running = false;
-
+      
+      // Calculate exact time remaining when paused
+      const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+      pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
+      
       io.to(roomKey).emit("pomodoroPaused", {
         running: false,
-        timeLeft: pomodoro.timeLeft,
+        timeLeft: pomodoro.timeLeft
       });
     }
   });
@@ -279,6 +284,70 @@ io.on("connection", (socket) => {
       io.to(roomKey).emit("pomodoroReset", {
         running: false,
         timeLeft: 0,
+      });
+    }
+  });
+
+  // Add this socket handler inside the io.on("connection") block
+  socket.on("leaveRoom", ({ roomKey, username }) => {
+    if (roomMembers.has(roomKey)) {
+      const members = roomMembers.get(roomKey);
+      members.delete(socket.id);
+      
+      // Remove user from room
+      socket.leave(roomKey);
+      
+      // Notify others in the room
+      io.to(roomKey).emit("userLeft", { username });
+      
+      // Clean up empty rooms
+      if (members.size === 0) {
+        roomMembers.delete(roomKey);
+        roomTasks.delete(roomKey);
+        roomPomodoros.delete(roomKey);
+      }
+      
+      console.log(`${username} manually left room ${roomKey}`);
+    }
+  });
+
+  // Add this new socket handler for resuming the timer
+  socket.on('resumePomodoro', ({ roomKey, timeLeft }) => {
+    if (roomPomodoros.has(roomKey)) {
+      const pomodoro = roomPomodoros.get(roomKey);
+      pomodoro.running = true;
+      pomodoro.timeLeft = timeLeft;
+      pomodoro.startTime = Date.now();
+      pomodoro.duration = timeLeft; // Set duration to remaining time for progress calculation
+
+      // Start interval for server-side time tracking
+      const interval = setInterval(() => {
+        if (pomodoro.running) {
+          const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+          pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
+
+          // Emit time update to all clients in the room
+          io.to(roomKey).emit('pomodoroTick', {
+            timeLeft: pomodoro.timeLeft,
+          });
+
+          // Stop if timer reaches 0
+          if (pomodoro.timeLeft === 0) {
+            clearInterval(interval);
+            pomodoro.running = false;
+            io.to(roomKey).emit('pomodoroComplete');
+          }
+        } else {
+          clearInterval(interval);
+        }
+      }, 1000);
+
+      // Notify clients that timer has resumed
+      io.to(roomKey).emit('pomodoroResumed', {
+        running: true,
+        timeLeft: timeLeft,
+        startTime: pomodoro.startTime,
+        duration: timeLeft
       });
     }
   });

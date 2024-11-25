@@ -21,8 +21,8 @@ export default function RoomPage() {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [members, setMembers] = useState([]);
   const [pomodoroState, setPomodoroState] = useState({
-    timeLeft: 0,
     isRunning: false,
+    timeLeft: 0,
     duration: 0
   });
 
@@ -39,14 +39,55 @@ export default function RoomPage() {
       username
     );
 
-    const ui = ZegoUIKitPrebuilt.create(kitToken);
-    ui.joinRoom({
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
+    
+    zp.joinRoom({
       container: meetingContainerRef.current,
-      scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
+      scenario: {
+        mode: ZegoUIKitPrebuilt.VideoConference,
+        config: {
+          role: ZegoUIKitPrebuilt.Host,
+        },
+      },
+      showPreJoinView: true,
+      showScreenSharingButton: true,
+      showUserList: true,
+      showPreviewTitle: true,
+      previewViewConfig: {
+        title: topic || "Study Room",
+        video: false,
+        audio: false,
+      },
+      turnOnMicrophoneWhenJoining: false,
+      turnOnCameraWhenJoining: false,
+      showMyCameraToggleButton: true,
+      showMyMicrophoneToggleButton: true,
+      showAudioVideoSettingsButton: true,
+      onJoinRoom: (room) => {
+        console.log("Successfully joined room:", room);
+      },
+      onLeaveRoom: () => {
+        console.log("Left room");
+      },
+      onError: (error) => {
+        console.error("Error in video conference:", error);
+      }
     });
 
-    return () => ui.leaveRoom();
-  }, [roomKey, username]);
+    // Cleanup function
+    return () => {
+      try {
+        if (meetingContainerRef.current) {
+          meetingContainerRef.current.innerHTML = '';
+        }
+        if (zp && typeof zp.destroy === 'function') {
+          zp.destroy();
+        }
+      } catch (error) {
+        console.error("Error during cleanup:", error);
+      }
+    };
+  }, [roomKey, username, topic]);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -105,6 +146,14 @@ export default function RoomPage() {
         duration: duration
       });
     });
+    socket.on('pomodoroResumed', ({ running, timeLeft }) => {
+      console.log('Pomodoro resumed:', { running, timeLeft });
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: running,
+        timeLeft: timeLeft
+      }));
+    });
 
     socket.on('pomodoroTick', ({ timeLeft }) => {
       setPomodoroState(prev => ({
@@ -121,10 +170,10 @@ export default function RoomPage() {
       }));
     });
 
-    socket.on('pomodoroReset', ({ running, timeLeft }) => {
+    socket.on('pomodoroReset', () => {
       setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
+        isRunning: false,
+        timeLeft: 0,
         duration: 0
       });
     });
@@ -132,9 +181,9 @@ export default function RoomPage() {
     socket.on('pomodoroComplete', () => {
       setPomodoroState(prev => ({
         ...prev,
-        isRunning: false
+        isRunning: false,
+        timeLeft: 0
       }));
-      // Play sound when timer completes
       const audio = new Audio('/timer-complete.mp3');
       audio.play();
     });
@@ -166,22 +215,42 @@ export default function RoomPage() {
   };
 
   const startPomodoro = () => {
-    const duration = selectedMinutes * 60;
-    socketService.socket.emit('startPomodoro', {
-      roomKey,
-      duration
-    });
+    if (pomodoroState.timeLeft > 0 && !pomodoroState.isRunning) {
+      // Resume from paused state
+      socketService.socket.emit('resumePomodoro', {
+        roomKey,
+        timeLeft: pomodoroState.timeLeft
+      });
+    } else {
+      // Start new timer
+      const duration = selectedMinutes * 60;
+      socketService.socket.emit('startPomodoro', {
+        roomKey,
+        duration,
+        isPaused: false
+      });
+    }
   };
 
   const pausePomodoro = () => {
     socketService.socket.emit('pausePomodoro', {
-      roomKey
+      roomKey,
+      currentTime: pomodoroState.timeLeft
     });
+    setPomodoroState(prev => ({
+      ...prev,
+      isRunning: false
+    }));
   };
 
   const resetPomodoro = () => {
     socketService.socket.emit('resetPomodoro', {
       roomKey
+    });
+    setPomodoroState({
+      isRunning: false,
+      timeLeft: 0,
+      duration: 0
     });
   };
 
@@ -222,7 +291,30 @@ export default function RoomPage() {
   };
 
   const leaveRoom = () => {
-    navigate("/");
+    try {
+      // Disconnect from the socket room
+      if (socketService.socket) {
+        socketService.socket.emit('leaveRoom', { roomKey, username });
+        socketService.disconnect();
+      }
+      
+      // Clear any timers if they're running
+      if (pomodoroState.isRunning) {
+        resetPomodoro();
+      }
+
+      // Clear the video conference container
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+      
+      // Navigate to home page
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error("Error leaving room:", error);
+      // Still navigate even if there's an error
+      navigate('/', { replace: true });
+    }
   };
 
   return (
@@ -306,30 +398,37 @@ export default function RoomPage() {
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"
               disabled={pomodoroState.isRunning}
             >
+              <option value={5}>5 Minutes</option>
               <option value={10}>10 Minutes</option>
+              <option value={15}>15 Minutes</option>
               <option value={20}>20 Minutes</option>
               <option value={25}>25 Minutes</option>
               <option value={30}>30 Minutes</option>
+              <option value={35}>35 Minutes</option>
               <option value={40}>40 Minutes</option>
+              <option value={45}>45 Minutes</option>
+              <option value={50}>50 Minutes</option>
+              <option value={55}>55 Minutes</option>
+              <option value={60}>60 Minutes</option>
             </select>
             {!pomodoroState.isRunning ? (
               <button
                 onClick={startPomodoro}
-                className="bg-green-500 px-4 py-2 rounded-lg"
+                className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
               >
                 Start
               </button>
             ) : (
               <button
                 onClick={pausePomodoro}
-                className="bg-yellow-500 px-4 py-2 rounded-lg"
+                className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
               >
                 Pause
               </button>
             )}
             <button
               onClick={resetPomodoro}
-              className="bg-red-500 px-4 py-2 rounded-lg"
+              className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
             >
               Reset
             </button>
