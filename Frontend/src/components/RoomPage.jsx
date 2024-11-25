@@ -138,7 +138,14 @@ export default function RoomPage() {
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', { roomKey });
+    if (socketService.socket) {
+      socketService.socket.emit('resetPomodoro', { roomKey });
+      setPomodoroState({
+        isRunning: false,
+        timeLeft: 0,
+        duration: 0
+      });
+    }
   };
 
   // Task Management
@@ -159,11 +166,23 @@ export default function RoomPage() {
   // Room Management
   const leaveRoom = () => {
     try {
-      if (socketService.socket) {
-        socketService.socket.emit('leaveRoom', { roomKey, username });
-        socketService.disconnect();
+      const socket = socketService.socket;
+      if (socket) {
+        if (pomodoroState.isRunning) {
+          socket.emit('pausePomodoro', { roomKey });
+        }
+        socket.emit('leaveRoom', { roomKey, username });
       }
-      if (pomodoroState.isRunning) resetPomodoro();
+      
+      // Reset local state
+      setPomodoroState({
+        isRunning: false,
+        timeLeft: 0,
+        duration: 0
+      });
+      
+      // Cleanup and navigate
+      socketService.disconnect();
       navigate('/', { replace: true });
     } catch (error) {
       console.error("Error leaving room:", error);
