@@ -23,17 +23,25 @@ const JoinRoomModal = ({ onClose }) => {
     setError("");
 
     try {
-
       const res = await axios.post(
         "https://studysphere-github.onrender.com/api/rooms/join",
         { roomKey, username }
       );
-      
-
 
       if (res.data.success) {
-        const { topic } = res.data.room;
-        navigate(`/rooms/${roomKey}`, { state: { username,topic }});
+        const { topic, creator } = res.data.room;
+
+        // Persist room data in local storage for refresh support
+        localStorage.setItem(
+          "roomData",
+          JSON.stringify({
+            username,
+            topic,
+            roomKey,
+          })
+        );
+
+        navigate(`/rooms/${roomKey}`, { state: { username, topic, creator } });
         onClose();
       } else {
         setError("Room not found or incorrect code.");
@@ -48,11 +56,13 @@ const JoinRoomModal = ({ onClose }) => {
   return (
     <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="modal-content bg-white p-6 md:p-8 rounded-md shadow-lg w-11/12 sm:w-3/4 md:w-1/3 lg:w-1/4">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Join Room</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-center text-[#00334D]">
+          Join Room
+        </h2>
         {error && <div className="text-red-600 mb-4 text-center">{error}</div>}
         <form onSubmit={handleJoin} className="space-y-4">
           <div>
-            <label>Username:</label>
+            <label className="block font-medium text-gray-700">Username:</label>
             <input
               type="text"
               value={username}
@@ -63,7 +73,7 @@ const JoinRoomModal = ({ onClose }) => {
             />
           </div>
           <div>
-            <label>Room Key:</label>
+            <label className="block font-medium text-gray-700">Room Key:</label>
             <input
               type="text"
               value={roomKey}
