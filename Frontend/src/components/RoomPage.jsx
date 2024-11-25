@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
-import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
+import { BiTrash, BiEdit } from "react-icons/bi";
 import socketService from "../services/socketService";
 
 export default function RoomPage() {
@@ -13,218 +13,184 @@ export default function RoomPage() {
   const topic = state?.topic;
   const username = state?.username || creator;
 
-  const [time, setTime] = useState(0);
-  const [isPomodoroRunning, setPomodoroRunning] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState(25);
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [members, setMembers] = useState([]);
   const [pomodoroState, setPomodoroState] = useState({
-    timeLeft: 0,
     isRunning: false,
+    timeLeft: 0,
     duration: 0
   });
 
   const meetingContainerRef = useRef(null);
 
+  // Video Conference Setup
   useEffect(() => {
     const appId = 1876705794;
     const serverSecret = "99cf0d1e05d48b4324ddc3e28a03301f";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      appId,
-      serverSecret,
-      roomKey,
-      uuidv4(),
-      username
+      appId, serverSecret, roomKey, uuidv4(), username
     );
 
-    const ui = ZegoUIKitPrebuilt.create(kitToken);
-    ui.joinRoom({
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
+    
+    zp.joinRoom({
       container: meetingContainerRef.current,
-      scenario: { mode: ZegoUIKitPrebuilt.VideoConference },
-    });
-
-    return () => ui.leaveRoom();
-  }, [roomKey, username]);
-
-  useEffect(() => {
-    const socket = socketService.connect();
-
-    // Join room on component mount
-    socket.emit('joinRoom', { roomKey, username });
-
-    // Handle room join confirmation
-    socket.on('roomJoined', ({ members, tasks }) => {
-      console.log('Room joined successfully:', { members, tasks });
-      setMembers(members);
-      setTasks(tasks || []);
-    });
-
-    // Handle new user joining
-    socket.on('userJoined', ({ username, members }) => {
-      console.log('User joined:', username, 'Current members:', members);
-      setMembers(members);
-    });
-
-    // Handle user leaving
-    socket.on('userLeft', ({ username }) => {
-      console.log('User left:', username);
-      setMembers(prev => prev.filter(member => member !== username));
-    });
-
-    // Handle tasks
-    socket.on('taskAdded', (taskData) => {
-      console.log('Task added:', taskData);
-      setTasks(prev => [...prev, taskData]);
-    });
-
-    socket.on('taskDeleted', (taskId) => {
-      console.log('Task deleted:', taskId);
-      setTasks(prev => prev.filter(task => task.id !== taskId));
-    });
-
-    socket.on('taskEdited', ({ taskId, newText }) => {
-      console.log('Task edited:', taskId, newText);
-      setTasks(prev => prev.map(task => 
-        task.id === taskId ? { ...task, text: newText } : task
-      ));
-    });
-
-    // Handle errors
-    socket.on('error', ({ message }) => {
-      console.error('Socket error:', message);
-      alert(message);
-    });
-
-    socket.on('pomodoroStarted', ({ running, timeLeft, duration }) => {
-      console.log('Pomodoro started:', { running, timeLeft, duration });
-      setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
-        duration: duration
-      });
-    });
-
-    socket.on('pomodoroTick', ({ timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        timeLeft: timeLeft
-      }));
-    });
-
-    socket.on('pomodoroPaused', ({ running, timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: running,
-        timeLeft: timeLeft
-      }));
-    });
-
-    socket.on('pomodoroReset', ({ running, timeLeft }) => {
-      setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
-        duration: 0
-      });
-    });
-
-    socket.on('pomodoroComplete', () => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: false
-      }));
-      // Play sound when timer completes
-      const audio = new Audio('/timer-complete.mp3');
-      audio.play();
+      scenario: {
+        mode: ZegoUIKitPrebuilt.VideoConference,
+        config: { role: ZegoUIKitPrebuilt.Host },
+      },
+      showPreJoinView: true,
+      showScreenSharingButton: true,
+      showUserList: true,
+      showPreviewTitle: true,
+      previewViewConfig: {
+        title: topic || "Study Room",
+        video: false,
+        audio: false,
+      },
+      turnOnMicrophoneWhenJoining: false,
+      turnOnCameraWhenJoining: false,
+      showMyCameraToggleButton: true,
+      showMyMicrophoneToggleButton: true,
+      showAudioVideoSettingsButton: true,
     });
 
     return () => {
-      socket.off('roomJoined');
-      socket.off('userJoined');
-      socket.off('userLeft');
-      socket.off('taskAdded');
-      socket.off('taskDeleted');
-      socket.off('taskEdited');
-      socket.off('error');
-      socket.off('pomodoroStarted');
-      socket.off('pomodoroTick');
-      socket.off('pomodoroPaused');
-      socket.off('pomodoroReset');
-      socket.off('pomodoroComplete');
+      try {
+        if (meetingContainerRef.current) {
+          meetingContainerRef.current.innerHTML = '';
+        }
+        if (zp?.destroy) zp.destroy();
+      } catch (error) {
+        console.error("Error during cleanup:", error);
+      }
+    };
+  }, [roomKey, username, topic]);
+
+  // Socket Connection and Event Handlers
+  useEffect(() => {
+    const socket = socketService.connect();
+    socket.emit('joinRoom', { roomKey, username });
+
+    const socketEvents = {
+      'roomJoined': ({ members, tasks, pomodoroState }) => {
+        setMembers(members);
+        setTasks(tasks || []);
+        if (pomodoroState) {
+          setPomodoroState({
+            isRunning: pomodoroState.running,
+            timeLeft: pomodoroState.timeLeft,
+            duration: pomodoroState.duration
+          });
+        }
+      },
+      'userJoined': ({ username, members }) => setMembers(members),
+      'userLeft': ({ username }) => setMembers(prev => prev.filter(member => member !== username)),
+      'taskAdded': (taskData) => setTasks(prev => [...prev, taskData]),
+      'taskDeleted': (taskId) => setTasks(prev => prev.filter(task => task.id !== taskId)),
+      'taskEdited': ({ taskId, newText }) => setTasks(prev => 
+        prev.map(task => task.id === taskId ? { ...task, text: newText } : task)
+      ),
+      'pomodoroStarted': ({ running, timeLeft, duration }) => setPomodoroState({ isRunning: running, timeLeft, duration }),
+      'pomodoroResumed': ({ running, timeLeft }) => setPomodoroState(prev => ({ ...prev, isRunning: running, timeLeft })),
+      'pomodoroTick': ({ timeLeft }) => setPomodoroState(prev => ({ ...prev, timeLeft })),
+      'pomodoroPaused': ({ running, timeLeft }) => setPomodoroState(prev => ({ ...prev, isRunning: running, timeLeft })),
+      'pomodoroReset': () => setPomodoroState({ isRunning: false, timeLeft: 0, duration: 0 }),
+      'pomodoroComplete': () => {
+        setPomodoroState(prev => ({ ...prev, isRunning: false, timeLeft: 0 }));
+        new Audio('/timer-complete.mp3').play();
+      }
+    };
+
+    // Register all socket events
+    Object.entries(socketEvents).forEach(([event, handler]) => {
+      socket.on(event, handler);
+    });
+
+    return () => {
+      // Cleanup all socket events
+      Object.keys(socketEvents).forEach(event => socket.off(event));
       socketService.disconnect();
     };
   }, [roomKey, username]);
 
-  const toggleFullscreen = () => {
-    const element = meetingContainerRef.current;
-    if (!document.fullscreenElement) {
-      element?.requestFullscreen();
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
-  };
-
+  // Timer Controls
   const startPomodoro = () => {
-    const duration = selectedMinutes * 60;
-    socketService.socket.emit('startPomodoro', {
-      roomKey,
-      duration
-    });
+    if (pomodoroState.timeLeft > 0 && !pomodoroState.isRunning) {
+      socketService.socket.emit('resumePomodoro', {
+        roomKey,
+        timeLeft: pomodoroState.timeLeft
+      });
+    } else {
+      socketService.socket.emit('startPomodoro', {
+        roomKey,
+        duration: selectedMinutes * 60,
+        isPaused: false
+      });
+    }
   };
 
   const pausePomodoro = () => {
-    socketService.socket.emit('pausePomodoro', {
-      roomKey
-    });
+    socketService.socket.emit('pausePomodoro', { roomKey });
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', {
-      roomKey
-    });
-  };
-
-  const addTask = () => {
-    if (currentTask.trim()) {
-      if (editingTaskId !== null) {
-        socketService.socket.emit('editTask', {
-          roomKey,
-          taskId: editingTaskId,
-          newText: currentTask.trim()
-        });
-        setEditingTaskId(null);
-      } else {
-        socketService.socket.emit('addTask', {
-          roomKey,
-          task: currentTask.trim()
-        });
-      }
-      setCurrentTask("");
+    if (socketService.socket) {
+      socketService.socket.emit('resetPomodoro', { roomKey });
+      setPomodoroState({
+        isRunning: false,
+        timeLeft: 0,
+        duration: 0
+      });
     }
   };
 
-  const deleteTask = (taskId) => {
-    socketService.socket.emit('deleteTask', {
-      roomKey,
-      taskId
-    });
+  // Task Management
+  const addTask = () => {
+    if (currentTask.trim()) {
+      socketService.socket.emit(
+        editingTaskId ? 'editTask' : 'addTask',
+        {
+          roomKey,
+          ...(editingTaskId ? { taskId: editingTaskId, newText: currentTask.trim() } : { task: currentTask.trim() })
+        }
+      );
+      setCurrentTask("");
+      setEditingTaskId(null);
+    }
   };
 
-  const startEditingTask = (task) => {
-    setEditingTaskId(task.id);
-    setCurrentTask(task.text);
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(roomKey);
-    alert("Room key copied to clipboard!");
-  };
-
+  // Room Management
   const leaveRoom = () => {
-    navigate("/");
+    try {
+      const socket = socketService.socket;
+      if (socket) {
+        if (pomodoroState.isRunning) {
+          socket.emit('pausePomodoro', { roomKey });
+        }
+        socket.emit('leaveRoom', { roomKey, username });
+      }
+      
+      // Reset local state
+      setPomodoroState({
+        isRunning: false,
+        timeLeft: 0,
+        duration: 0
+      });
+      
+      // Cleanup and navigate
+      socketService.disconnect();
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error("Error leaving room:", error);
+      navigate('/', { replace: true });
+    }
   };
 
+  // Render your JSX here (keep the existing JSX)
   return (
     <div
       className="room-page flex flex-col items-center min-h-screen w-full text-white"
@@ -273,13 +239,21 @@ export default function RoomPage() {
                 <span>{task.text}</span>
                 <div className="space-x-2">
                   <button
-                    onClick={() => startEditingTask(task)}
+                    onClick={() => {
+                      setEditingTaskId(task.id);
+                      setCurrentTask(task.text);
+                    }}
                     className="text-blue-500"
                   >
                     <BiEdit />
                   </button>
                   <button
-                    onClick={() => deleteTask(task.id)}
+                    onClick={() => {
+                      socketService.socket.emit('deleteTask', {
+                        roomKey,
+                        taskId: task.id
+                      });
+                    }}
                     className="text-red-500"
                   >
                     <BiTrash />
@@ -306,11 +280,18 @@ export default function RoomPage() {
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"
               disabled={pomodoroState.isRunning}
             >
+              <option value={5}>5 Minutes</option>
               <option value={10}>10 Minutes</option>
+              <option value={15}>15 Minutes</option>
               <option value={20}>20 Minutes</option>
               <option value={25}>25 Minutes</option>
               <option value={30}>30 Minutes</option>
+              <option value={35}>35 Minutes</option>
               <option value={40}>40 Minutes</option>
+              <option value={45}>45 Minutes</option>
+              <option value={50}>50 Minutes</option>
+              <option value={55}>55 Minutes</option>
+              <option value={60}>60 Minutes</option>
             </select>
             {!pomodoroState.isRunning ? (
               <button
@@ -342,7 +323,10 @@ export default function RoomPage() {
           <p className="mt-2">Room Key:</p>
           <p className="bg-gray-700 p-2 rounded-md">{roomKey}</p>
           <button
-            onClick={copyToClipboard}
+            onClick={() => {
+              navigator.clipboard.writeText(roomKey);
+              alert("Room key copied to clipboard!");
+            }}
             className="bg-blue-500 mt-4 px-4 py-2 rounded-lg w-full"
           >
             Copy Key
@@ -381,14 +365,6 @@ export default function RoomPage() {
       {/* Video Conference Section */}
       <div className="relative w-full h-[395px] mt-[-3px] bg-[#001022]/50">
         <div ref={meetingContainerRef} className="w-full h-full"></div>
-
-        {/* Full-screen Button */}
-        <button
-          onClick={toggleFullscreen}
-          className="absolute top-4 right-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
-        >
-          ⛶ Full Screen
-        </button>
       </div>
     </div>
   );

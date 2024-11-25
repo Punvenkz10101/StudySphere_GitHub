@@ -13,8 +13,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend URL
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -23,154 +24,177 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection
-try {
-  mongoose
-    .connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("MongoDB connected successfully!"))
-    .catch((err) => console.error("MongoDB connection error:", err));
-} catch (error) {
-  console.error("Error connecting to MongoDB:", error);
-}
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected successfully!"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
 app.use("/api/rooms", roomRoutes);
 app.use("/api/contacts", contactRoutes);
 
-// Move roomTasks to the top level scope
-const roomTasks = new Map();
-const roomMembers = new Map();
-const roomPomodoros = new Map();
+// Room State Management
+const roomState = {
+  tasks: new Map(),
+  members: new Map(),
+  pomodoros: new Map()
+};
+
+// Socket Event Handlers
+const handlePomodoroTimer = (roomKey, pomodoro) => {
+  const interval = setInterval(() => {
+    if (pomodoro.running) {
+      const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+      pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
+
+      io.to(roomKey).emit("pomodoroTick", { timeLeft: pomodoro.timeLeft });
+
+      if (pomodoro.timeLeft === 0) {
+        clearInterval(interval);
+        pomodoro.running = false;
+        io.to(roomKey).emit("pomodoroComplete");
+      }
+    } else {
+      clearInterval(interval);
+    }
+  }, 1000);
+};
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-
-  // Handle room creation
-  socket.on("createRoom", async (roomData) => {
-    try {
-      const { roomKey, creator } = roomData;
-
-      // Initialize room data
-      if (!roomMembers.has(roomKey)) {
-        roomMembers.set(roomKey, new Map());
-      }
-      if (!roomTasks.has(roomKey)) {
-        roomTasks.set(roomKey, []);
-      }
-
-      // Add creator to room members
-      roomMembers.get(roomKey).set(socket.id, creator);
-
-      socket.join(roomKey);
-
-      // Send initial room state
-      io.to(roomKey).emit("roomCreated", {
-        roomKey,
-        creator,
-        members: [creator],
-        tasks: [],
-      });
-
-      console.log(`Room created: ${roomKey} by ${creator}`);
-    } catch (error) {
-      console.error("Error creating room:", error);
-      socket.emit("error", { message: "Error creating room" });
+  socket.on("joinRoom", ({ roomKey, username }) => {
+    socket.join(roomKey);
+    if (!roomState.members.has(roomKey)) {
+      roomState.members.set(roomKey, new Map());
+      roomState.tasks.set(roomKey, []);
     }
+    roomState.members.get(roomKey).set(socket.id, username);
+    
+    const members = Array.from(roomState.members.get(roomKey).values());
+    
+    // Get current pomodoro state if exists
+    let pomodoroState = null;
+    if (roomState.pomodoros.has(roomKey)) {
+      const pomodoro = roomState.pomodoros.get(roomKey);
+      const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+      const timeLeft = Math.max(0, pomodoro.duration - elapsed);
+      
+      pomodoroState = {
+        running: pomodoro.running,
+        timeLeft: timeLeft,
+        duration: pomodoro.duration
+      };
+    }
+
+    // Send current room state including pomodoro
+    socket.emit("roomJoined", {
+      members,
+      tasks: roomState.tasks.get(roomKey),
+      pomodoroState
+    });
+    
+    // If timer is running, immediately start it for the new user
+    if (pomodoroState && pomodoroState.running) {
+      socket.emit("pomodoroStarted", {
+        running: true,
+        timeLeft: pomodoroState.timeLeft,
+        duration: pomodoroState.duration
+      });
+    }
+
+    io.to(roomKey).emit("userJoined", { username, members });
   });
 
-  // Handle room joining
-  socket.on("joinRoom", async ({ roomKey, username }) => {
-    try {
-      socket.join(roomKey);
-
-      // Initialize room if it doesn't exist
-      if (!roomMembers.has(roomKey)) {
-        roomMembers.set(roomKey, new Map());
-      }
-      if (!roomTasks.has(roomKey)) {
-        roomTasks.set(roomKey, []);
-      }
-
-      // Add member to room
-      roomMembers.get(roomKey).set(socket.id, username);
-
-      // Get current room state
-      const members = Array.from(roomMembers.get(roomKey).values());
-      const tasks = roomTasks.get(roomKey);
-
-      // Send current state to the joining user
-      socket.emit("roomJoined", {
-        roomKey,
-        members,
-        tasks,
-      });
-
-      // Notify others about new user
-      io.to(roomKey).emit("userJoined", { username, members });
-
-      console.log(`${username} joined room ${roomKey}`);
-      console.log("Current members:", members);
-
-      if (roomPomodoros.has(roomKey)) {
-        const pomodoro = roomPomodoros.get(roomKey);
-        if (pomodoro.running) {
-          const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
-          const remaining = Math.max(0, pomodoro.duration - elapsed);
-
-          socket.emit("pomodoroState", {
-            running: pomodoro.running,
-            time: remaining,
-            startTime: pomodoro.startTime,
-            duration: pomodoro.duration,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error joining room:", error);
-      socket.emit("error", { message: "Error joining room" });
-    }
-  });
-
-  // Handle disconnection with room cleanup
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-
-    roomMembers.forEach((members, roomKey) => {
-      if (members.has(socket.id)) {
-        const username = members.get(socket.id);
-        members.delete(socket.id);
-
-        // Notify room about user leaving
-        io.to(roomKey).emit("userLeft", { username });
-
-        // Clean up empty rooms
-        if (members.size === 0) {
-          roomMembers.delete(roomKey);
-          roomTasks.delete(roomKey);
-        }
-
-        console.log(`${username} left room ${roomKey}`);
-      }
+  // Pomodoro handlers
+  socket.on("startPomodoro", ({ roomKey, duration }) => {
+    const pomodoro = {
+      running: true,
+      timeLeft: duration,
+      startTime: Date.now(),
+      duration
+    };
+    roomState.pomodoros.set(roomKey, pomodoro);
+    handlePomodoroTimer(roomKey, pomodoro);
+    io.to(roomKey).emit("pomodoroStarted", {
+      running: true,
+      timeLeft: duration,
+      duration
     });
   });
 
-  // Handle messages
-  socket.on("sendMessage", ({ roomKey, message, sender }) => {
-    const messageData = {
-      id: Date.now(),
-      sender,
-      content: message,
-      timestamp: new Date(),
-    };
-    io.to(roomKey).emit("newMessage", messageData);
+  socket.on("resumePomodoro", ({ roomKey, timeLeft }) => {
+    if (roomState.pomodoros.has(roomKey)) {
+      const pomodoro = roomState.pomodoros.get(roomKey);
+      pomodoro.running = true;
+      pomodoro.timeLeft = timeLeft;
+      pomodoro.startTime = Date.now();
+      pomodoro.duration = timeLeft;
+      
+      handlePomodoroTimer(roomKey, pomodoro);
+      io.to(roomKey).emit("pomodoroResumed", {
+        running: true,
+        timeLeft
+      });
+    }
   });
 
-  // Todo list handlers
+  // Add other event handlers (pause, reset, tasks, etc.)
+  // ... (keep other essential handlers)
+
+  socket.on("disconnect", () => {
+    for (const [roomKey, members] of roomState.members) {
+      if (members.has(socket.id)) {
+        const username = members.get(socket.id);
+        members.delete(socket.id);
+        io.to(roomKey).emit("userLeft", { username });
+        
+        if (members.size === 0) {
+          roomState.members.delete(roomKey);
+          roomState.tasks.delete(roomKey);
+          roomState.pomodoros.delete(roomKey);
+        }
+      }
+    }
+  });
+
+  // Add back these essential socket handlers
+  socket.on("pausePomodoro", ({ roomKey }) => {
+    if (roomState.pomodoros.has(roomKey)) {
+      const pomodoro = roomState.pomodoros.get(roomKey);
+      pomodoro.running = false;
+      
+      // Calculate exact time remaining when paused
+      const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+      pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
+      
+      io.to(roomKey).emit("pomodoroPaused", {
+        running: false,
+        timeLeft: pomodoro.timeLeft
+      });
+    }
+  });
+
+  socket.on("resetPomodoro", ({ roomKey }) => {
+    if (roomState.pomodoros.has(roomKey)) {
+      const pomodoro = roomState.pomodoros.get(roomKey);
+      pomodoro.running = false;
+      pomodoro.timeLeft = 0;
+      pomodoro.startTime = null;
+      pomodoro.duration = 0;
+
+      io.to(roomKey).emit("pomodoroReset", {
+        running: false,
+        timeLeft: 0
+      });
+    }
+  });
+
+  // Task management handlers
   socket.on("addTask", ({ roomKey, task }) => {
-    if (!roomTasks.has(roomKey)) {
-      roomTasks.set(roomKey, []);
+    if (!roomState.tasks.has(roomKey)) {
+      roomState.tasks.set(roomKey, []);
     }
 
     const taskData = {
@@ -180,111 +204,47 @@ io.on("connection", (socket) => {
       createdBy: socket.id,
     };
 
-    roomTasks.get(roomKey).push(taskData);
-    console.log("Task added:", taskData, "in room:", roomKey);
+    roomState.tasks.get(roomKey).push(taskData);
     io.to(roomKey).emit("taskAdded", taskData);
   });
 
   socket.on("deleteTask", ({ roomKey, taskId }) => {
-    if (roomTasks.has(roomKey)) {
-      const tasks = roomTasks.get(roomKey);
+    if (roomState.tasks.has(roomKey)) {
+      const tasks = roomState.tasks.get(roomKey);
       const updatedTasks = tasks.filter((task) => task.id !== taskId);
-      roomTasks.set(roomKey, updatedTasks);
-      console.log("Task deleted:", taskId, "in room:", roomKey);
+      roomState.tasks.set(roomKey, updatedTasks);
       io.to(roomKey).emit("taskDeleted", taskId);
     }
   });
 
   socket.on("editTask", ({ roomKey, taskId, newText }) => {
-    if (roomTasks.has(roomKey)) {
-      const tasks = roomTasks.get(roomKey);
+    if (roomState.tasks.has(roomKey)) {
+      const tasks = roomState.tasks.get(roomKey);
       const updatedTasks = tasks.map((task) =>
         task.id === taskId ? { ...task, text: newText } : task
       );
-      roomTasks.set(roomKey, updatedTasks);
-      console.log("Task edited:", newText, "taskId:", taskId, "in room:", roomKey);
+      roomState.tasks.set(roomKey, updatedTasks);
       io.to(roomKey).emit("taskEdited", { taskId, newText });
     }
   });
 
-  socket.on("startPomodoro", ({ roomKey, duration }) => {
-    console.log(`Starting pomodoro in room ${roomKey} for ${duration} seconds`);
-
-    if (!roomPomodoros.has(roomKey)) {
-      roomPomodoros.set(roomKey, {
-        running: false,
-        timeLeft: 0,
-        startTime: null,
-        duration: 0,
-      });
-    }
-
-    const pomodoro = roomPomodoros.get(roomKey);
-    pomodoro.running = true;
-    pomodoro.timeLeft = duration;
-    pomodoro.startTime = Date.now();
-    pomodoro.duration = duration;
-
-    // Start interval for server-side time tracking
-    const interval = setInterval(() => {
-      if (pomodoro.running) {
-        const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
-        pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
-
-        // Emit time update to all clients in the room
-        io.to(roomKey).emit("pomodoroTick", {
-          timeLeft: pomodoro.timeLeft,
-        });
-
-        // Stop if timer reaches 0
-        if (pomodoro.timeLeft === 0) {
-          clearInterval(interval);
-          pomodoro.running = false;
-          io.to(roomKey).emit("pomodoroComplete");
-        }
-      } else {
-        clearInterval(interval);
+  socket.on("leaveRoom", ({ roomKey, username }) => {
+    if (roomState.members.has(roomKey)) {
+      const members = roomState.members.get(roomKey);
+      members.delete(socket.id);
+      
+      socket.leave(roomKey);
+      io.to(roomKey).emit("userLeft", { username });
+      
+      if (members.size === 0) {
+        roomState.members.delete(roomKey);
+        roomState.tasks.delete(roomKey);
+        roomState.pomodoros.delete(roomKey);
       }
-    }, 1000);
-
-    // Broadcast initial state to all users in the room
-    io.to(roomKey).emit("pomodoroStarted", {
-      running: true,
-      timeLeft: duration,
-      startTime: pomodoro.startTime,
-      duration: pomodoro.duration,
-    });
-  });
-
-  socket.on("pausePomodoro", ({ roomKey }) => {
-    if (roomPomodoros.has(roomKey)) {
-      const pomodoro = roomPomodoros.get(roomKey);
-      pomodoro.running = false;
-
-      io.to(roomKey).emit("pomodoroPaused", {
-        running: false,
-        timeLeft: pomodoro.timeLeft,
-      });
-    }
-  });
-
-  socket.on("resetPomodoro", ({ roomKey }) => {
-    if (roomPomodoros.has(roomKey)) {
-      const pomodoro = roomPomodoros.get(roomKey);
-      pomodoro.running = false;
-      pomodoro.timeLeft = 0;
-      pomodoro.startTime = null;
-      pomodoro.duration = 0;
-
-      io.to(roomKey).emit("pomodoroReset", {
-        running: false,
-        timeLeft: 0,
-      });
     }
   });
 });
 
-// Start the server
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
