@@ -30,6 +30,7 @@ app.use('/api/rooms', roomRoutes);
 // Move roomTasks to the top level scope
 const roomTasks = new Map();
 const roomMembers = new Map();
+const roomPomodoros = new Map();
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
@@ -99,6 +100,21 @@ io.on('connection', (socket) => {
       
       console.log(`${username} joined room ${roomKey}`);
       console.log('Current members:', members);
+
+      if (roomPomodoros.has(roomKey)) {
+        const pomodoro = roomPomodoros.get(roomKey);
+        if (pomodoro.running) {
+          const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+          const remaining = Math.max(0, pomodoro.duration - elapsed);
+          
+          socket.emit('pomodoroState', {
+            running: pomodoro.running,
+            time: remaining,
+            startTime: pomodoro.startTime,
+            duration: pomodoro.duration
+          });
+        }
+      }
     } catch (error) {
       console.error('Error joining room:', error);
       socket.emit('error', { message: 'Error joining room' });
@@ -176,6 +192,82 @@ io.on('connection', (socket) => {
       roomTasks.set(roomKey, updatedTasks);
       console.log('Task edited:', newText, 'taskId:', taskId, 'in room:', roomKey);
       io.to(roomKey).emit('taskEdited', { taskId, newText });
+    }
+  });
+
+  socket.on('startPomodoro', ({ roomKey, duration }) => {
+    console.log(`Starting pomodoro in room ${roomKey} for ${duration} seconds`);
+    
+    if (!roomPomodoros.has(roomKey)) {
+      roomPomodoros.set(roomKey, {
+        running: false,
+        timeLeft: 0,
+        startTime: null,
+        duration: 0
+      });
+    }
+
+    const pomodoro = roomPomodoros.get(roomKey);
+    pomodoro.running = true;
+    pomodoro.timeLeft = duration;
+    pomodoro.startTime = Date.now();
+    pomodoro.duration = duration;
+
+    // Start interval for server-side time tracking
+    const interval = setInterval(() => {
+      if (pomodoro.running) {
+        const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
+        pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
+
+        // Emit time update to all clients in the room
+        io.to(roomKey).emit('pomodoroTick', {
+          timeLeft: pomodoro.timeLeft
+        });
+
+        // Stop if timer reaches 0
+        if (pomodoro.timeLeft === 0) {
+          clearInterval(interval);
+          pomodoro.running = false;
+          io.to(roomKey).emit('pomodoroComplete');
+        }
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    // Broadcast initial state to all users in the room
+    io.to(roomKey).emit('pomodoroStarted', {
+      running: true,
+      timeLeft: duration,
+      startTime: pomodoro.startTime,
+      duration: duration
+    });
+  });
+
+  socket.on('pausePomodoro', ({ roomKey }) => {
+    if (roomPomodoros.has(roomKey)) {
+      const pomodoro = roomPomodoros.get(roomKey);
+      pomodoro.running = false;
+      
+      io.to(roomKey).emit('pomodoroPaused', {
+        running: false,
+        timeLeft: pomodoro.timeLeft
+      });
+    }
+  });
+
+  socket.on('resetPomodoro', ({ roomKey }) => {
+    if (roomPomodoros.has(roomKey)) {
+      const pomodoro = roomPomodoros.get(roomKey);
+      pomodoro.running = false;
+      pomodoro.timeLeft = 0;
+      pomodoro.startTime = null;
+      pomodoro.duration = 0;
+
+      io.to(roomKey).emit('pomodoroReset', {
+        running: false,
+        timeLeft: 0
+      });
     }
   });
 });

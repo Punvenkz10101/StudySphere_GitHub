@@ -20,6 +20,11 @@ export default function RoomPage() {
   const [currentTask, setCurrentTask] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [members, setMembers] = useState([]);
+  const [pomodoroState, setPomodoroState] = useState({
+    timeLeft: 0,
+    isRunning: false,
+    duration: 0
+  });
 
   const meetingContainerRef = useRef(null);
 
@@ -92,6 +97,48 @@ export default function RoomPage() {
       alert(message);
     });
 
+    socket.on('pomodoroStarted', ({ running, timeLeft, duration }) => {
+      console.log('Pomodoro started:', { running, timeLeft, duration });
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: duration
+      });
+    });
+
+    socket.on('pomodoroTick', ({ timeLeft }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        timeLeft: timeLeft
+      }));
+    });
+
+    socket.on('pomodoroPaused', ({ running, timeLeft }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: running,
+        timeLeft: timeLeft
+      }));
+    });
+
+    socket.on('pomodoroReset', ({ running, timeLeft }) => {
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: 0
+      });
+    });
+
+    socket.on('pomodoroComplete', () => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: false
+      }));
+      // Play sound when timer completes
+      const audio = new Audio('/timer-complete.mp3');
+      audio.play();
+    });
+
     return () => {
       socket.off('roomJoined');
       socket.off('userJoined');
@@ -100,6 +147,11 @@ export default function RoomPage() {
       socket.off('taskDeleted');
       socket.off('taskEdited');
       socket.off('error');
+      socket.off('pomodoroStarted');
+      socket.off('pomodoroTick');
+      socket.off('pomodoroPaused');
+      socket.off('pomodoroReset');
+      socket.off('pomodoroComplete');
       socketService.disconnect();
     };
   }, [roomKey, username]);
@@ -114,13 +166,23 @@ export default function RoomPage() {
   };
 
   const startPomodoro = () => {
-    setTime(selectedMinutes * 60);
-    setPomodoroRunning(true);
+    const duration = selectedMinutes * 60;
+    socketService.socket.emit('startPomodoro', {
+      roomKey,
+      duration
+    });
+  };
+
+  const pausePomodoro = () => {
+    socketService.socket.emit('pausePomodoro', {
+      roomKey
+    });
   };
 
   const resetPomodoro = () => {
-    setPomodoroRunning(false);
-    setTime(0);
+    socketService.socket.emit('resetPomodoro', {
+      roomKey
+    });
   };
 
   const addTask = () => {
@@ -232,28 +294,39 @@ export default function RoomPage() {
         <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col items-center">
           <h2 className="text-xl font-semibold">Pomodoro Timer</h2>
           <div className="text-4xl font-bold mt-4">
-            {Math.floor(time / 60)
+            {Math.floor(pomodoroState.timeLeft / 60)
               .toString()
               .padStart(2, "0")}
-            :{(time % 60).toString().padStart(2, "0")}
+            :{(pomodoroState.timeLeft % 60).toString().padStart(2, "0")}
           </div>
           <div className="space-x-4 mt-4">
             <select
               value={selectedMinutes}
               onChange={(e) => setSelectedMinutes(Number(e.target.value))}
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"
+              disabled={pomodoroState.isRunning}
             >
               <option value={10}>10 Minutes</option>
               <option value={20}>20 Minutes</option>
+              <option value={25}>25 Minutes</option>
               <option value={30}>30 Minutes</option>
               <option value={40}>40 Minutes</option>
             </select>
-            <button
-              onClick={startPomodoro}
-              className="bg-green-500 px-4 py-2 rounded-lg"
-            >
-              Start
-            </button>
+            {!pomodoroState.isRunning ? (
+              <button
+                onClick={startPomodoro}
+                className="bg-green-500 px-4 py-2 rounded-lg"
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={pausePomodoro}
+                className="bg-yellow-500 px-4 py-2 rounded-lg"
+              >
+                Pause
+              </button>
+            )}
             <button
               onClick={resetPomodoro}
               className="bg-red-500 px-4 py-2 rounded-lg"
