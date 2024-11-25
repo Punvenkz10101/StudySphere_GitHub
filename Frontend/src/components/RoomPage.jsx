@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
 import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
+import socketService from "../services/socketService";
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -18,6 +19,7 @@ export default function RoomPage() {
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
+  const [members, setMembers] = useState([]);
 
   const meetingContainerRef = useRef(null);
 
@@ -39,6 +41,67 @@ export default function RoomPage() {
     });
 
     return () => ui.leaveRoom();
+  }, [roomKey, username]);
+
+  useEffect(() => {
+    const socket = socketService.connect();
+
+    // Join room on component mount
+    socket.emit('joinRoom', { roomKey, username });
+
+    // Handle room join confirmation
+    socket.on('roomJoined', ({ members, tasks }) => {
+      console.log('Room joined successfully:', { members, tasks });
+      setMembers(members);
+      setTasks(tasks || []);
+    });
+
+    // Handle new user joining
+    socket.on('userJoined', ({ username, members }) => {
+      console.log('User joined:', username, 'Current members:', members);
+      setMembers(members);
+    });
+
+    // Handle user leaving
+    socket.on('userLeft', ({ username }) => {
+      console.log('User left:', username);
+      setMembers(prev => prev.filter(member => member !== username));
+    });
+
+    // Handle tasks
+    socket.on('taskAdded', (taskData) => {
+      console.log('Task added:', taskData);
+      setTasks(prev => [...prev, taskData]);
+    });
+
+    socket.on('taskDeleted', (taskId) => {
+      console.log('Task deleted:', taskId);
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    });
+
+    socket.on('taskEdited', ({ taskId, newText }) => {
+      console.log('Task edited:', taskId, newText);
+      setTasks(prev => prev.map(task => 
+        task.id === taskId ? { ...task, text: newText } : task
+      ));
+    });
+
+    // Handle errors
+    socket.on('error', ({ message }) => {
+      console.error('Socket error:', message);
+      alert(message);
+    });
+
+    return () => {
+      socket.off('roomJoined');
+      socket.off('userJoined');
+      socket.off('userLeft');
+      socket.off('taskAdded');
+      socket.off('taskDeleted');
+      socket.off('taskEdited');
+      socket.off('error');
+      socketService.disconnect();
+    };
   }, [roomKey, username]);
 
   const toggleFullscreen = () => {
@@ -63,21 +126,32 @@ export default function RoomPage() {
   const addTask = () => {
     if (currentTask.trim()) {
       if (editingTaskId !== null) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task, index) =>
-            index === editingTaskId ? currentTask : task
-          )
-        );
+        socketService.socket.emit('editTask', {
+          roomKey,
+          taskId: editingTaskId,
+          newText: currentTask.trim()
+        });
         setEditingTaskId(null);
       } else {
-        setTasks((prev) => [...prev, currentTask]);
+        socketService.socket.emit('addTask', {
+          roomKey,
+          task: currentTask.trim()
+        });
       }
       setCurrentTask("");
     }
   };
 
-  const deleteTask = (index) => {
-    setTasks((prev) => prev.filter((_, i) => i !== index));
+  const deleteTask = (taskId) => {
+    socketService.socket.emit('deleteTask', {
+      roomKey,
+      taskId
+    });
+  };
+
+  const startEditingTask = (task) => {
+    setEditingTaskId(task.id);
+    setCurrentTask(task.text);
   };
 
   const copyToClipboard = () => {
@@ -115,6 +189,11 @@ export default function RoomPage() {
               onChange={(e) => setCurrentTask(e.target.value)}
               placeholder="Add a new task"
               className="w-full p-2 bg-gray-700 rounded-md"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  addTask();
+                }
+              }}
             />
             <button
               onClick={addTask}
@@ -124,21 +203,21 @@ export default function RoomPage() {
             </button>
           </div>
           <ul className="mt-4 space-y-2 overflow-y-auto">
-            {tasks.map((task, index) => (
+            {tasks.map((task) => (
               <li
-                key={index}
+                key={task.id}
                 className="flex items-center justify-between bg-gray-700 p-2 rounded-lg"
               >
-                <span>{task}</span>
+                <span>{task.text}</span>
                 <div className="space-x-2">
                   <button
-                    onClick={() => setCurrentTask(task)}
+                    onClick={() => startEditingTask(task)}
                     className="text-blue-500"
                   >
                     <BiEdit />
                   </button>
                   <button
-                    onClick={() => deleteTask(index)}
+                    onClick={() => deleteTask(task.id)}
                     className="text-red-500"
                   >
                     <BiTrash />
@@ -207,7 +286,21 @@ export default function RoomPage() {
         <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col">
           <h2 className="text-xl font-semibold">Members Joined</h2>
           <ul className="mt-4 space-y-2">
-            <li>{username} (Host)</li>
+            {members.map((memberUsername, index) => (
+              <li key={index} className="flex items-center justify-between">
+                <span>{memberUsername}</span>
+                {memberUsername === username && 
+                  <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
+                    You
+                  </span>
+                }
+                {memberUsername === creator && 
+                  <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
+                    Host
+                  </span>
+                }
+              </li>
+            ))}
           </ul>
         </div>
       </div>
