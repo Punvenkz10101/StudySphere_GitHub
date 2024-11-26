@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // Backend server URL
+const socket = io('http://localhost:5001'); // Backend server URL
 
 // Action function to emit events
 export const joinRoom = (roomKey, username) => {

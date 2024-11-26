@@ -21,9 +21,11 @@ router.post("/create", async (req, res) => {
     const newRoom = new Room({ creator, topic, participantsLimit, roomKey });
     await newRoom.save();
     
-    // Emit socket event through req.app.get('io')
+    // Get io instance from app
     const io = req.app.get('io');
-    io.emit('roomCreated', newRoom);
+    if (io) {
+      io.emit('roomCreated', newRoom);
+    }
 
     res.status(201).json({ success: true, room: newRoom });
   } catch (error) {
@@ -34,7 +36,15 @@ router.post("/create", async (req, res) => {
 
 // Join a room using a roomKey
 router.post("/join", async (req, res) => {
+  console.log("Join request:", req.body);
   const { roomKey, username } = req.body;
+
+  if (!roomKey || !username) {
+    return res.status(400).json({
+      success: false,
+      message: "Room key and username are required"
+    });
+  }
 
   try {
     const room = await Room.findOne({ roomKey });
@@ -47,14 +57,28 @@ router.post("/join", async (req, res) => {
       });
     }
 
-    // Emit socket event through req.app.get('io')
+    // Get io instance from app
     const io = req.app.get('io');
-    io.to(roomKey).emit('userJoined', { username, roomKey });
+    if (io) {
+      io.to(roomKey).emit('userJoined', { username, roomKey });
+    }
 
-    res.json({ success: true, room });
+    res.json({ 
+      success: true, 
+      room: {
+        roomKey: room.roomKey,
+        topic: room.topic,
+        creator: room.creator,
+        participantsLimit: room.participantsLimit
+      } 
+    });
   } catch (error) {
     console.error("Error joining room:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 });
 

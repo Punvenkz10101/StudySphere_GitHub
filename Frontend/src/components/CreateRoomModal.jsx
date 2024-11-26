@@ -31,14 +31,13 @@ const CreateRoomModal = ({ onClose }) => {
 
     try {
       const res = await axios.post(
-        "https://studysphere-github.onrender.com/api/rooms/create",
+        `${import.meta.env.VITE_API_URL}/rooms/create`,
         { creator, topic, participantsLimit }
       );
 
       if (res.data.success) {
         const roomKey = res.data.room.roomKey;
 
-        // Persist room data in local storage for refresh support
         localStorage.setItem(
           "roomData",
           JSON.stringify({

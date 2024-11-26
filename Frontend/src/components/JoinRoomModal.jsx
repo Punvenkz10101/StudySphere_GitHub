@@ -24,14 +24,13 @@ const JoinRoomModal = ({ onClose }) => {
 
     try {
       const res = await axios.post(
-        "https://studysphere-github.onrender.com/api/rooms/join",
+        `${import.meta.env.VITE_API_URL}/rooms/join`,
         { roomKey, username }
       );
 
       if (res.data.success) {
         const { topic, creator } = res.data.room;
 
-        // Persist room data in local storage for refresh support
         localStorage.setItem(
           "roomData",
           JSON.stringify({

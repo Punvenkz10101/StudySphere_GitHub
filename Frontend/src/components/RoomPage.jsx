@@ -90,117 +90,53 @@ export default function RoomPage() {
   }, [roomKey, username, topic]);
 
   useEffect(() => {
-    const socket = socketService.connect();
+    socketService.emit('joinRoom', { roomKey, username });
 
-    // Join room on component mount
-    socket.emit('joinRoom', { roomKey, username });
-
-    // Handle room join confirmation
-    socket.on('roomJoined', ({ members, tasks }) => {
-      console.log('Room joined successfully:', { members, tasks });
+    socketService.on('roomJoined', ({ members, tasks, pomodoroState }) => {
       setMembers(members);
       setTasks(tasks || []);
+      if (pomodoroState) {
+        setPomodoroState({
+          isRunning: pomodoroState.running,
+          timeLeft: pomodoroState.timeLeft,
+          duration: pomodoroState.duration
+        });
+      }
     });
 
-    // Handle new user joining
-    socket.on('userJoined', ({ username, members }) => {
-      console.log('User joined:', username, 'Current members:', members);
+    socketService.on('userJoined', ({ username, members }) => {
       setMembers(members);
     });
 
-    // Handle user leaving
-    socket.on('userLeft', ({ username }) => {
-      console.log('User left:', username);
+    socketService.on('userLeft', ({ username }) => {
       setMembers(prev => prev.filter(member => member !== username));
     });
 
-    // Handle tasks
-    socket.on('taskAdded', (taskData) => {
-      console.log('Task added:', taskData);
+    socketService.on('taskAdded', (taskData) => {
       setTasks(prev => [...prev, taskData]);
     });
 
-    socket.on('taskDeleted', (taskId) => {
-      console.log('Task deleted:', taskId);
+    socketService.on('taskDeleted', (taskId) => {
       setTasks(prev => prev.filter(task => task.id !== taskId));
     });
 
-    socket.on('taskEdited', ({ taskId, newText }) => {
-      console.log('Task edited:', taskId, newText);
-      setTasks(prev => prev.map(task => 
-        task.id === taskId ? { ...task, text: newText } : task
-      ));
+    socketService.on('taskEdited', ({ taskId, newText }) => {
+      setTasks(prev => 
+        prev.map(task => task.id === taskId ? { ...task, text: newText } : task)
+      );
     });
 
-    // Handle errors
-    socket.on('error', ({ message }) => {
-      console.error('Socket error:', message);
-      alert(message);
+    socketService.on('pomodoroStarted', ({ running, timeLeft, duration }) => {
+      setPomodoroState({ isRunning: running, timeLeft, duration });
     });
 
-    socket.on('pomodoroStarted', ({ running, timeLeft, duration }) => {
-      console.log('Pomodoro started:', { running, timeLeft, duration });
-      setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
-        duration: duration
-      });
-    });
-    socket.on('pomodoroResumed', ({ running, timeLeft }) => {
-      console.log('Pomodoro resumed:', { running, timeLeft });
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: running,
-        timeLeft: timeLeft
-      }));
+    socketService.on('pomodoroTick', ({ timeLeft }) => {
+      setPomodoroState(prev => ({ ...prev, timeLeft }));
     });
 
-    socket.on('pomodoroTick', ({ timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        timeLeft: timeLeft
-      }));
-    });
-
-    socket.on('pomodoroPaused', ({ running, timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: running,
-        timeLeft: timeLeft
-      }));
-    });
-
-    socket.on('pomodoroReset', () => {
-      setPomodoroState({
-        isRunning: false,
-        timeLeft: 0,
-        duration: 0
-      });
-    });
-
-    socket.on('pomodoroComplete', () => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: false,
-        timeLeft: 0
-      }));
-      const audio = new Audio('/timer-complete.mp3');
-      audio.play();
-    });
-
+    // Cleanup function
     return () => {
-      socket.off('roomJoined');
-      socket.off('userJoined');
-      socket.off('userLeft');
-      socket.off('taskAdded');
-      socket.off('taskDeleted');
-      socket.off('taskEdited');
-      socket.off('error');
-      socket.off('pomodoroStarted');
-      socket.off('pomodoroTick');
-      socket.off('pomodoroPaused');
-      socket.off('pomodoroReset');
-      socket.off('pomodoroComplete');
+      socketService.emit('leaveRoom', { roomKey, username });
       socketService.disconnect();
     };
   }, [roomKey, username]);
@@ -216,68 +152,44 @@ export default function RoomPage() {
 
   const startPomodoro = () => {
     if (pomodoroState.timeLeft > 0 && !pomodoroState.isRunning) {
-      // Resume from paused state
-      socketService.socket.emit('resumePomodoro', {
+      socketService.emit('resumePomodoro', {
         roomKey,
         timeLeft: pomodoroState.timeLeft
       });
     } else {
-      // Start new timer
-      const duration = selectedMinutes * 60;
-      socketService.socket.emit('startPomodoro', {
+      socketService.emit('startPomodoro', {
         roomKey,
-        duration,
-        isPaused: false
+        duration: selectedMinutes * 60
       });
     }
   };
 
   const pausePomodoro = () => {
-    socketService.socket.emit('pausePomodoro', {
-      roomKey,
-      currentTime: pomodoroState.timeLeft
-    });
-    setPomodoroState(prev => ({
-      ...prev,
-      isRunning: false
-    }));
+    socketService.emit('pausePomodoro', { roomKey });
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', {
-      roomKey
-    });
-    setPomodoroState({
-      isRunning: false,
-      timeLeft: 0,
-      duration: 0
-    });
+    socketService.emit('resetPomodoro', { roomKey });
   };
 
   const addTask = () => {
     if (currentTask.trim()) {
-      if (editingTaskId !== null) {
-        socketService.socket.emit('editTask', {
+      socketService.emit(
+        editingTaskId ? 'editTask' : 'addTask',
+        {
           roomKey,
-          taskId: editingTaskId,
-          newText: currentTask.trim()
-        });
-        setEditingTaskId(null);
-      } else {
-        socketService.socket.emit('addTask', {
-          roomKey,
-          task: currentTask.trim()
-        });
-      }
+          ...(editingTaskId 
+            ? { taskId: editingTaskId, newText: currentTask.trim() } 
+            : { task: currentTask.trim() })
+        }
+      );
       setCurrentTask("");
+      setEditingTaskId(null);
     }
   };
 
   const deleteTask = (taskId) => {
-    socketService.socket.emit('deleteTask', {
-      roomKey,
-      taskId
-    });
+    socketService.emit('deleteTask', { roomKey, taskId });
   };
 
   const startEditingTask = (task) => {

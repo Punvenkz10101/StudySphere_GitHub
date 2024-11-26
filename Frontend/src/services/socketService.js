@@ -2,32 +2,37 @@ import io from 'socket.io-client';
 
 class SocketService {
   constructor() {
-    this.socket = null;
+    this.socket = io(import.meta.env.VITE_SOCKET_URL, {
+      withCredentials: true,
+      transports: ['websocket']
+    });
+
+    this.socket.on('connect', () => {
+      console.log('Connected to socket server');
+    });
+
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
   }
 
-  connect() {
-    if (!this.socket) {
-      this.socket = io('http://localhost:5001', {
-        transports: ['websocket', 'polling'],
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
-
-      this.socket.on('connect', () => {
-        console.log('Socket connected successfully');
-      });
-
-      this.socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-      });
+  emit(event, data) {
+    if (this.socket) {
+      this.socket.emit(event, data);
+    } else {
+      console.error('Socket not initialized');
     }
-    return this.socket;
+  }
+
+  on(event, callback) {
+    if (this.socket) {
+      this.socket.on(event, callback);
+    }
   }
 
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();
-      this.socket = null;
     }
   }
 }
