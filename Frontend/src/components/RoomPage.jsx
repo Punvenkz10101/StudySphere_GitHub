@@ -26,7 +26,7 @@ export default function RoomPage() {
     timeLeft: 0,
     duration: 0
   });
-
+  const [sessioncount, setSessionCount] = useState(0)
   const meetingContainerRef = useRef(null);
 
   // Memoize tasks to prevent unnecessary re-renders
@@ -240,6 +240,7 @@ export default function RoomPage() {
         duration
       });
     }
+    setSessionCount(prev=> prev+1);
   };
 
   const pausePomodoro = () => {
@@ -443,6 +444,7 @@ export default function RoomPage() {
               Reset
             </button>
           </div>
+          Sessions Completed:{sessioncount}
         </div>
 
         {/* Room Info */}

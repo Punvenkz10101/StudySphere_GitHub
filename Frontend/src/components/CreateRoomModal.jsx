@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { auth } from '../components/Firebase/firebase.js';
+import SigninPage from "./SignInPage.jsx";
+
 
 const CreateRoomModal = ({ onClose }) => {
   const [creator, setCreator] = useState("");
@@ -8,6 +11,7 @@ const CreateRoomModal = ({ onClose }) => {
   const [participantsLimit, setParticipantsLimit] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -16,6 +20,14 @@ const CreateRoomModal = ({ onClose }) => {
     return () => {
       document.body.style.overflow = "auto";
     };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+       // Access username or email
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -58,8 +70,19 @@ const CreateRoomModal = ({ onClose }) => {
       setLoading(false);
     }
   };
+   if (!user) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <SigninPage
+          onClose={onClose}
+          
+        />
+      </div>
+    );
+  }
 
-  return (
+  return (  
+    
     <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="modal-content bg-white p-6 md:p-8 rounded-md shadow-lg w-11/12 sm:w-3/4 md:w-1/3 lg:w-1/4">
         <h2 className="text-2xl font-semibold mb-4 text-center text-[#00334D]">

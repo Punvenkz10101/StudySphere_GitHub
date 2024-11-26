@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { auth } from '../components/Firebase/firebase.js';
+import SigninPage from "./SignInPage.jsx";
 
 const JoinRoomModal = ({ onClose }) => {
   const [roomKey, setRoomKey] = useState("");
@@ -15,6 +17,13 @@ const JoinRoomModal = ({ onClose }) => {
     return () => {
       document.body.style.overflow = "auto";
     };
+  }, []);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+       // Access username or email
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleJoin = async (e) => {
@@ -51,6 +60,16 @@ const JoinRoomModal = ({ onClose }) => {
       setLoading(false);
     }
   };
+  if (!user) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <SigninPage
+          onClose={onClose}
+          
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
