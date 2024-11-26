@@ -5,14 +5,14 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
   const el = useRef(null);
   React.useEffect(() => {
     const typed = new Typed(el.current, {
-      strings: [' Welcome to StudySphere', 'An Awesome Learning Experience' ],
+      strings: ['An Awesome Learning Experience','Discover and Connect with Study Rooms'],
       typeSpeed: 60,
-      backSpeed: 60, // Speed when backspacing
-      loop: true,
+      backSpeed: 60, 
+     
     });
 
     return () => {
-      // Destroy Typed instance during cleanup to stop animation
+   
       typed.destroy();
     };
   }, []);
@@ -25,11 +25,11 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
       }}
     >
       <div className="z-10 space-y-4 px-4">
-        <h1 ref={el} className="text-[45px] sm:text-[59px] font-bold leading-tight">
-         
+        <h1 className="text-[45px] sm:text-[59px] font-bold leading-tight">
+        Welcome to StudySphere
         </h1>
-        <p className="text-[24px] sm:text-[33px] font-medium leading-snug">
-          Discover and Connect with Study Rooms
+        <p ref={el}  className="text-[24px] sm:text-[33px] font-medium leading-snug">
+          
         </p>
 
         {/* Added margin for space between the text and buttons */}
