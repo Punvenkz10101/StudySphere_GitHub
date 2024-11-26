@@ -25,7 +25,7 @@ export default function RoomPage() {
     timeLeft: 0,
     duration: 0
   });
-
+  const [sessioncount, setSessionCount] = useState(0)
   const meetingContainerRef = useRef(null);
 
   useEffect(() => {
@@ -133,6 +133,9 @@ export default function RoomPage() {
     socketService.on('pomodoroTick', ({ timeLeft }) => {
       setPomodoroState(prev => ({ ...prev, timeLeft }));
     });
+    socketService.on('pomodoroReset', () => {
+      setPomodoroState({ isRunning: false, timeLeft: 0, duration: 0 });
+    });
 
     // Cleanup function
     return () => {
@@ -162,6 +165,7 @@ export default function RoomPage() {
         duration: selectedMinutes * 60
       });
     }
+    setSessionCount(prev=> prev+1);
   };
 
   const pausePomodoro = () => {
@@ -169,6 +173,7 @@ export default function RoomPage() {
   };
 
   const resetPomodoro = () => {
+    // Emit the reset event to the server
     socketService.emit('resetPomodoro', { roomKey });
     setPomodoroState({ isRunning: false, timeLeft: 0, duration: 0 });
   };
@@ -346,6 +351,7 @@ export default function RoomPage() {
               Reset
             </button>
           </div>
+          Sessions Completed:{sessioncount}
         </div>
 
         {/* Room Info */}

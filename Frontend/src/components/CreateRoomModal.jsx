@@ -25,7 +25,7 @@ const CreateRoomModal = ({ onClose }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
-      console.log(user.displayName || user.email); // Access username or email
+       // Access username or email
     });
     return () => unsubscribe();
   }, []);
@@ -75,7 +75,7 @@ const CreateRoomModal = ({ onClose }) => {
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
           onClose={onClose}
-          toggleSignupOverlay={() => console.log("Open Signup Overlay")}
+          
         />
       </div>
     );
