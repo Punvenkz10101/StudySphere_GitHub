@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
-import { BiTrash, BiEdit } from "react-icons/bi";
+import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
 
 export default function RoomPage() {
@@ -13,6 +13,8 @@ export default function RoomPage() {
   const topic = state?.topic;
   const username = state?.username || creator;
 
+  const [time, setTime] = useState(0);
+  const [isPomodoroRunning, setPomodoroRunning] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState(25);
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState("");
@@ -26,12 +28,15 @@ export default function RoomPage() {
 
   const meetingContainerRef = useRef(null);
 
-  // Video Conference Setup
   useEffect(() => {
     const appId = 1876705794;
     const serverSecret = "99cf0d1e05d48b4324ddc3e28a03301f";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      appId, serverSecret, roomKey, uuidv4(), username
+      appId,
+      serverSecret,
+      roomKey,
+      uuidv4(),
+      username
     );
 
     const zp = ZegoUIKitPrebuilt.create(kitToken);
@@ -40,7 +45,9 @@ export default function RoomPage() {
       container: meetingContainerRef.current,
       scenario: {
         mode: ZegoUIKitPrebuilt.VideoConference,
-        config: { role: ZegoUIKitPrebuilt.Host },
+        config: {
+          role: ZegoUIKitPrebuilt.Host,
+        },
       },
       showPreJoinView: true,
       showScreenSharingButton: true,
@@ -56,122 +63,260 @@ export default function RoomPage() {
       showMyCameraToggleButton: true,
       showMyMicrophoneToggleButton: true,
       showAudioVideoSettingsButton: true,
+      onJoinRoom: (room) => {
+        console.log("Successfully joined room:", room);
+      },
+      onLeaveRoom: () => {
+        console.log("Left room");
+      },
+      onError: (error) => {
+        console.error("Error in video conference:", error);
+      }
     });
 
+    // Cleanup function
     return () => {
       try {
         if (meetingContainerRef.current) {
           meetingContainerRef.current.innerHTML = '';
         }
-        if (zp?.destroy) zp.destroy();
+        if (zp && typeof zp.destroy === 'function') {
+          zp.destroy();
+        }
       } catch (error) {
         console.error("Error during cleanup:", error);
       }
     };
   }, [roomKey, username, topic]);
 
-  // Socket Connection and Event Handlers
   useEffect(() => {
     const socket = socketService.connect();
+
+    // Join room on component mount
     socket.emit('joinRoom', { roomKey, username });
 
-    const socketEvents = {
-      'roomJoined': ({ members, tasks, pomodoroState }) => {
-        setMembers(members);
-        setTasks(tasks || []);
-        if (pomodoroState) {
-          setPomodoroState({
-            isRunning: pomodoroState.running,
-            timeLeft: pomodoroState.timeLeft,
-            duration: pomodoroState.duration
-          });
-        }
-      },
-      'userJoined': ({ username, members }) => setMembers(members),
-      'userLeft': ({ username }) => setMembers(prev => prev.filter(member => member !== username)),
-      'taskAdded': (taskData) => setTasks(prev => [...prev, taskData]),
-      'taskDeleted': (taskId) => setTasks(prev => prev.filter(task => task.id !== taskId)),
-      'taskEdited': ({ taskId, newText }) => setTasks(prev => 
-        prev.map(task => task.id === taskId ? { ...task, text: newText } : task)
-      ),
-      'pomodoroStarted': ({ running, timeLeft, duration }) => setPomodoroState({ isRunning: running, timeLeft, duration }),
-      'pomodoroResumed': ({ running, timeLeft }) => setPomodoroState(prev => ({ ...prev, isRunning: running, timeLeft })),
-      'pomodoroTick': ({ timeLeft }) => setPomodoroState(prev => ({ ...prev, timeLeft })),
-      'pomodoroPaused': ({ running, timeLeft }) => setPomodoroState(prev => ({ ...prev, isRunning: running, timeLeft })),
-      'pomodoroReset': () => setPomodoroState({ isRunning: false, timeLeft: 0, duration: 0 }),
-      'pomodoroComplete': () => {
-        setPomodoroState(prev => ({ ...prev, isRunning: false, timeLeft: 0 }));
-        new Audio('/timer-complete.mp3').play();
-      }
-    };
+    // Handle room join confirmation
+    socket.on('roomJoined', ({ members, tasks }) => {
+      console.log('Room joined successfully:', { members, tasks });
+      setMembers(members);
+      setTasks(tasks || []);
+    });
 
-    // Register all socket events
-    Object.entries(socketEvents).forEach(([event, handler]) => {
-      socket.on(event, handler);
+    // Handle new user joining
+    socket.on('userJoined', ({ username, members }) => {
+      console.log('User joined:', username, 'Current members:', members);
+      setMembers(members);
+    });
+
+    // Handle user leaving
+    socket.on('userLeft', ({ username }) => {
+      console.log('User left:', username);
+      setMembers(prev => prev.filter(member => member !== username));
+    });
+
+    // Handle tasks
+    socket.on('taskAdded', (taskData) => {
+      console.log('Task added:', taskData);
+      setTasks(prev => [...prev, taskData]);
+    });
+
+    socket.on('taskDeleted', (taskId) => {
+      console.log('Task deleted:', taskId);
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    });
+
+    socket.on('taskEdited', ({ taskId, newText }) => {
+      console.log('Task edited:', taskId, newText);
+      setTasks(prev => prev.map(task => 
+        task.id === taskId ? { ...task, text: newText } : task
+      ));
+    });
+
+    // Handle errors
+    socket.on('error', ({ message }) => {
+      console.error('Socket error:', message);
+      alert(message);
+    });
+
+    socket.on('pomodoroStarted', ({ running, timeLeft, duration }) => {
+      console.log('Pomodoro started:', { running, timeLeft, duration });
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: duration
+      });
+    });
+    socket.on('pomodoroResumed', ({ running, timeLeft }) => {
+      console.log('Pomodoro resumed:', { running, timeLeft });
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: running,
+        timeLeft: timeLeft
+      }));
+    });
+
+    socket.on('pomodoroTick', ({ timeLeft }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        timeLeft: timeLeft
+      }));
+    });
+
+    socket.on('pomodoroPaused', ({ running, timeLeft }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: running,
+        timeLeft: timeLeft
+      }));
+    });
+
+    socket.on('pomodoroReset', () => {
+      setPomodoroState({
+        isRunning: false,
+        timeLeft: 0,
+        duration: 0
+      });
+    });
+
+    socket.on('pomodoroComplete', () => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: false,
+        timeLeft: 0
+      }));
+      const audio = new Audio('/timer-complete.mp3');
+      audio.play();
     });
 
     return () => {
-      // Cleanup all socket events
-      Object.keys(socketEvents).forEach(event => socket.off(event));
+      socket.off('roomJoined');
+      socket.off('userJoined');
+      socket.off('userLeft');
+      socket.off('taskAdded');
+      socket.off('taskDeleted');
+      socket.off('taskEdited');
+      socket.off('error');
+      socket.off('pomodoroStarted');
+      socket.off('pomodoroTick');
+      socket.off('pomodoroPaused');
+      socket.off('pomodoroReset');
+      socket.off('pomodoroComplete');
       socketService.disconnect();
     };
   }, [roomKey, username]);
 
-  // Timer Controls
+  const toggleFullscreen = () => {
+    const element = meetingContainerRef.current;
+    if (!document.fullscreenElement) {
+      element?.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  };
+
   const startPomodoro = () => {
     if (pomodoroState.timeLeft > 0 && !pomodoroState.isRunning) {
+      // Resume from paused state
       socketService.socket.emit('resumePomodoro', {
         roomKey,
         timeLeft: pomodoroState.timeLeft
       });
     } else {
+      // Start new timer
+      const duration = selectedMinutes * 60;
       socketService.socket.emit('startPomodoro', {
         roomKey,
-        duration: selectedMinutes * 60,
+        duration,
         isPaused: false
       });
     }
   };
 
   const pausePomodoro = () => {
-    socketService.socket.emit('pausePomodoro', { roomKey });
+    socketService.socket.emit('pausePomodoro', {
+      roomKey,
+      currentTime: pomodoroState.timeLeft
+    });
+    setPomodoroState(prev => ({
+      ...prev,
+      isRunning: false
+    }));
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', { roomKey });
+    socketService.socket.emit('resetPomodoro', {
+      roomKey
+    });
+    setPomodoroState({
+      isRunning: false,
+      timeLeft: 0,
+      duration: 0
+    });
   };
 
-  // Task Management
   const addTask = () => {
     if (currentTask.trim()) {
-      socketService.socket.emit(
-        editingTaskId ? 'editTask' : 'addTask',
-        {
+      if (editingTaskId !== null) {
+        socketService.socket.emit('editTask', {
           roomKey,
-          ...(editingTaskId ? { taskId: editingTaskId, newText: currentTask.trim() } : { task: currentTask.trim() })
-        }
-      );
+          taskId: editingTaskId,
+          newText: currentTask.trim()
+        });
+        setEditingTaskId(null);
+      } else {
+        socketService.socket.emit('addTask', {
+          roomKey,
+          task: currentTask.trim()
+        });
+      }
       setCurrentTask("");
-      setEditingTaskId(null);
     }
   };
 
-  // Room Management
+  const deleteTask = (taskId) => {
+    socketService.socket.emit('deleteTask', {
+      roomKey,
+      taskId
+    });
+  };
+
+  const startEditingTask = (task) => {
+    setEditingTaskId(task.id);
+    setCurrentTask(task.text);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(roomKey);
+    alert("Room key copied to clipboard!");
+  };
+
   const leaveRoom = () => {
     try {
+      // Disconnect from the socket room
       if (socketService.socket) {
         socketService.socket.emit('leaveRoom', { roomKey, username });
         socketService.disconnect();
       }
-      if (pomodoroState.isRunning) resetPomodoro();
+      
+      // Clear any timers if they're running
+      if (pomodoroState.isRunning) {
+        resetPomodoro();
+      }
+
+      // Clear the video conference container
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+      
+      // Navigate to home page
       navigate('/', { replace: true });
     } catch (error) {
       console.error("Error leaving room:", error);
+      // Still navigate even if there's an error
       navigate('/', { replace: true });
     }
   };
 
-  // Render your JSX here (keep the existing JSX)
   return (
     <div
       className="room-page flex flex-col items-center min-h-screen w-full text-white"
@@ -220,21 +365,13 @@ export default function RoomPage() {
                 <span>{task.text}</span>
                 <div className="space-x-2">
                   <button
-                    onClick={() => {
-                      setEditingTaskId(task.id);
-                      setCurrentTask(task.text);
-                    }}
+                    onClick={() => startEditingTask(task)}
                     className="text-blue-500"
                   >
                     <BiEdit />
                   </button>
                   <button
-                    onClick={() => {
-                      socketService.socket.emit('deleteTask', {
-                        roomKey,
-                        taskId: task.id
-                      });
-                    }}
+                    onClick={() => deleteTask(task.id)}
                     className="text-red-500"
                   >
                     <BiTrash />
@@ -277,21 +414,21 @@ export default function RoomPage() {
             {!pomodoroState.isRunning ? (
               <button
                 onClick={startPomodoro}
-                className="bg-green-500 px-4 py-2 rounded-lg"
+                className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
               >
                 Start
               </button>
             ) : (
               <button
                 onClick={pausePomodoro}
-                className="bg-yellow-500 px-4 py-2 rounded-lg"
+                className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
               >
                 Pause
               </button>
             )}
             <button
               onClick={resetPomodoro}
-              className="bg-red-500 px-4 py-2 rounded-lg"
+              className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
             >
               Reset
             </button>
@@ -304,10 +441,7 @@ export default function RoomPage() {
           <p className="mt-2">Room Key:</p>
           <p className="bg-gray-700 p-2 rounded-md">{roomKey}</p>
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(roomKey);
-              alert("Room key copied to clipboard!");
-            }}
+            onClick={copyToClipboard}
             className="bg-blue-500 mt-4 px-4 py-2 rounded-lg w-full"
           >
             Copy Key
@@ -346,6 +480,14 @@ export default function RoomPage() {
       {/* Video Conference Section */}
       <div className="relative w-full h-[395px] mt-[-3px] bg-[#001022]/50">
         <div ref={meetingContainerRef} className="w-full h-full"></div>
+
+        {/* Full-screen Button */}
+        <button
+          onClick={toggleFullscreen}
+          className="absolute top-4 right-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
+        >
+          ⛶ Full Screen
+        </button>
       </div>
     </div>
   );
