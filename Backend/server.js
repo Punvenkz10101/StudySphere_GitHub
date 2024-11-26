@@ -24,7 +24,14 @@ const io = socketIo(server, {
 app.set('io', io);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'development' 
+    ? ["http://localhost:5173", "http://127.0.0.1:5173"]
+    : process.env.CORS_ORIGIN,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 // Database Connection
@@ -50,7 +57,7 @@ const roomMembers = new Map();
 const roomPomodoros = new Map();
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+  console.log("New client connected:", socket.id);
 
   // Handle room creation
   socket.on("createRoom", async (roomData) => {
@@ -63,6 +70,16 @@ io.on("connection", (socket) => {
       }
       if (!roomTasks.has(roomKey)) {
         roomTasks.set(roomKey, []);
+      }
+      if (!roomPomodoros.has(roomKey)) {
+        roomPomodoros.set(roomKey, {
+          running: false,
+          timeLeft: 0,
+          startTime: null,
+          duration: 0,
+          interval: null,
+          sessionCount: 0
+        });
       }
 
       // Add creator to room members
@@ -87,6 +104,7 @@ io.on("connection", (socket) => {
 
   // Handle room joining
   socket.on("joinRoom", async ({ roomKey, username }) => {
+    console.log(`User ${username} joining room ${roomKey}`);
     try {
       socket.join(roomKey);
 
@@ -126,9 +144,18 @@ io.on("connection", (socket) => {
 
           socket.emit("pomodoroState", {
             running: pomodoro.running,
-            time: remaining,
+            timeLeft: remaining,
             startTime: pomodoro.startTime,
             duration: pomodoro.duration,
+            sessionCount: pomodoro.sessionCount
+          });
+        } else {
+          socket.emit("pomodoroState", {
+            running: false,
+            timeLeft: pomodoro.timeLeft,
+            startTime: null,
+            duration: pomodoro.duration,
+            sessionCount: pomodoro.sessionCount
           });
         }
       }
@@ -140,7 +167,7 @@ io.on("connection", (socket) => {
 
   // Handle disconnection with room cleanup
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    console.log("Client disconnected:", socket.id);
 
     roomMembers.forEach((members, roomKey) => {
       if (members.has(socket.id)) {
@@ -213,15 +240,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("startPomodoro", ({ roomKey, duration }) => {
-    console.log(`Starting pomodoro in room ${roomKey} for ${duration} seconds`);
-
     if (!roomPomodoros.has(roomKey)) {
       roomPomodoros.set(roomKey, {
         running: false,
         timeLeft: 0,
         startTime: null,
         duration: 0,
-        interval: null
+        interval: null,
+        sessionCount: 0
       });
     }
 
@@ -230,6 +256,15 @@ io.on("connection", (socket) => {
     // Clear any existing interval
     if (pomodoro.interval) {
       clearInterval(pomodoro.interval);
+    }
+
+    // Only increment session count for new timers
+    if (!pomodoro.running && pomodoro.timeLeft === 0) {
+      pomodoro.sessionCount += 1;
+      // Broadcast session count update to all clients
+      io.to(roomKey).emit("sessionCountUpdate", {
+        sessionCount: pomodoro.sessionCount
+      });
     }
 
     pomodoro.running = true;
@@ -243,28 +278,30 @@ io.on("connection", (socket) => {
         const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
         pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
 
-        // Emit time update to all clients in the room
+        // Broadcast timer update to all clients
         io.to(roomKey).emit("pomodoroTick", {
-          timeLeft: pomodoro.timeLeft
+          timeLeft: pomodoro.timeLeft,
+          running: pomodoro.running
         });
 
-        // Stop if timer reaches 0
+        // Handle timer completion
         if (pomodoro.timeLeft === 0) {
           clearInterval(pomodoro.interval);
           pomodoro.running = false;
-          io.to(roomKey).emit("pomodoroComplete");
+          io.to(roomKey).emit("pomodoroComplete", {
+            sessionCount: pomodoro.sessionCount
+          });
         }
-      } else {
-        clearInterval(pomodoro.interval);
       }
     }, 1000);
 
-    // Broadcast initial state to all users in the room
+    // Broadcast initial state to all clients
     io.to(roomKey).emit("pomodoroStarted", {
       running: true,
       timeLeft: duration,
       startTime: pomodoro.startTime,
-      duration: pomodoro.duration
+      duration: duration,
+      sessionCount: pomodoro.sessionCount
     });
   });
 
@@ -272,65 +309,19 @@ io.on("connection", (socket) => {
     if (roomPomodoros.has(roomKey)) {
       const pomodoro = roomPomodoros.get(roomKey);
       
-      // Calculate exact time remaining when paused
+      pomodoro.running = false;
       const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
       pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
-      pomodoro.running = false;
 
-      // Clear the interval
       if (pomodoro.interval) {
         clearInterval(pomodoro.interval);
       }
-      
+
+      // Broadcast pause state to all clients
       io.to(roomKey).emit("pomodoroPaused", {
         running: false,
-        timeLeft: pomodoro.timeLeft
-      });
-    }
-  });
-
-  socket.on("resumePomodoro", ({ roomKey, timeLeft }) => {
-    if (roomPomodoros.has(roomKey)) {
-      const pomodoro = roomPomodoros.get(roomKey);
-      
-      // Clear any existing interval
-      if (pomodoro.interval) {
-        clearInterval(pomodoro.interval);
-      }
-
-      pomodoro.running = true;
-      pomodoro.startTime = Date.now();
-      pomodoro.timeLeft = timeLeft;
-      pomodoro.duration = timeLeft;
-
-      // Start new interval
-      pomodoro.interval = setInterval(() => {
-        if (pomodoro.running) {
-          const elapsed = Math.floor((Date.now() - pomodoro.startTime) / 1000);
-          pomodoro.timeLeft = Math.max(0, pomodoro.duration - elapsed);
-
-          // Emit time update to all clients in the room
-          io.to(roomKey).emit("pomodoroTick", {
-            timeLeft: pomodoro.timeLeft
-          });
-
-          // Stop if timer reaches 0
-          if (pomodoro.timeLeft === 0) {
-            clearInterval(pomodoro.interval);
-            pomodoro.running = false;
-            io.to(roomKey).emit("pomodoroComplete");
-          }
-        } else {
-          clearInterval(pomodoro.interval);
-        }
-      }, 1000);
-
-      // Notify clients that timer has resumed
-      io.to(roomKey).emit("pomodoroResumed", {
-        running: true,
-        timeLeft: timeLeft,
-        startTime: pomodoro.startTime,
-        duration: timeLeft
+        timeLeft: pomodoro.timeLeft,
+        sessionCount: pomodoro.sessionCount
       });
     }
   });
@@ -339,7 +330,6 @@ io.on("connection", (socket) => {
     if (roomPomodoros.has(roomKey)) {
       const pomodoro = roomPomodoros.get(roomKey);
       
-      // Clear interval if it exists
       if (pomodoro.interval) {
         clearInterval(pomodoro.interval);
       }
@@ -349,9 +339,11 @@ io.on("connection", (socket) => {
       pomodoro.startTime = null;
       pomodoro.duration = 0;
 
+      // Broadcast reset state to all clients
       io.to(roomKey).emit("pomodoroReset", {
         running: false,
-        timeLeft: 0
+        timeLeft: 0,
+        sessionCount: pomodoro.sessionCount
       });
     }
   });

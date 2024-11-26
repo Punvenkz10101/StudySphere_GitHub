@@ -9,6 +9,7 @@ const JoinRoomModal = ({ onClose }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -18,10 +19,10 @@ const JoinRoomModal = ({ onClose }) => {
       document.body.style.overflow = "auto";
     };
   }, []);
+
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-       // Access username or email
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
     });
     return () => unsubscribe();
   }, []);
@@ -60,12 +61,12 @@ const JoinRoomModal = ({ onClose }) => {
       setLoading(false);
     }
   };
+
   if (!user) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
           onClose={onClose}
-          
         />
       </div>
     );

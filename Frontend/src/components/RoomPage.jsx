@@ -26,7 +26,7 @@ export default function RoomPage() {
     timeLeft: 0,
     duration: 0
   });
-  const [sessioncount, setSessionCount] = useState(0)
+  const [sessionCount, setSessionCount] = useState(0);
   const meetingContainerRef = useRef(null);
 
   // Memoize tasks to prevent unnecessary re-renders
@@ -84,47 +84,124 @@ export default function RoomPage() {
   }, [roomKey, username, topic]);
 
   useEffect(() => {
-    // Safely connect to socket
     const socket = socketService.connect();
     
-    // Join room safely
-    socketService.emit('joinRoom', { 
-      roomKey, 
-      username 
-    });
+    // Join room
+    socketService.emit('joinRoom', { roomKey, username });
 
-    // Handle room join confirmation with safe defaults
+    // Handle initial Pomodoro state when joining
+    const handlePomodoroState = ({ running, timeLeft, duration, sessionCount }) => {
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: duration
+      });
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+    };
+    socket.on('pomodoroState', handlePomodoroState);
+
+    // Handle timer start
+    const handlePomodoroStarted = ({ running, timeLeft, duration, sessionCount }) => {
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: duration
+      });
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+    };
+    socket.on('pomodoroStarted', handlePomodoroStarted);
+
+    // Handle timer ticks
+    const handlePomodoroTick = ({ timeLeft, running }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        timeLeft: timeLeft,
+        isRunning: running
+      }));
+    };
+    socket.on('pomodoroTick', handlePomodoroTick);
+
+    // Handle timer pause
+    const handlePomodoroPaused = ({ running, timeLeft, sessionCount }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: running,
+        timeLeft: timeLeft
+      }));
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+    };
+    socket.on('pomodoroPaused', handlePomodoroPaused);
+
+    // Handle timer reset
+    const handlePomodoroReset = ({ running, timeLeft, sessionCount }) => {
+      setPomodoroState({
+        isRunning: running,
+        timeLeft: timeLeft,
+        duration: 0
+      });
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+    };
+    socket.on('pomodoroReset', handlePomodoroReset);
+
+    // Handle timer completion
+    const handlePomodoroComplete = ({ sessionCount }) => {
+      setPomodoroState(prev => ({
+        ...prev,
+        isRunning: false,
+        timeLeft: 0
+      }));
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+      // Play completion sound
+      const audio = new Audio('/timer-complete.mp3');
+      audio.play().catch(error => console.warn('Audio play failed:', error));
+    };
+    socket.on('pomodoroComplete', handlePomodoroComplete);
+
+    // Handle session count updates
+    const handleSessionCountUpdate = ({ sessionCount }) => {
+      if (typeof sessionCount === 'number') {
+        setSessionCount(sessionCount);
+      }
+    };
+    socket.on('sessionCountUpdate', handleSessionCountUpdate);
+
+    // Room event handlers
     const handleRoomJoined = ({ members = [], tasks = [] }) => {
       console.log('Room joined successfully:', { members, tasks });
       setMembers(members);
       setTasks(tasks);
     };
-    socket.on('roomJoined', handleRoomJoined);
 
-    // Other socket event handlers with error handling
     const handleUserJoined = ({ username, members = [] }) => {
       console.log('User joined:', username, 'Current members:', members);
       setMembers(members);
     };
-    socket.on('userJoined', handleUserJoined);
 
     const handleUserLeft = ({ username }) => {
       console.log('User left:', username);
       setMembers(prev => (prev || []).filter(member => member !== username));
     };
-    socket.on('userLeft', handleUserLeft);
 
+    // Task event handlers
     const handleTaskAdded = (taskData) => {
       console.log('Task added:', taskData);
       setTasks(prev => [...(prev || []), taskData]);
     };
-    socket.on('taskAdded', handleTaskAdded);
 
     const handleTaskDeleted = (taskId) => {
       console.log('Task deleted:', taskId);
       setTasks(prev => (prev || []).filter(task => task.id !== taskId));
     };
-    socket.on('taskDeleted', handleTaskDeleted);
 
     const handleTaskEdited = ({ taskId, newText }) => {
       console.log('Task edited:', taskId, newText);
@@ -134,84 +211,31 @@ export default function RoomPage() {
         )
       );
     };
+
+    // Attach event listeners
+    socket.on('roomJoined', handleRoomJoined);
+    socket.on('userJoined', handleUserJoined);
+    socket.on('userLeft', handleUserLeft);
+    socket.on('taskAdded', handleTaskAdded);
+    socket.on('taskDeleted', handleTaskDeleted);
     socket.on('taskEdited', handleTaskEdited);
-
-    // Pomodoro event handlers
-    const handlePomodoroStarted = ({ running, timeLeft, startTime, duration }) => {
-      console.log('Pomodoro started:', { running, timeLeft, startTime, duration });
-      setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
-        duration: duration
-      });
-    };
-    socket.on('pomodoroStarted', handlePomodoroStarted);
-
-    const handlePomodoroTick = ({ timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        timeLeft: timeLeft
-      }));
-    };
-    socket.on('pomodoroTick', handlePomodoroTick);
-
-    const handlePomodoroPaused = ({ running, timeLeft }) => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: running,
-        timeLeft: timeLeft
-      }));
-    };
-    socket.on('pomodoroPaused', handlePomodoroPaused);
-
-    const handlePomodoroResumed = ({ running, timeLeft, startTime, duration }) => {
-      setPomodoroState({
-        isRunning: running,
-        timeLeft: timeLeft,
-        duration: duration
-      });
-    };
-    socket.on('pomodoroResumed', handlePomodoroResumed);
-
-    const handlePomodoroReset = () => {
-      setPomodoroState({
-        isRunning: false,
-        timeLeft: 0,
-        duration: 0
-      });
-    };
-    socket.on('pomodoroReset', handlePomodoroReset);
-
-    const handlePomodoroComplete = () => {
-      setPomodoroState(prev => ({
-        ...prev,
-        isRunning: false,
-        timeLeft: 0
-      }));
-      
-      // Optional: Play a sound when pomodoro is complete
-      const audio = new Audio('/timer-complete.mp3');
-      audio.play().catch(error => console.warn('Audio play failed:', error));
-    };
-    socket.on('pomodoroComplete', handlePomodoroComplete);
 
     // Cleanup function
     return () => {
-      // Remove all event listeners
+      socket.off('pomodoroState', handlePomodoroState);
+      socket.off('pomodoroStarted', handlePomodoroStarted);
+      socket.off('pomodoroTick', handlePomodoroTick);
+      socket.off('pomodoroPaused', handlePomodoroPaused);
+      socket.off('pomodoroReset', handlePomodoroReset);
+      socket.off('pomodoroComplete', handlePomodoroComplete);
+      socket.off('sessionCountUpdate', handleSessionCountUpdate);
       socket.off('roomJoined', handleRoomJoined);
       socket.off('userJoined', handleUserJoined);
       socket.off('userLeft', handleUserLeft);
       socket.off('taskAdded', handleTaskAdded);
       socket.off('taskDeleted', handleTaskDeleted);
       socket.off('taskEdited', handleTaskEdited);
-      socket.off('pomodoroStarted', handlePomodoroStarted);
-      socket.off('pomodoroTick', handlePomodoroTick);
-      socket.off('pomodoroPaused', handlePomodoroPaused);
-      socket.off('pomodoroResumed', handlePomodoroResumed);
-      socket.off('pomodoroReset', handlePomodoroReset);
-      socket.off('pomodoroComplete', handlePomodoroComplete);
       
-      // Disconnect socket
       socketService.disconnect();
     };
   }, [roomKey, username]);
@@ -226,43 +250,19 @@ export default function RoomPage() {
   };
 
   const startPomodoro = () => {
-    if (pomodoroState.timeLeft > 0 && !pomodoroState.isRunning) {
-      // Resume from paused state
-      socketService.socket.emit('resumePomodoro', {
-        roomKey,
-        timeLeft: pomodoroState.timeLeft
-      });
-    } else {
-      // Start new timer
-      const duration = selectedMinutes * 60;
-      socketService.socket.emit('startPomodoro', {
-        roomKey,
-        duration
-      });
-    }
-    setSessionCount(prev=> prev+1);
+    const duration = selectedMinutes * 60;
+    socketService.socket.emit('startPomodoro', {
+      roomKey,
+      duration
+    });
   };
 
   const pausePomodoro = () => {
-    socketService.socket.emit('pausePomodoro', {
-      roomKey,
-      currentTime: pomodoroState.timeLeft
-    });
-    setPomodoroState(prev => ({
-      ...prev,
-      isRunning: false
-    }));
+    socketService.socket.emit('pausePomodoro', { roomKey });
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', {
-      roomKey
-    });
-    setPomodoroState({
-      isRunning: false,
-      timeLeft: 0,
-      duration: 0
-    });
+    socketService.socket.emit('resetPomodoro', { roomKey });
   };
 
   const addTask = () => {
@@ -426,6 +426,7 @@ export default function RoomPage() {
               <button
                 onClick={startPomodoro}
                 className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                disabled={pomodoroState.isRunning}
               >
                 Start
               </button>
@@ -444,7 +445,9 @@ export default function RoomPage() {
               Reset
             </button>
           </div>
-          Sessions Completed:{sessioncount}
+          <div className="mt-2 text-sm text-gray-300">
+            Sessions Completed: {sessionCount}
+          </div>
         </div>
 
         {/* Room Info */}
