@@ -2,25 +2,29 @@ import io from 'socket.io-client';
 
 class SocketService {
   constructor() {
-    this.socket = io(import.meta.env.VITE_SOCKET_URL, {
-      withCredentials: true,
-      transports: ['websocket']
-    });
+    this.socket = null;
+  }
 
-    this.socket.on('connect', () => {
-      console.log('Connected to socket server');
-    });
+  connect() {
+    if (!this.socket) {
+      this.socket = io(import.meta.env.VITE_SOCKET_URL, {
+        transports: ['websocket'],
+        withCredentials: true
+      });
+    }
+    return this.socket;
+  }
 
-    this.socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
-    });
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
   }
 
   emit(event, data) {
     if (this.socket) {
       this.socket.emit(event, data);
-    } else {
-      console.error('Socket not initialized');
     }
   }
 
@@ -30,12 +34,14 @@ class SocketService {
     }
   }
 
-  disconnect() {
+  off(event) {
     if (this.socket) {
-      this.socket.disconnect();
+      this.socket.off(event);
     }
   }
 }
 
+// Create a singleton instance
 const socketService = new SocketService();
+
 export default socketService; 
