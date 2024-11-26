@@ -170,6 +170,7 @@ export default function RoomPage() {
 
   const resetPomodoro = () => {
     socketService.emit('resetPomodoro', { roomKey });
+    setPomodoroState({ isRunning: false, timeLeft: 0, duration: 0 });
   };
 
   const addTask = () => {

@@ -36,7 +36,7 @@ const navigate =useNavigate();
   }, []);
 
   const navigation = [
-    { name: "Product", path:"/" },
+    { name: "Home", path:"/" },
     { name: "Features", path:"/" },
     { name: "Support", path:"/" },
     { name: "Contact Us", path:"/contact-us" },

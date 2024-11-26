@@ -1,6 +1,21 @@
-import React from 'react';
+import React , {useRef}from 'react';
+import Typed from 'typed.js';
 
 export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
+  const el = useRef(null);
+  React.useEffect(() => {
+    const typed = new Typed(el.current, {
+      strings: [' Welcome to StudySphere', 'An Awesome Learning Experience' ],
+      typeSpeed: 60,
+      backSpeed: 60, // Speed when backspacing
+      loop: true,
+    });
+
+    return () => {
+      // Destroy Typed instance during cleanup to stop animation
+      typed.destroy();
+    };
+  }, []);
   return (
     <section
       className="relative h-screen flex flex-col items-center justify-center text-center bg-cover bg-center text-white animate-fadeIn"
@@ -10,8 +25,8 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
       }}
     >
       <div className="z-10 space-y-4 px-4">
-        <h1 className="text-[45px] sm:text-[59px] font-bold leading-tight">
-          Welcome to StudySphere
+        <h1 ref={el} className="text-[45px] sm:text-[59px] font-bold leading-tight">
+         
         </h1>
         <p className="text-[24px] sm:text-[33px] font-medium leading-snug">
           Discover and Connect with Study Rooms
