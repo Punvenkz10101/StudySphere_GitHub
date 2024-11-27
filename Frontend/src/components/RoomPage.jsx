@@ -250,11 +250,20 @@ export default function RoomPage() {
   };
 
   const startPomodoro = () => {
-    const duration = selectedMinutes * 60;
-    socketService.socket.emit('startPomodoro', {
-      roomKey,
-      duration
-    });
+    if (pomodoroState.timeLeft > 0 && pomodoroState.isRunning === false) {
+      // If there's time left from a pause, continue from there
+      socketService.socket.emit('startPomodoro', {
+        roomKey,
+        duration: pomodoroState.timeLeft
+      });
+    } else {
+      // Start new timer with selected duration
+      const duration = selectedMinutes * 60; // Convert minutes to seconds
+      socketService.socket.emit('startPomodoro', {
+        roomKey,
+        duration: duration
+      });
+    }
   };
 
   const pausePomodoro = () => {
@@ -405,7 +414,15 @@ export default function RoomPage() {
           <div className="space-x-4 mt-4">
             <select
               value={selectedMinutes}
-              onChange={(e) => setSelectedMinutes(Number(e.target.value))}
+              onChange={(e) => {
+                setSelectedMinutes(Number(e.target.value));
+                // Reset the timer state when changing duration
+                setPomodoroState({
+                  isRunning: false,
+                  timeLeft: 0,
+                  duration: 0
+                });
+              }}
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"
               disabled={pomodoroState.isRunning}
             >
