@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
@@ -9,22 +9,22 @@ export default function RoomPage() {
   const { roomKey } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  
+
   // Ensure these values have default fallbacks
-  const creator = state?.creator || state?.username || '';
-  const topic = state?.topic || 'Study Room';
-  const username = state?.username || creator || '';
+  const creator = state?.creator || state?.username || "";
+  const topic = state?.topic || "Study Room";
+  const username = state?.username || creator || "";
 
   // Initialize state with default values
   const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
-  const [currentTask, setCurrentTask] = useState('');
+  const [currentTask, setCurrentTask] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [selectedMinutes, setSelectedMinutes] = useState(25);
   const [pomodoroState, setPomodoroState] = useState({
     isRunning: false,
     timeLeft: 0,
-    duration: 0
+    duration: 0,
   });
   const [sessionCount, setSessionCount] = useState(0);
   const meetingContainerRef = useRef(null);
@@ -46,7 +46,7 @@ export default function RoomPage() {
     );
 
     const zp = ZegoUIKitPrebuilt.create(kitToken);
-    
+
     zp.joinRoom({
       container: meetingContainerRef.current,
       scenario: {
@@ -75,7 +75,7 @@ export default function RoomPage() {
     return () => {
       try {
         if (meetingContainerRef.current) {
-          meetingContainerRef.current.innerHTML = '';
+          meetingContainerRef.current.innerHTML = "";
         }
       } catch (error) {
         console.error("Error during cleanup:", error);
@@ -85,157 +85,169 @@ export default function RoomPage() {
 
   useEffect(() => {
     const socket = socketService.connect();
-    
+
     // Join room
-    socketService.emit('joinRoom', { roomKey, username });
+    socketService.emit("joinRoom", { roomKey, username });
 
     // Handle initial Pomodoro state when joining
-    const handlePomodoroState = ({ running, timeLeft, duration, sessionCount }) => {
+    const handlePomodoroState = ({
+      running,
+      timeLeft,
+      duration,
+      sessionCount,
+    }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
-        duration: duration
+        duration: duration,
       });
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
     };
-    socket.on('pomodoroState', handlePomodoroState);
+    socket.on("pomodoroState", handlePomodoroState);
 
     // Handle timer start
-    const handlePomodoroStarted = ({ running, timeLeft, duration, sessionCount }) => {
+    const handlePomodoroStarted = ({
+      running,
+      timeLeft,
+      duration,
+      sessionCount,
+    }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
-        duration: duration
+        duration: duration,
       });
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
     };
-    socket.on('pomodoroStarted', handlePomodoroStarted);
+    socket.on("pomodoroStarted", handlePomodoroStarted);
 
     // Handle timer ticks
     const handlePomodoroTick = ({ timeLeft, running }) => {
-      setPomodoroState(prev => ({
+      setPomodoroState((prev) => ({
         ...prev,
         timeLeft: timeLeft,
-        isRunning: running
+        isRunning: running,
       }));
     };
-    socket.on('pomodoroTick', handlePomodoroTick);
+    socket.on("pomodoroTick", handlePomodoroTick);
 
     // Handle timer pause
     const handlePomodoroPaused = ({ running, timeLeft, sessionCount }) => {
-      setPomodoroState(prev => ({
+      setPomodoroState((prev) => ({
         ...prev,
         isRunning: running,
-        timeLeft: timeLeft
+        timeLeft: timeLeft,
       }));
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
     };
-    socket.on('pomodoroPaused', handlePomodoroPaused);
+    socket.on("pomodoroPaused", handlePomodoroPaused);
 
     // Handle timer reset
     const handlePomodoroReset = ({ running, timeLeft, sessionCount }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
-        duration: 0
+        duration: 0,
       });
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
     };
-    socket.on('pomodoroReset', handlePomodoroReset);
+    socket.on("pomodoroReset", handlePomodoroReset);
 
     // Handle timer completion
     const handlePomodoroComplete = ({ sessionCount }) => {
-      setPomodoroState(prev => ({
+      setPomodoroState((prev) => ({
         ...prev,
         isRunning: false,
-        timeLeft: 0
+        timeLeft: 0,
       }));
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
       // Play completion sound
-      const audio = new Audio('/timer-complete.mp3');
-      audio.play().catch(error => console.warn('Audio play failed:', error));
+      const audio = new Audio("/timer-complete.mp3");
+      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
-    socket.on('pomodoroComplete', handlePomodoroComplete);
+    socket.on("pomodoroComplete", handlePomodoroComplete);
 
     // Handle session count updates
     const handleSessionCountUpdate = ({ sessionCount }) => {
-      if (typeof sessionCount === 'number') {
+      if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
     };
-    socket.on('sessionCountUpdate', handleSessionCountUpdate);
+    socket.on("sessionCountUpdate", handleSessionCountUpdate);
 
     // Room event handlers
     const handleRoomJoined = ({ members = [], tasks = [] }) => {
-      console.log('Room joined successfully:', { members, tasks });
+      console.log("Room joined successfully:", { members, tasks });
       setMembers(members);
       setTasks(tasks);
     };
 
     const handleUserJoined = ({ username, members = [] }) => {
-      console.log('User joined:', username, 'Current members:', members);
+      console.log("User joined:", username, "Current members:", members);
       setMembers(members);
     };
 
     const handleUserLeft = ({ username }) => {
-      console.log('User left:', username);
-      setMembers(prev => (prev || []).filter(member => member !== username));
+      console.log("User left:", username);
+      setMembers((prev) =>
+        (prev || []).filter((member) => member !== username)
+      );
     };
 
     // Task event handlers
     const handleTaskAdded = (taskData) => {
-      console.log('Task added:', taskData);
-      setTasks(prev => [...(prev || []), taskData]);
+      console.log("Task added:", taskData);
+      setTasks((prev) => [...(prev || []), taskData]);
     };
 
     const handleTaskDeleted = (taskId) => {
-      console.log('Task deleted:', taskId);
-      setTasks(prev => (prev || []).filter(task => task.id !== taskId));
+      console.log("Task deleted:", taskId);
+      setTasks((prev) => (prev || []).filter((task) => task.id !== taskId));
     };
 
     const handleTaskEdited = ({ taskId, newText }) => {
-      console.log('Task edited:', taskId, newText);
-      setTasks(prev => 
-        (prev || []).map(task => 
+      console.log("Task edited:", taskId, newText);
+      setTasks((prev) =>
+        (prev || []).map((task) =>
           task.id === taskId ? { ...task, text: newText } : task
         )
       );
     };
 
     // Attach event listeners
-    socket.on('roomJoined', handleRoomJoined);
-    socket.on('userJoined', handleUserJoined);
-    socket.on('userLeft', handleUserLeft);
-    socket.on('taskAdded', handleTaskAdded);
-    socket.on('taskDeleted', handleTaskDeleted);
-    socket.on('taskEdited', handleTaskEdited);
+    socket.on("roomJoined", handleRoomJoined);
+    socket.on("userJoined", handleUserJoined);
+    socket.on("userLeft", handleUserLeft);
+    socket.on("taskAdded", handleTaskAdded);
+    socket.on("taskDeleted", handleTaskDeleted);
+    socket.on("taskEdited", handleTaskEdited);
 
     // Cleanup function
     return () => {
-      socket.off('pomodoroState', handlePomodoroState);
-      socket.off('pomodoroStarted', handlePomodoroStarted);
-      socket.off('pomodoroTick', handlePomodoroTick);
-      socket.off('pomodoroPaused', handlePomodoroPaused);
-      socket.off('pomodoroReset', handlePomodoroReset);
-      socket.off('pomodoroComplete', handlePomodoroComplete);
-      socket.off('sessionCountUpdate', handleSessionCountUpdate);
-      socket.off('roomJoined', handleRoomJoined);
-      socket.off('userJoined', handleUserJoined);
-      socket.off('userLeft', handleUserLeft);
-      socket.off('taskAdded', handleTaskAdded);
-      socket.off('taskDeleted', handleTaskDeleted);
-      socket.off('taskEdited', handleTaskEdited);
-      
+      socket.off("pomodoroState", handlePomodoroState);
+      socket.off("pomodoroStarted", handlePomodoroStarted);
+      socket.off("pomodoroTick", handlePomodoroTick);
+      socket.off("pomodoroPaused", handlePomodoroPaused);
+      socket.off("pomodoroReset", handlePomodoroReset);
+      socket.off("pomodoroComplete", handlePomodoroComplete);
+      socket.off("sessionCountUpdate", handleSessionCountUpdate);
+      socket.off("roomJoined", handleRoomJoined);
+      socket.off("userJoined", handleUserJoined);
+      socket.off("userLeft", handleUserLeft);
+      socket.off("taskAdded", handleTaskAdded);
+      socket.off("taskDeleted", handleTaskDeleted);
+      socket.off("taskEdited", handleTaskEdited);
+
       socketService.disconnect();
     };
   }, [roomKey, username]);
@@ -252,41 +264,41 @@ export default function RoomPage() {
   const startPomodoro = () => {
     if (pomodoroState.timeLeft > 0 && pomodoroState.isRunning === false) {
       // If there's time left from a pause, continue from there
-      socketService.socket.emit('startPomodoro', {
+      socketService.socket.emit("startPomodoro", {
         roomKey,
-        duration: pomodoroState.timeLeft
+        duration: pomodoroState.timeLeft,
       });
     } else {
       // Start new timer with selected duration
       const duration = selectedMinutes * 60; // Convert minutes to seconds
-      socketService.socket.emit('startPomodoro', {
+      socketService.socket.emit("startPomodoro", {
         roomKey,
-        duration: duration
+        duration: duration,
       });
     }
   };
 
   const pausePomodoro = () => {
-    socketService.socket.emit('pausePomodoro', { roomKey });
+    socketService.socket.emit("pausePomodoro", { roomKey });
   };
 
   const resetPomodoro = () => {
-    socketService.socket.emit('resetPomodoro', { roomKey });
+    socketService.socket.emit("resetPomodoro", { roomKey });
   };
 
   const addTask = () => {
     if (currentTask.trim()) {
       if (editingTaskId !== null) {
-        socketService.socket.emit('editTask', {
+        socketService.socket.emit("editTask", {
           roomKey,
           taskId: editingTaskId,
-          newText: currentTask.trim()
+          newText: currentTask.trim(),
         });
         setEditingTaskId(null);
       } else {
-        socketService.socket.emit('addTask', {
+        socketService.socket.emit("addTask", {
           roomKey,
-          task: currentTask.trim()
+          task: currentTask.trim(),
         });
       }
       setCurrentTask("");
@@ -294,9 +306,9 @@ export default function RoomPage() {
   };
 
   const deleteTask = (taskId) => {
-    socketService.socket.emit('deleteTask', {
+    socketService.socket.emit("deleteTask", {
       roomKey,
-      taskId
+      taskId,
     });
   };
 
@@ -314,10 +326,10 @@ export default function RoomPage() {
     try {
       // Disconnect from the socket room
       if (socketService.socket) {
-        socketService.socket.emit('leaveRoom', { roomKey, username });
+        socketService.socket.emit("leaveRoom", { roomKey, username });
         socketService.disconnect();
       }
-      
+
       // Clear any timers if they're running
       if (pomodoroState.isRunning) {
         resetPomodoro();
@@ -325,15 +337,15 @@ export default function RoomPage() {
 
       // Clear the video conference container
       if (meetingContainerRef.current) {
-        meetingContainerRef.current.innerHTML = '';
+        meetingContainerRef.current.innerHTML = "";
       }
-      
+
       // Navigate to home page
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Error leaving room:", error);
       // Still navigate even if there's an error
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   };
 
@@ -360,16 +372,16 @@ export default function RoomPage() {
             {members.map((memberUsername, index) => (
               <li key={index} className="flex items-center justify-between">
                 <span>{memberUsername}</span>
-                {memberUsername === username && 
+                {memberUsername === username && (
                   <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
                     You
                   </span>
-                }
-                {memberUsername === creator && 
+                )}
+                {memberUsername === creator && (
                   <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
                     Host
                   </span>
-                }
+                )}
               </li>
             ))}
           </ul>
@@ -393,7 +405,7 @@ export default function RoomPage() {
                 setPomodoroState({
                   isRunning: false,
                   timeLeft: 0,
-                  duration: 0
+                  duration: 0,
                 });
               }}
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"
@@ -451,7 +463,7 @@ export default function RoomPage() {
               placeholder="Add a new task"
               className="w-full p-2 bg-gray-700 rounded-md"
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   addTask();
                 }
               }}
@@ -516,7 +528,7 @@ export default function RoomPage() {
         {/* Full-screen Button */}
         <button
           onClick={toggleFullscreen}
-          className="absolute top-4 right-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
+          className="absolute top-4 left-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
         >
           ⛶ Full Screen
         </button>
