@@ -353,50 +353,23 @@ export default function RoomPage() {
 
       {/* Main Content */}
       <div className="content-wrapper grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 w-full h-full">
-        {/* To-Do Section */}
+        {/* Members Joined */}
         <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col">
-          <h2 className="text-xl font-semibold mb-4">To-Do List</h2>
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={currentTask}
-              onChange={(e) => setCurrentTask(e.target.value)}
-              placeholder="Add a new task"
-              className="w-full p-2 bg-gray-700 rounded-md"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  addTask();
+          <h2 className="text-xl font-semibold">Members Joined</h2>
+          <ul className="mt-4 space-y-2">
+            {members.map((memberUsername, index) => (
+              <li key={index} className="flex items-center justify-between">
+                <span>{memberUsername}</span>
+                {memberUsername === username && 
+                  <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
+                    You
+                  </span>
                 }
-              }}
-            />
-            <button
-              onClick={addTask}
-              className="bg-green-500 text-white py-2 px-4 rounded-lg w-full"
-            >
-              {editingTaskId !== null ? "Edit Task" : "Add Task"}
-            </button>
-          </div>
-          <ul className="mt-4 space-y-2 overflow-y-auto">
-            {memoizedTasks.map((task) => (
-              <li
-                key={task.id}
-                className="flex items-center justify-between bg-gray-700 p-2 rounded-lg"
-              >
-                <span>{task.text}</span>
-                <div className="space-x-2">
-                  <button
-                    onClick={() => startEditingTask(task)}
-                    className="text-blue-500"
-                  >
-                    <BiEdit />
-                  </button>
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    className="text-red-500"
-                  >
-                    <BiTrash />
-                  </button>
-                </div>
+                {memberUsername === creator && 
+                  <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
+                    Host
+                  </span>
+                }
               </li>
             ))}
           </ul>
@@ -467,6 +440,55 @@ export default function RoomPage() {
           </div>
         </div>
 
+        {/* To-Do Section */}
+        <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col">
+          <h2 className="text-xl font-semibold mb-4">To-Do List</h2>
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={currentTask}
+              onChange={(e) => setCurrentTask(e.target.value)}
+              placeholder="Add a new task"
+              className="w-full p-2 bg-gray-700 rounded-md"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  addTask();
+                }
+              }}
+            />
+            <button
+              onClick={addTask}
+              className="bg-green-500 text-white py-2 px-4 rounded-lg w-full"
+            >
+              {editingTaskId !== null ? "Edit Task" : "Add Task"}
+            </button>
+          </div>
+          <ul className="mt-4 space-y-2 overflow-y-auto">
+            {memoizedTasks.map((task) => (
+              <li
+                key={task.id}
+                className="flex items-center justify-between bg-gray-700 p-2 rounded-lg"
+              >
+                <span>{task.text}</span>
+                <div className="space-x-2">
+                  <button
+                    onClick={() => startEditingTask(task)}
+                    className="text-blue-500"
+                  >
+                    <BiEdit />
+                  </button>
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="text-red-500"
+                  >
+                    <BiTrash />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Room Info */}
         <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col">
           <h2 className="text-xl font-semibold">Room Info</h2>
@@ -484,28 +506,6 @@ export default function RoomPage() {
           >
             Leave Room
           </button>
-        </div>
-
-        {/* Members Joined */}
-        <div className="bg-[#001022]/50 p-4 rounded-lg flex flex-col">
-          <h2 className="text-xl font-semibold">Members Joined</h2>
-          <ul className="mt-4 space-y-2">
-            {members.map((memberUsername, index) => (
-              <li key={index} className="flex items-center justify-between">
-                <span>{memberUsername}</span>
-                {memberUsername === username && 
-                  <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
-                    You
-                  </span>
-                }
-                {memberUsername === creator && 
-                  <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
-                    Host
-                  </span>
-                }
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 
