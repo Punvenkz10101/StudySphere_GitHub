@@ -35,7 +35,7 @@ const Team = () => {
             name="Bharath"
             profession="Web Developer"
             description="Bharath keeps everything on track with his keen organizational skills and strategic planning. His dedication ensures that each project meets its goals efficiently."
-            imageSrc="/Bharath.png"
+            imageSrc="/bharath.jpeg"
             />
           <TeamCard
             name="Harsha Kumar"
@@ -75,7 +75,7 @@ const TeamCard = ({ imageSrc, name, profession, description }) => {
           {/* Social Icons */}
           <div className="flex justify-center space-x-3 mt-2">
             <a
-              href="#"
+              href=""
               className="text-white hover:text-gray-400"
               aria-label="LinkedIn"
             >
