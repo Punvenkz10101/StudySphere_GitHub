@@ -30,17 +30,17 @@ const Team = () => {
             profession="Team Lead/Web Developer"
             description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. His technical expertise ensures a smooth user experience."
             imageSrc="/Puneeth.jpg"
-          />
+            />
           <TeamCard
             name="Bharath"
-            profession="UI/UX Designer"
-            description="Bharath's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
-            imageSrc=""
-          />
+            profession="Web Developer"
+            description="Bharath keeps everything on track with his keen organizational skills and strategic planning. His dedication ensures that each project meets its goals efficiently."
+            imageSrc="/Bharath.png"
+            />
           <TeamCard
             name="Harsha Kumar"
-            profession="Web Developer"
-            description="Harsha keeps everything on track with his keen organizational skills and strategic planning. His dedication ensures that each project meets its goals efficiently."
+            profession="UI/UX Designer"
+            description="Harsha's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
             imageSrc=""
           />
         </div>
