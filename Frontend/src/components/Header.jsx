@@ -8,6 +8,7 @@ const navigate =useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const menuRef=useRef(null);
 
   const userNameInitial = user
     ? (user.displayName ? user.displayName[0] : user.email[0]).toUpperCase()
@@ -27,6 +28,9 @@ const navigate =useNavigate();
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
+      if(menuRef.current && !menuRef.current.contains(event.target)){
+        setMenuOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -34,6 +38,10 @@ const navigate =useNavigate();
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  const handleNavigate=(path)=>{
+    navigate(path);
+    setMenuOpen(false);
+  }
 
   const navigation = [
     { name: "Home", path:"/" },
@@ -58,7 +66,7 @@ const navigate =useNavigate();
           {navigation.map((item) => (
            <button
            key={item.name}
-           onClick={() => navigate(item.path)}
+           onClick={() => handleNavigate(item.path)}
            className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
          >
            {item.name}
@@ -144,7 +152,7 @@ const navigate =useNavigate();
             {navigation.map((item) => (
              <button
              key={item.name}
-             onClick={() => navigate(item.path)}
+             onClick={() => handleNavigate(item.path)}
              className="text-base font-semibold text-white hover:text-[#00B2A9] transition-colors duration-300 transform hover:scale-105"
            >
              {item.name}
