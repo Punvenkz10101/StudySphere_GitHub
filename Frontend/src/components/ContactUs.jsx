@@ -39,7 +39,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(CTA.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
   
       <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
         <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
