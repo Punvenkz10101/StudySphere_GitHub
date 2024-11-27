@@ -210,18 +210,18 @@ export default function RoomPage() {
 
     // Room event handlers
     const handleRoomJoined = ({ members = [], tasks = [] }) => {
-      console.log("Room joined successfully:", { members, tasks });
+      console.log(`Room joined: ${username} entered the room`);
       setMembers(members);
       setTasks(tasks);
     };
 
     const handleUserJoined = ({ username, members = [] }) => {
-      console.log("User joined:", username, "Current members:", members);
+      console.log(`New user joined: ${username}`);
       setMembers(members);
     };
 
     const handleUserLeft = ({ username }) => {
-      console.log("User left:", username);
+      console.log(`User left the room: ${username}`);
       setMembers((prev) =>
         (prev || []).filter((member) => member !== username)
       );
@@ -229,17 +229,14 @@ export default function RoomPage() {
 
     // Task event handlers
     const handleTaskAdded = (taskData) => {
-      console.log("Task added:", taskData);
       setTasks((prev) => [...(prev || []), taskData]);
     };
 
     const handleTaskDeleted = (taskId) => {
-      console.log("Task deleted:", taskId);
       setTasks((prev) => (prev || []).filter((task) => task.id !== taskId));
     };
 
     const handleTaskEdited = ({ taskId, newText }) => {
-      console.log("Task edited:", taskId, newText);
       setTasks((prev) =>
         (prev || []).map((task) =>
           task.id === taskId ? { ...task, text: newText } : task

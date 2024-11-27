@@ -41,7 +41,7 @@ try {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-    .then(() => console.log("MongoDB connected successfully!"))
+    .then(() => console.log("MongoDB connected successfully"))
     .catch((err) => console.error("MongoDB connection error:", err));
 } catch (error) {
   console.error("Error connecting to MongoDB:", error);
@@ -326,9 +326,9 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// Add basic error handling
+// Keep error handling logs
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+  console.error('Critical Error:', error);
   process.exit(1);
 });
 
