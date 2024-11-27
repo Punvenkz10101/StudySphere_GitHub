@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaBars } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 
+
 const Header = ({ onLoginClick, onSignUpClick, user, onSignOut }) => {
 const navigate =useNavigate();
 
@@ -46,7 +47,6 @@ const navigate =useNavigate();
   const navigation = [
     { name: "Home", path:"/" },
     { name: "Features", path:"/" },
-    { name: "Support", path:"/" },
     { name: "Contact Us", path:"/contact-us" },
   ];
 

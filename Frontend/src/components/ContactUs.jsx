@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons"; // Import brands icons
+import { faUser, faEnvelope, faPen, faCommentDots } from "@fortawesome/free-solid-svg-icons"; // Import solid icons
 import axios from 'axios';
+import '../ContactUs.css'; // Ensure you have this CSS file for animations
 
-const ContactUs = () => { 
+const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,10 +30,10 @@ const ContactUs = () => {
       console.log('Response:', response); 
       alert('Message sent successfully!');
       setFormData({
-    name:'',
-    email:'',
-    subject:'',
-    message:""
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
       });
     } catch (error) {
       console.error('Error sending message:', error);
@@ -40,28 +42,31 @@ const ContactUs = () => {
 
   return (
     <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-  
       <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
         <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
         <p className="text-gray-600 text-center mt-2">We'd love to hear from you. Fill out the form below or contact us directly.</p>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="flex flex-col sm:flex-row sm:space-x-4">
-            <div className="flex-1">
+            <div className="flex-1 relative">
+              <FontAwesomeIcon icon={faUser} className="absolute left-3 top-10 animate-icon" />
               <label className="block text-sm font-medium text-gray-600 mb-1">Name <span className="text-red-500">*</span></label>
-              <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+              <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
             </div>
-            <div className="flex-1 mt-4 sm:mt-0">
+            <div className="flex-1 mt-4 sm:mt-0 relative">
+              <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-10 animate-icon" />
               <label className="block text-sm font-medium text-gray-600 mb-1">Email <span className="text-red-500">*</span></label>
-              <input type="email" name="email" placeholder="Your Email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+              <input type="email" name="email" placeholder="Your Email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
             </div>
           </div>
-          <div>
+          <div className="relative">
+            <FontAwesomeIcon icon={faPen} className="absolute left-3 top-10 animate-icon" />
             <label className="block text-sm font-medium text-gray-600 mb-1">Subject</label>
-            <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+            <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
           </div>
-          <div>
+          <div className="relative">
+            <FontAwesomeIcon icon={faCommentDots} className="absolute left-3 top-10 animate-icon" />
             <label className="block text-sm font-medium text-gray-600 mb-1">Message <span className="text-red-500">*</span></label>
-            <textarea name="message" rows="5" placeholder="Write your message..." value={formData.message} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" required></textarea>
+            <textarea name="message" rows="5" placeholder="Write your message..." value={formData.message} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required></textarea>
           </div>
           <button type="submit" className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition">Send Message</button>
         </form>
