@@ -301,6 +301,14 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  // Add this inside your io.on("connection", (socket) => { ... }) block
+  socket.on("durationChange", ({ roomKey, newDuration }) => {
+    // Broadcast the duration change to all users in the room except the sender
+    socket.to(roomKey).emit("durationChange", {
+      newDuration: newDuration
+    });
+  });
 });
 
 // Start the server
