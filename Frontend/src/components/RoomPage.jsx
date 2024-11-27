@@ -4,6 +4,7 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
 import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
+import io from 'socket.io-client';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -28,6 +29,8 @@ export default function RoomPage() {
   });
   const [sessionCount, setSessionCount] = useState(0);
   const meetingContainerRef = useRef(null);
+  const [socket, setSocket] = useState(null);
+  const [duration, setDuration] = useState(30); // Default duration
 
   // Memoize tasks to prevent unnecessary re-renders
   const memoizedTasks = useMemo(() => {
@@ -82,6 +85,26 @@ export default function RoomPage() {
       }
     };
   }, [roomKey, username, topic]);
+
+  useEffect(() => {
+    // Use the existing socketService instead of creating a new socket
+    const socket = socketService.connect();
+
+    // Listen for duration updates from other users
+    socket.on('durationUpdated', (data) => {
+      // Update duration for all users except the one who made the change
+      setSelectedMinutes(data.duration);
+      setPomodoroState(prev => ({
+        ...prev,
+        timeLeft: data.duration * 60,
+        duration: data.duration * 60
+      }));
+    });
+
+    return () => {
+      socket.off('durationUpdated');
+    };
+  }, []);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -349,6 +372,19 @@ export default function RoomPage() {
     }
   };
 
+  const handleDurationChange = (newDuration) => {
+    // Update local state
+    setDuration(newDuration);
+
+    // Emit duration change to all users in the room
+    if (socket) {
+      socket.emit('changeDuration', {
+        roomId: 'your-room-id', // Replace with actual room ID logic
+        duration: newDuration
+      });
+    }
+  };
+
   return (
     <div
       className="room-page flex flex-col items-center min-h-screen w-full text-white"
@@ -400,12 +436,20 @@ export default function RoomPage() {
             <select
               value={selectedMinutes}
               onChange={(e) => {
-                setSelectedMinutes(Number(e.target.value));
+                const newDuration = Number(e.target.value);
+                setSelectedMinutes(newDuration);
+                
+                // Emit duration change to all users in the room
+                socketService.socket.emit('changeDuration', {
+                  roomId: roomKey,
+                  duration: newDuration
+                });
+
                 // Reset the timer state when changing duration
                 setPomodoroState({
                   isRunning: false,
-                  timeLeft: 0,
-                  duration: 0,
+                  timeLeft: newDuration * 60,
+                  duration: newDuration * 60
                 });
               }}
               className="bg-gray-700 text-white px-4 py-2 rounded-lg"

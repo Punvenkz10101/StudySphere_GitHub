@@ -309,6 +309,15 @@ io.on("connection", (socket) => {
       newDuration: newDuration
     });
   });
+
+  // New event handler for time duration change
+  socket.on('changeDuration', (data) => {
+    // Broadcast the duration change to all users in the same room
+    io.to(data.roomId).emit('durationUpdated', {
+      duration: data.duration,
+      userId: socket.id
+    });
+  });
 });
 
 // Start the server
