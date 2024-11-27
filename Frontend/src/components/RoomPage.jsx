@@ -224,18 +224,6 @@ export default function RoomPage() {
       );
     };
 
-    // Add new listener for duration changes
-    const handleDurationChange = ({ newDuration }) => {
-      setSelectedMinutes(newDuration);
-      setPomodoroState({
-        isRunning: false,
-        timeLeft: 0,
-        duration: 0,
-      });
-    };
-    
-    socket.on("durationChange", handleDurationChange);
-
     // Attach event listeners
     socket.on("roomJoined", handleRoomJoined);
     socket.on("userJoined", handleUserJoined);
@@ -259,7 +247,6 @@ export default function RoomPage() {
       socket.off("taskAdded", handleTaskAdded);
       socket.off("taskDeleted", handleTaskDeleted);
       socket.off("taskEdited", handleTaskEdited);
-      socket.off("durationChange", handleDurationChange);
 
       socketService.disconnect();
     };
@@ -413,13 +400,7 @@ export default function RoomPage() {
             <select
               value={selectedMinutes}
               onChange={(e) => {
-                const newDuration = Number(e.target.value);
-                setSelectedMinutes(newDuration);
-                // Emit the duration change to all users
-                socketService.socket.emit("durationChange", {
-                  roomKey,
-                  newDuration: newDuration
-                });
+                setSelectedMinutes(Number(e.target.value));
                 // Reset the timer state when changing duration
                 setPomodoroState({
                   isRunning: false,
