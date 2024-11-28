@@ -2,7 +2,7 @@ import React from 'react';
 import SigninPage from './SignInPage';
 const CTA_Section = () => {
   
-  };
+
   return (
     <div className="bg-[#F2F2F2] py-10 md:py-0 flex flex-col md:flex-row items-center justify-center"> {/* Adjusted padding */}
       <div className="mx-auto max-w-5xl md:text-left md:w-1/2 px-4 md:px-0">
