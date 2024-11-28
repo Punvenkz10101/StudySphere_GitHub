@@ -43,7 +43,7 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
   };
 
   return (
-    <div className="bg-white relative rounded-lg p-8 shadow-lg w-80 max-w-md">
+    <div id='signIn' className="bg-white relative rounded-lg p-8 shadow-lg w-80 max-w-md">
       <button
         onClick={onClose}
         className="absolute top-3 right-3 text-gray-500 hover:text-black"
