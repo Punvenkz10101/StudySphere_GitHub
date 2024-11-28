@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons"; // Import brands icons
 import { faUser, faEnvelope, faPen, faCommentDots } from "@fortawesome/free-solid-svg-icons"; // Import solid icons
 import axios from 'axios';
+import Typed from 'typed.js';
+import { useRef } from "react";
 import '../ContactUs.css'; // Ensure you have this CSS file for animations
 
 const ContactUs = () => {
@@ -40,11 +42,26 @@ const ContactUs = () => {
     }
   };
 
+  const el = useRef(null);
+  React.useEffect(() => {
+    const typed = new Typed(el.current, {
+      strings: ["We'd love to hear from you",' Fill out the form below or contact us directly...'],
+      typeSpeed: 60,
+      backSpeed: 60, 
+     
+    });
+
+    return () => {
+   
+      typed.destroy();
+    };
+  }, []);
+
   return (
     <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
         <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
-        <p className="text-gray-600 text-center mt-2">We'd love to hear from you. Fill out the form below or contact us directly.</p>
+        <p ref={el} className="text-gray-600 text-center mt-2"></p>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="flex flex-col sm:flex-row sm:space-x-4">
             <div className="flex-1 relative">
