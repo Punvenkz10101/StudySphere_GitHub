@@ -27,11 +27,11 @@ const CTA_Section = () => {
         </div>
       </div>
 
-      <div className="mt-6 md:mt-0 md:w-1/2 flex justify-center">
+      <div className="mt-6 md:mt-0 md:w-1/2 flex justify-center" data-aos="zoom-in">
         <img 
-          src="/CTA.png" // Direct URL from the public folder
+          src="/CTA.png"
           alt="Study Room"
-          className="w-[280px] md:w-[360px] lg:w-[380px] transform transition-transform duration-300 hover:scale-105" // Increased image size for better visibility
+          className="w-[280px] md:w-[360px] lg:w-[380px] transform transition-transform duration-300 hover:scale-105"
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 // frontend/App.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import HeroSection from './components/HeroSection.jsx';
@@ -13,6 +13,8 @@ import CreateRoomModal from './components/CreateRoomModal.jsx';
 import JoinRoomModal from './components/JoinRoomModal.jsx';
 import RoomPage from './components/RoomPage.jsx';
 import ContactUs from './components/ContactUs.jsx';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -29,6 +31,14 @@ function App() {
   };
 
   const isRoomPage = location.pathname.startsWith('/rooms/');
+
+  // Initialize AOS in useEffect
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
 
   return (
     <div className="overflow-x-hidden">
