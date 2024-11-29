@@ -709,7 +709,7 @@ export default function RoomPage() {
 
         {/* Video Conference Section - Adjusted spacing */}
         <div className="relative w-full h-[338.6px] bg-[#001022]/50 rounded-lg mt-[-5px]">
-          <div ref={meetingContainerRef} className="w-full h-[300px] mt-[5px]"></div>
+          <div ref={meetingContainerRef} className="w-full h-[335px] mt-[2px]"></div>
           <button
             onClick={toggleFullscreen}
             className="absolute top-4 left-4 text-white bg-[#00334D] py-2 px-4 rounded-md z-10"
