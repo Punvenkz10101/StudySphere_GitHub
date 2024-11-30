@@ -52,18 +52,21 @@ const navigate =useNavigate();
   }
 
   const navigation = [
-    { name: "Home", path:"/",href:'#home' },
+    { name: "Home", path:"/",href:'' },
     { name: "Features", path:"/",href:'#features' },
     { name: "Contact Us", path:"/contact-us",href:''},
   ];
+  const pagehandler= ()=>{
+    navigate('/')
 
+  }
   return (
     <header  className="fixed top-0 z-50 w-full">
       <nav className="flex items-center justify-between p-4 md:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg h-[88px]">
         
         {/* Logo Section */}
         <div className="flex items-center space-x-4 ml-6 flex-none">
-          <span className="text-white text-3xl md:text-5xl lg:text-[34px] font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
+          <span  onClick={pagehandler} className="text-white text-3xl md:text-5xl lg:text-[34px] cursor-pointer font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
             StudySphere
           </span>
         </div>
