@@ -17,8 +17,13 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
     };
   }, []);
   return (
-    <section
-      className="relative min-h-screen flex flex-col items-center justify-center text-center bg-cover bg-center text-white animate-fadeIn px-4 sm:px-6"
+
+    <section 
+    id='home'  
+    className="relative h-screen flex flex-col items-center justify-center text-center bg-cover bg-center text-white animate-fadeIn"
+
+
+
       style={{
         backgroundImage: `url("/Hero_Image.jpg")`,
         backgroundColor: '#001D33',

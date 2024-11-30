@@ -1,6 +1,8 @@
 import React from 'react';
-
+import SigninPage from './SignInPage';
 const CTA_Section = () => {
+  
+
   return (
     <div className="bg-[#F2F2F2] py-10 md:py-0 flex flex-col md:flex-row items-center justify-center"> {/* Adjusted padding */}
       <div className="mx-auto max-w-5xl md:text-left md:w-1/2 px-4 md:px-0">
@@ -12,14 +14,14 @@ const CTA_Section = () => {
         </p>
 
         <div className="mt-6 flex flex-col md:flex-row justify-center md:justify-start gap-2 ml-48">
-          <a
+          <button  
             href="#"
             className="rounded-md bg-[#00334D] px-6 py-2 md:px-7 md:py-2 text-[16px] font-semibold text-white shadow-md hover:bg-[#004466] transition duration-300 transform hover:scale-105"
           >
             Sign Up 
-          </a>
+          </button>
           <a
-            href="#"
+            href="#features"
             className="rounded-md bg-[#00334D] px-5 py-2 md:px-6 md:py-2 text-[16px] font-semibold text-white hover:bg-[#004466] transition duration-300 transform hover:scale-105"
           >
             Explore Features &rarr;

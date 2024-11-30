@@ -39,25 +39,37 @@ const navigate =useNavigate();
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const handleNavigate=(path)=>{
-    navigate(path);
+  const handleNavigate=(path,href)=>{
+    if (href.startsWith("#")) {
+      const section = document.querySelector(href);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate(path); // For normal page navigation
+    }
     setMenuOpen(false);
   }
 
   const navigation = [
-    { name: "Home", path:"/" },
-    { name: "Features", path:"/" },
-    { name: "Contact Us", path:"/contact-us" },
-    { name: "Progress", path:"/progress" },
-  ];
 
+    { name: "Home", path:"/",href:'' },
+    { name: "Features", path:"/",href:'#features' },
+    { name: "Contact Us", path:"/contact-us",href:''},
+    { name: "Progress", path:"/progress" },
+
+  ];
+  const pagehandler= ()=>{
+    navigate('/')
+
+  }
   return (
-    <header className="fixed top-0 z-50 w-full">
+    <header  className="fixed top-0 z-50 w-full">
       <nav className="flex items-center justify-between p-4 md:p-6 bg-[#001022]/45 backdrop-blur-sm shadow-lg h-[88px]">
         
         {/* Logo Section */}
         <div className="flex items-center space-x-4 ml-6 flex-none">
-          <span className="text-white text-3xl md:text-5xl lg:text-[34px] font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
+          <span  onClick={pagehandler} className="text-white text-3xl md:text-5xl lg:text-[34px] cursor-pointer font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
             StudySphere
           </span>
         </div>
@@ -65,13 +77,13 @@ const navigate =useNavigate();
         {/* Navigation Links and Search Bar for Desktop */}
         <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center mx-8">
           {navigation.map((item) => (
-           <button
-           key={item.name}
-           onClick={() => handleNavigate(item.path)}
-           className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
-         >
-           {item.name}
-         </button>
+             <button
+             key={item.name}
+             onClick={() => handleNavigate(item.path, item.href)}
+             className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
+           >
+             {item.name}
+           </button>
           ))}
 
         </div>
@@ -152,7 +164,8 @@ const navigate =useNavigate();
              onClick={() => handleNavigate(item.path)}
              className="text-base font-semibold text-white hover:text-[#00B2A9] transition-colors duration-300 transform hover:scale-105"
            >
-             {item.name}
+             <a href={item.href}> {item.name}</a>
+
            </button>
             ))}
             <input

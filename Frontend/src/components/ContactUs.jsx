@@ -3,6 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { faUser, faEnvelope, faPen, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
+import Typed from 'typed.js';
+import { useRef } from "react";
+import '../ContactUs.css'; // Ensure you have this CSS file for animations
+
+
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -37,27 +42,43 @@ const ContactUs = () => {
     }
   };
 
+  const el = useRef(null);
+  React.useEffect(() => {
+    const typed = new Typed(el.current, {
+      strings: ["We'd love to hear from you",' Fill out the form below or contact us directly...'],
+      typeSpeed: 60,
+      backSpeed: 60, 
+     
+    });
+
+    return () => {
+   
+      typed.destroy();
+    };
+  }, []);
+
   return (
-    <div 
-      className="min-h-screen w-full flex items-center justify-center"
-      style={{
-        backgroundImage: `url('/Night5.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}
-    >
-      <div className="max-w-4xl w-full mx-4 my-8 bg-[#001022]/50 backdrop-blur-sm rounded-xl shadow-xl overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl sm:text-4xl font-bold text-white">Get in Touch</h2>
-            <p className="text-gray-300 mt-2">We'd love to hear from you. Fill out the form below or contact us directly.</p>
+    <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
+        <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
+        <p ref={el} className="text-gray-600 text-center mt-2"></p>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row sm:space-x-4">
+            <div className="flex-1 relative">
+              <FontAwesomeIcon icon={faUser} className="absolute left-3 top-10 animate-icon" />
+              <label className="block text-sm font-medium text-gray-600 mb-1">Name <span className="text-red-500">*</span></label>
+              <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+            </div>
+            <div className="flex-1 mt-4 sm:mt-0 relative">
+              <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-10 animate-icon" />
+              <label className="block text-sm font-medium text-gray-600 mb-1">Email <span className="text-red-500">*</span></label>
+              <input type="email" name="email" placeholder="Your Email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+            </div>
+          </div>
+          <div className="relative">
+            <FontAwesomeIcon icon={faPen} className="absolute left-3 top-10 animate-icon" />
+            <label className="block text-sm font-medium text-gray-600 mb-1">Subject</label>
+            <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

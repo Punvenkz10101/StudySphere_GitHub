@@ -35,7 +35,7 @@ export default function FeaturesSection() {
         </div>
       </div>
 
-      <div className="space-y-7 px-2 md:px-0">
+      <div  className="space-y-7 px-2 md:px-0">
         {features.map((feature, index) => (
           <div
             key={index}
