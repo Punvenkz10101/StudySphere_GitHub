@@ -96,6 +96,19 @@ export default function RoomPage() {
   }, [roomKey, username, topic]);
 
   useEffect(() => {
+    // Initialize socket connection
+    const newSocket = io('http://localhost:5001');
+    setSocket(newSocket);
+
+    // Clean up socket connection when component unmounts
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     // Use the existing socketService instead of creating a new socket
     const socket = socketService.connect();
 
@@ -334,6 +347,11 @@ export default function RoomPage() {
       );
     });
 
+    // Listen for task updates
+    socket.on("tasksUpdated", ({ tasks }) => {
+      setTasks(tasks);
+    });
+
     // Attach event listeners
     socket.on("roomJoined", handleRoomJoined);
     socket.on("userJoined", handleUserJoined);
@@ -367,6 +385,7 @@ export default function RoomPage() {
       socket.off("breakComplete", handleBreakComplete);
       socket.off('breakDurationUpdated');
       socket.off("taskToggled");
+      socket.off("tasksUpdated");
 
       socketService.disconnect();
     };
@@ -509,26 +528,24 @@ export default function RoomPage() {
   };
 
   const toggleTaskCompletion = (taskId) => {
-    if (!taskId) return;
-    
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
     const newCompleted = !task.completed;
-    
+
+    // Emit to other users
+    socket.emit('toggleTask', {
+      roomKey,
+      taskId,
+      completed: newCompleted
+    });
+
     // Update local state
     setTasks((prev) =>
       prev.map((t) =>
         t.id === taskId ? { ...t, completed: newCompleted } : t
       )
     );
-    
-    // Emit to other users
-    socketService.socket.emit("toggleTask", {
-      roomKey,
-      taskId,
-      completed: newCompleted
-    });
   };
 
   return (
@@ -753,7 +770,16 @@ export default function RoomPage() {
                       <input
                         type="checkbox"
                         checked={!!task.completed}
-                        onChange={() => toggleTaskCompletion(task.id)}
+                        onChange={() => {
+                          // Emit socket event first to ensure real-time sync
+                          socket.emit('toggleTask', {
+                            roomKey,
+                            taskId: task.id,
+                            completed: !task.completed
+                          });
+                          // Then update local state
+                          toggleTaskCompletion(task.id);
+                        }}
                         className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-gray-500 bg-gray-700/50 
                                  transition-colors checked:border-blue-500 checked:bg-blue-500 hover:border-blue-400
                                  focus:outline-none focus:ring-2 focus:ring-blue-500/30"
