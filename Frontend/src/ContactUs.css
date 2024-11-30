@@ -11,15 +11,17 @@
     animation: icon-bounce 1.5s infinite;
   }
   .contact-container {
-    min-height: calc(100vh - 88px); /* Adjust the height to take header into account */
+    min-height: 100vh;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('Night5.jpg');
+    padding: 2rem 1rem;
+    background-image: url('/Night5.jpg');
     background-size: cover;
     background-position: center;
-    padding: 0 1rem;
-    padding-top: 88px; /* Padding equal to header height */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
   
   .animate-icon {

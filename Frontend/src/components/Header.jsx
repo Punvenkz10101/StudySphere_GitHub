@@ -48,6 +48,7 @@ const navigate =useNavigate();
     { name: "Home", path:"/" },
     { name: "Features", path:"/" },
     { name: "Contact Us", path:"/contact-us" },
+    { name: "Progress", path:"/progress" },
   ];
 
   return (
