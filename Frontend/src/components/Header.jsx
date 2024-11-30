@@ -39,8 +39,8 @@ const navigate =useNavigate();
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const handleNavigate=(path,href)=>{
-    if (href.startsWith("#")) {
+  const handleNavigate = (path, href = '') => {
+    if (href && href.startsWith("#")) {
       const section = document.querySelector(href);
       if (section) {
         section.scrollIntoView({ behavior: "smooth" });
@@ -49,14 +49,14 @@ const navigate =useNavigate();
       navigate(path); // For normal page navigation
     }
     setMenuOpen(false);
-  }
+  };
 
   const navigation = [
 
     { name: "Home", path:"/",href:'' },
     { name: "Features", path:"/",href:'#features' },
     { name: "Contact Us", path:"/contact-us",href:''},
-    { name: "Progress", path:"/progress" },
+    { name: "Progress", path:"/progress",href:''},
 
   ];
   const pagehandler= ()=>{

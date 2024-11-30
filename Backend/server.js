@@ -15,7 +15,7 @@ const io = socketIo(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
       ? process.env.CORS_ORIGIN 
-      : ["http://localhost:5173", "http://127.0.0.1:5173"],
+      : ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -26,13 +26,16 @@ app.set('io', io);
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'development' 
-    ? ["http://localhost:5173", "http://127.0.0.1:5173"]
+    ? true 
     : process.env.CORS_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
+
+// Add before your routes
+app.options('*', cors()); // Enable preflight requests for all routes
 
 // Database Connection
 try {
