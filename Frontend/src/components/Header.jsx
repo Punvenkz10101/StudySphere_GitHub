@@ -52,9 +52,12 @@ const navigate =useNavigate();
   }
 
   const navigation = [
+
     { name: "Home", path:"/",href:'' },
     { name: "Features", path:"/",href:'#features' },
     { name: "Contact Us", path:"/contact-us",href:''},
+    { name: "Progress", path:"/progress" },
+
   ];
   const pagehandler= ()=>{
     navigate('/')
@@ -82,11 +85,7 @@ const navigate =useNavigate();
              {item.name}
            </button>
           ))}
-          <input
-            type="text"
-            placeholder="Search for rooms..."
-            className="px-3 md:px-4 py-2 w-[280px] md:w-[340px] h-[40px] md:h-[44px] bg-[#1A1A1A]/80 text-white text-sm md:text-[16px] rounded-md shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#007A99]"
-          />
+
         </div>
 
         {/* User Icon and Dropdown */}

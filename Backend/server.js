@@ -318,6 +318,90 @@ io.on("connection", (socket) => {
       userId: socket.id
     });
   });
+
+  // Update the break timer implementation
+  socket.on("startBreak", ({ roomKey, duration }) => {
+    let room = rooms.get(roomKey) || {};
+    
+    // Clear existing break interval if any
+    if (room.breakInterval) {
+      clearInterval(room.breakInterval);
+    }
+    
+    room.breakTimer = {
+      duration: parseInt(duration),
+      timeLeft: parseInt(duration),
+      isRunning: true
+    };
+
+    room.breakInterval = setInterval(() => {
+      if (room.breakTimer.timeLeft > 0) {
+        room.breakTimer.timeLeft--;
+        io.to(roomKey).emit('breakTick', {
+          timeLeft: room.breakTimer.timeLeft,
+          running: true
+        });
+      } else {
+        clearInterval(room.breakInterval);
+        room.breakTimer.isRunning = false;
+        room.breakSessionCount = (room.breakSessionCount || 0) + 1;
+        io.to(roomKey).emit('breakComplete', {
+          sessionCount: room.breakSessionCount
+        });
+      }
+    }, 1000);
+
+    rooms.set(roomKey, room);
+    io.to(roomKey).emit('breakStarted', {
+      running: true,
+      timeLeft: room.breakTimer.timeLeft,
+      duration: room.breakTimer.duration,
+      sessionCount: room.breakSessionCount || 0
+    });
+  });
+
+  socket.on("pauseBreak", ({ roomKey }) => {
+    const room = rooms.get(roomKey);
+    if (room?.breakTimer) {
+      clearInterval(room.breakInterval);
+      room.breakTimer.isRunning = false;
+      
+      io.to(roomKey).emit('breakTick', {
+        timeLeft: room.breakTimer.timeLeft,
+        running: false
+      });
+    }
+  });
+
+  socket.on("resetBreak", ({ roomKey }) => {
+    const room = rooms.get(roomKey);
+    if (room) {
+      clearInterval(room.breakInterval);
+      if (room.breakTimer) {
+        room.breakTimer.timeLeft = 0;
+        room.breakTimer.isRunning = false;
+      }
+      
+      io.to(roomKey).emit('breakTick', {
+        timeLeft: 0,
+        running: false
+      });
+    }
+  });
+
+  // Update the break duration change handler
+  socket.on('changeBreakDuration', ({ roomId, duration }) => {
+    const room = rooms.get(roomId);
+    if (room) {
+      // Only update if break timer is not running
+      if (!room.breakTimer?.isRunning) {
+        io.to(roomId).emit('breakDurationUpdated', { 
+          duration,
+          timeLeft: duration * 60
+        });
+      }
+    }
+  });
 });
 
 // Start the server

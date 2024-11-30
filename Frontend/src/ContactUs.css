@@ -10,4 +10,49 @@
   .animate-icon {
     animation: icon-bounce 1.5s infinite;
   }
+  .contact-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-image: url('/Night5.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  
+  .animate-icon {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  input:focus + .animate-icon,
+  textarea:focus + .animate-icon {
+    transform: scale(1.2);
+  }
+  
+  @media (max-width: 640px) {
+    .contact-container {
+      padding: 2rem 1rem;
+    }
+    .flex {
+      flex-direction: column;
+    }
+    .sm\\:mt-0 {
+      margin-top: 0 !important;
+    }
+    .sm\\:ml-10 {
+      margin-left: 0 !important;
+    }
+    .sm\\:mr-15 {
+      margin-right: 0 !important;
+    }
+    .flex-icon-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+  }
   
