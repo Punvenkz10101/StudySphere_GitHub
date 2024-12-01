@@ -5,7 +5,7 @@ app.use((req, res, next) => {
     const allowedOrigins = [
         'https://study-sphere-git-hub.vercel.app',
         'https://study-sphere-git-hub.vercel.app/',
-        // Allow Vercel preview deployments
+        // Allow all Vercel preview deployments
         /^https:\/\/study-sphere-git-.*\.vercel\.app$/
     ];
 
@@ -22,6 +22,9 @@ app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+        // Optionally log or handle disallowed origins
+        console.warn(`CORS blocked for origin: ${origin}`);
     }
     
     if (req.method === 'OPTIONS') {
