@@ -9,21 +9,13 @@ const contactRoutes = require("./routes/contactRoutes");
 
 dotenv.config();
 
-const allowedOrigins = [
-    'https://study-sphere-git-hub.vercel.app',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:5174',
-    'http://localhost:3000'
-];
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
       ? process.env.CORS_ORIGIN 
-      : ["http://localhost:5173", "http://127.0.0.1:5173"],
+      : ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -34,13 +26,16 @@ app.set('io', io);
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'development' 
-    ? ["http://localhost:5173", "http://127.0.0.1:5173"]
+    ? true 
     : process.env.CORS_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
+
+// Add before your routes
+app.options('*', cors()); // Enable preflight requests for all routes
 
 // Database Connection
 try {
@@ -410,16 +405,37 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  // Handle task toggling
+  socket.on('toggleTask', ({ roomKey, taskId, completed }) => {
+    if (roomTasks.has(roomKey)) {
+        const tasks = roomTasks.get(roomKey);
+        const updatedTasks = tasks.map(task => 
+            task.id === taskId ? { ...task, completed } : task
+        );
+        roomTasks.set(roomKey, updatedTasks);
+        
+        // Send updated tasks to all users in the room
+        io.to(roomKey).emit("tasksUpdated", {
+            tasks: updatedTasks
+        });
+    }
+  });
 });
 
 // Start the server
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
-// Socket.IO connection handling
-io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
-    // Handle socket events here
+// Keep error handling logs
+process.on('uncaughtException', (error) => {
+  console.error('Critical Error:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled Rejection:', error);
+  process.exit(1);
 });
