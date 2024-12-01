@@ -1,44 +1,41 @@
 const cors = require('cors');
 
+// Define allowed origins
+const allowedOrigins = [
+    'https://study-sphere-git-hub.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    // Allow all Vercel preview deployments
+    /^https:\/\/study-sphere-git-.*\.vercel\.app$/
+];
+
+// Update CORS middleware
 app.use(cors({
-    origin: 'https://study-sphere-git-hub.vercel.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
 
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    
-    // List of allowed origins
-    const allowedOrigins = [
-        'https://study-sphere-git-hub.vercel.app',
-        'https://study-sphere-git-hub.vercel.app/',
-        // Allow all Vercel preview deployments
-        /^https:\/\/study-sphere-git-.*\.vercel\.app$/
-    ];
+        // Log the incoming origin for debugging
+        console.log(`Incoming origin: ${origin}`);
 
-    // Check if the origin matches any of our allowed origins
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-        if (allowedOrigin instanceof RegExp) {
-            return allowedOrigin.test(origin);
+        // Check if the origin is allowed
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            if (allowedOrigin instanceof RegExp) {
+                return allowedOrigin.test(origin);
+            }
+            return allowedOrigin === origin;
+        });
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
         }
-        return allowedOrigin === origin;
-    });
-
-    if (isAllowed) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else {
-        // Log the blocked origin for debugging
-        console.warn(`CORS blocked for origin: ${origin}`);
-    }
-    
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    next();
-});
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Make sure all your routes are defined after CORS middleware 

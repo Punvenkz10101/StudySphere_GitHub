@@ -13,10 +13,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CORS_ORIGIN 
-      : ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
   }
 });
@@ -24,14 +22,57 @@ const io = socketIo(server, {
 app.set('io', io);
 
 // Middleware
+app.use((req, res, next) => {
+  console.log('Incoming request:', {
+    origin: req.headers.origin,
+    method: req.method,
+    path: req.path
+  });
+  next();
+});
+
+// Define allowed origins
+const allowedOrigins = [
+    'https://study-sphere-git-hub.vercel.app',
+    'https://study-sphere-git-hub.vercel.app/',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:5174',
+    'http://localhost:3000'
+];
+
+// CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'development' 
-    ? true 
-    : process.env.CORS_ORIGIN,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"]
+    origin: function (origin, callback) {
+        // Allow requests with no origin
+        if (!origin) return callback(null, true);
+
+        console.log('Incoming request from origin:', origin);
+
+        // Remove trailing slash from origin for comparison
+        const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+
+        // Check if the normalized origin is allowed
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            const normalizedAllowedOrigin = allowedOrigin.endsWith('/') 
+                ? allowedOrigin.slice(0, -1) 
+                : allowedOrigin;
+            return normalizedAllowedOrigin === normalizedOrigin;
+        });
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Make sure CORS is applied before any route handlers
 app.use(express.json());
 
 // Add before your routes
