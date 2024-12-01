@@ -23,7 +23,7 @@ app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
     } else {
-        // Optionally log or handle disallowed origins
+        // Log the blocked origin for debugging
         console.warn(`CORS blocked for origin: ${origin}`);
     }
     
