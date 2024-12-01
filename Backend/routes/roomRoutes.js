@@ -2,37 +2,37 @@ const express = require("express");
 const Room = require("../models/Room");
 const crypto = require("crypto");
 const router = express.Router();
+const cors = require("cors");
 
 console.log("Room routes loaded");
 
 // Add OPTIONS handler for the create endpoint
-router.options('/create', (req, res) => {
-    res.status(200).end();
-});
+router.options('/create', cors());
 
 // Create a room
 router.post("/create", async (req, res) => {
-    // Add CORS headers explicitly for this route
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-
-    const { creator, topic, participantsLimit } = req.body;
-    const roomKey = crypto.randomBytes(4).toString("hex");
-
-    if (participantsLimit < 1 || participantsLimit > 10) {
-        return res.status(400).json({
-            success: false,
-            message: "Participant limit must be between 1 and 10",
-        });
-    }
-
     try {
+        const { creator, topic, participantsLimit } = req.body;
+        
+        console.log('Create room request:', {
+            creator,
+            topic,
+            participantsLimit,
+            origin: req.headers.origin
+        });
+
+        const roomKey = crypto.randomBytes(4).toString("hex");
+
+        if (participantsLimit < 1 || participantsLimit > 10) {
+            return res.status(400).json({
+                success: false,
+                message: "Participant limit must be between 1 and 10",
+            });
+        }
+
         const newRoom = new Room({ creator, topic, participantsLimit, roomKey });
         await newRoom.save();
         
-        // Get io instance from app
         const io = req.app.get('io');
         if (io) {
             io.emit('roomCreated', newRoom);
@@ -40,8 +40,12 @@ router.post("/create", async (req, res) => {
 
         res.status(201).json({ success: true, room: newRoom });
     } catch (error) {
-        console.error("Error creating room:", error.message);
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Error creating room:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

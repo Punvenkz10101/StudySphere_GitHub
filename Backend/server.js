@@ -9,59 +9,55 @@ const contactRoutes = require("./routes/contactRoutes");
 
 dotenv.config();
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
-  }
-});
-
-app.set('io', io);
-
-// Middleware
-app.use((req, res, next) => {
-  console.log('Incoming request:', {
-    origin: req.headers.origin,
-    method: req.method,
-    path: req.path
-  });
-  next();
-});
-
-// Define allowed origins
+// Define allowed origins BEFORE creating the server and socket.io instance
 const allowedOrigins = [
     'https://study-sphere-git-hub.vercel.app',
-    'https://study-sphere-git-hub.vercel.app/',
+    'https://study-sphere-git-hub.vercel.app/', // Include both versions
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:5174',
     'http://localhost:3000'
 ];
 
-// CORS configuration
+const app = express();
+const server = http.createServer(app);
+
+// Configure Socket.IO with CORS
+const io = socketIo(server, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization']
+    }
+});
+
+app.set('io', io);
+
+// Simple CORS middleware for logging
+app.use((req, res, next) => {
+    console.log('Incoming request:', {
+        origin: req.headers.origin,
+        method: req.method,
+        path: req.path
+    });
+    next();
+});
+
+// Main CORS configuration
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin
         if (!origin) return callback(null, true);
 
-        console.log('Incoming request from origin:', origin);
-
-        // Remove trailing slash from origin for comparison
+        // Remove trailing slash for comparison
         const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+        const normalizedAllowedOrigins = allowedOrigins.map(origin => 
+            origin.endsWith('/') ? origin.slice(0, -1) : origin
+        );
 
-        // Check if the normalized origin is allowed
-        const isAllowed = allowedOrigins.some(allowedOrigin => {
-            const normalizedAllowedOrigin = allowedOrigin.endsWith('/') 
-                ? allowedOrigin.slice(0, -1) 
-                : allowedOrigin;
-            return normalizedAllowedOrigin === normalizedOrigin;
-        });
-
-        if (isAllowed) {
-            callback(null, true);
+        if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
+            // Return the original origin that was sent
+            callback(null, origin);
         } else {
             console.warn(`CORS blocked for origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
@@ -72,24 +68,11 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Make sure CORS is applied before any route handlers
+// Enable pre-flight for all routes
+app.options('*', cors());
+
+// Parse JSON bodies
 app.use(express.json());
-
-// Add before your routes
-app.options('*', cors()); // Enable preflight requests for all routes
-
-// Database Connection
-try {
-  mongoose
-    .connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("MongoDB connected successfully"))
-    .catch((err) => console.error("MongoDB connection error:", err));
-} catch (error) {
-  console.error("Error connecting to MongoDB:", error);
-}
 
 // Routes
 app.use("/api/rooms", roomRoutes);
