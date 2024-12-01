@@ -20,16 +20,42 @@ const allowedOrigins = [
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
-    cors: {
-        origin: allowedOrigins,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        credentials: true,
-        allowedHeaders: ['Content-Type', 'Authorization']
-    }
+  cors: {
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.CORS_ORIGIN 
+      : ["http://localhost:5173", "http://127.0.0.1:5173"],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
-app.use(cors());
+app.set('io', io);
+
+// Middleware
+app.use(cors({
+  origin: process.env.NODE_ENV === 'development' 
+    ? ["http://localhost:5173", "http://127.0.0.1:5173"]
+    : process.env.CORS_ORIGIN,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
+
+// Database Connection
+try {
+  mongoose
+    .connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch((err) => console.error("MongoDB connection error:", err));
+} catch (error) {
+  console.error("Error connecting to MongoDB:", error);
+}
+
+// Routes
 app.use("/api/rooms", roomRoutes);
 app.use("/api/contacts", contactRoutes);
 

@@ -58,114 +58,126 @@ const ContactUs = () => {
   }, []);
 
   return (
-    <div className="h-screen pt-[88px]" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <div className="max-w-7xl mx-auto h-[calc(100vh-88px)] bg-[#001022]/50 rounded-lg shadow-md p-8 backdrop-filter backdrop-blur-lg flex flex-col">
-        <h2 className="text-3xl sm:text-5xl font-bold text-white text-center">Get in Touch</h2>
-        <p ref={el} className="text-white text-center mt-3 text-lg"></p>
-        
-        <div className="flex-1 flex gap-12 mt-8">
-          {/* Form Section */}
-          <div className="flex-1">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="flex flex-col sm:flex-row sm:space-x-6">
-                <div className="flex-1 relative">
-                  <FontAwesomeIcon icon={faUser} className="absolute left-4 top-11 animate-icon text-gray-400 text-lg" />
-                  <label className="block text-base font-medium text-white mb-2">Name <span className="text-red-500">*</span></label>
-                  <input 
-                    type="text" 
-                    name="name" 
-                    placeholder="Your Name" 
-                    value={formData.name} 
-                    onChange={handleChange} 
-                    className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg p-3 pl-12 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                    required 
-                  />
-                </div>
-                <div className="flex-1 relative">
-                  <FontAwesomeIcon icon={faEnvelope} className="absolute left-4 top-11 animate-icon text-gray-400 text-lg" />
-                  <label className="block text-base font-medium text-white mb-2">Email <span className="text-red-500">*</span></label>
-                  <input 
-                    type="email" 
-                    name="email" 
-                    placeholder="Your Email" 
-                    value={formData.email} 
-                    onChange={handleChange} 
-                    className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg p-3 pl-12 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                    required 
-                  />
-                </div>
-              </div>
-
-              <div className="relative">
-                <FontAwesomeIcon icon={faPen} className="absolute left-4 top-11 animate-icon text-gray-400 text-lg" />
-                <label className="block text-base font-medium text-white mb-2">Subject</label>
-                <input 
-                  type="text" 
-                  name="subject" 
-                  placeholder="Subject" 
-                  value={formData.subject} 
-                  onChange={handleChange} 
-                  className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg p-3 pl-12 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                />
-              </div>
-
-              <div className="relative">
-                <FontAwesomeIcon icon={faCommentDots} className="absolute left-4 top-11 animate-icon text-gray-400 text-lg" />
-                <label className="block text-base font-medium text-white mb-2">Message <span className="text-red-500">*</span></label>
-                <textarea
-                  name="message"
-                  rows="4"
-                  placeholder="Write your message..."
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full bg-gray-700/50 text-white border border-gray-600 rounded-lg p-3 pl-12 text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="flex justify-center mt-6">
-                <button
-                  type="submit"
-                  className="px-10 py-3 bg-blue-500 text-white font-semibold text-lg rounded-lg hover:bg-blue-600 transition duration-300"
-                >
-                  Send Message
-                </button>
-              </div>
-            </form>
+    <div className="bg-gray-100 py-12 px-6 sm:px-12" style={{ backgroundImage: 'url(Night5.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="max-w-4xl mx-auto bg-white bg-opacity-70 rounded-lg shadow-md p-6 sm:p-12 backdrop-filter backdrop-blur-lg">
+        <h2 className="text-2xl sm:text-4xl font-bold text-gray-800 text-center">Get in Touch</h2>
+        <p ref={el} className="text-gray-600 text-center mt-2"></p>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col sm:flex-row sm:space-x-4">
+            <div className="flex-1 relative">
+              <FontAwesomeIcon icon={faUser} className="absolute left-3 top-10 animate-icon" />
+              <label className="block text-sm font-medium text-gray-600 mb-1">Name <span className="text-red-500">*</span></label>
+              <input type="text" name="name" placeholder="Your Name" value={formData.name} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+            </div>
+            <div className="flex-1 mt-4 sm:mt-0 relative">
+              <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-10 animate-icon" />
+              <label className="block text-sm font-medium text-gray-600 mb-1">Email <span className="text-red-500">*</span></label>
+              <input type="email" name="email" placeholder="Your Email" value={formData.email} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+            </div>
+          </div>
+          <div className="relative">
+            <FontAwesomeIcon icon={faPen} className="absolute left-3 top-10 animate-icon" />
+            <label className="block text-sm font-medium text-gray-600 mb-1">Subject</label>
+            <input type="text" name="subject" placeholder="Subject" value={formData.subject} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
           </div>
 
-          {/* Contact Information Section */}
-          <div className="w-96 text-left space-y-8">
-            <h3 className="text-2xl font-bold text-white">Or reach us at:</h3>
-            <div className="space-y-6">
-              <p className="flex items-center text-gray-300 text-lg">
-                <span className="font-medium min-w-[80px]">Phone:</span>
-                <a href="tel:+1234567890" className="ml-3 text-blue-400 hover:text-blue-300">9059909791</a>
-              </p>
-              <p className="flex items-center text-gray-300 text-lg">
-                <span className="font-medium min-w-[80px]">Email:</span>
-                <a href="mailto:StudySphere@gmail.com" className="ml-3 text-blue-400 hover:text-blue-300">StudySphere@gmail.com</a>
-              </p>
-              <p className="flex items-center text-gray-300 text-lg">
-                <span className="font-medium min-w-[80px]">Address:</span>
-                <span className="ml-3">Reva University, Yelahanka</span>
-              </p>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Form Section */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-4">
+                <div className="relative">
+                  <FontAwesomeIcon icon={faUser} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700/50 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                    required
+                  />
+                </div>
 
-            {/* Social Media Links */}
-            <div className="flex space-x-8 mt-8">
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors animate-icon">
-                <FontAwesomeIcon icon={faFacebook} size="2x" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors animate-icon">
-                <FontAwesomeIcon icon={faTwitter} size="2x" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors animate-icon">
-                <FontAwesomeIcon icon={faInstagram} size="2x" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors animate-icon">
-                <FontAwesomeIcon icon={faLinkedin} size="2x" />
-              </a>
+                <div className="relative">
+                  <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700/50 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                    required
+                  />
+                </div>
+
+                <div className="relative">
+                  <FontAwesomeIcon icon={faPen} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    name="subject"
+                    placeholder="Subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700/50 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                  />
+                </div>
+
+                <div className="relative">
+                  <FontAwesomeIcon icon={faCommentDots} className="absolute left-3 top-3 text-gray-400" />
+                  <textarea
+                    name="message"
+                    rows="4"
+                    placeholder="Write your message..."
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700/50 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                    required
+                  ></textarea>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+              >
+                Send Message
+              </button>
+            </form>
+
+            {/* Contact Information */}
+            <div className="text-center lg:text-left lg:pl-8">
+              <h3 className="text-2xl font-bold text-white mb-6">Or reach us at:</h3>
+              <div className="space-y-3">
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium">Phone:</span>
+                  <a href="tel:+1234567890" className="ml-2 text-blue-400 hover:text-blue-300">9059909791</a>
+                </p>
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium">Email:</span>
+                  <a href="mailto:StudySphere@gmail.com" className="ml-2 text-blue-400 hover:text-blue-300">StudySphere@gmail.com</a>
+                </p>
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium">Address:</span>
+                  <span className="ml-2">Reva University, Yelahanka</span>
+                </p>
+              </div>
+
+              {/* Social Media Links */}
+              <div className="mt-6 flex justify-center lg:justify-start space-x-6">
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  <FontAwesomeIcon icon={faFacebook} size="2x" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  <FontAwesomeIcon icon={faTwitter} size="2x" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  <FontAwesomeIcon icon={faInstagram} size="2x" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                  <FontAwesomeIcon icon={faLinkedin} size="2x" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
