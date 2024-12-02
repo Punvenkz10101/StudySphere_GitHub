@@ -89,7 +89,8 @@ export default function FeaturesSection() {
             </div>
 
             {/* Text Section */}
-            <div
+            <div 
+            data-aos="fade-down-right"
               className={`md:w-1/2 p-2 text-center md:text-left ${
                 index === 1
                   ? "mt-0 md:mt-[-60px] md:ml-[90px]"
