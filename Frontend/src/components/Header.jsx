@@ -43,6 +43,7 @@ const navigate =useNavigate();
     if (href.startsWith("#")) {
       const section = document.querySelector(href);
       if (section) {
+       navigate(path)
         section.scrollIntoView({ behavior: "smooth" });
       }
     } else {
