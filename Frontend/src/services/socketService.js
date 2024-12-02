@@ -1,47 +1,33 @@
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-class SocketService {
-  constructor() {
-    this.socket = null;
-  }
+const SOCKET_URL = process.env.NODE_ENV === 'production' 
+  ? process.env.VITE_SOCKET_URL 
+  : 'http://localhost:5001';
 
-  connect() {
-    if (!this.socket) {
-      this.socket = io(import.meta.env.VITE_SOCKET_URL, {
-        transports: ['websocket'],
-        withCredentials: true
-      });
+const socket = io(SOCKET_URL, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
+
+const socketService = {
+  socket,
+  connect: () => socket.connect(),
+  disconnect: () => socket.disconnect(),
+  emit: (event, data) => {
+    if (socket) {
+      socket.emit(event, data);
     }
-    return this.socket;
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
+  },
+  on: (event, callback) => {
+    if (socket) {
+      socket.on(event, callback);
     }
-  }
-
-  emit(event, data) {
-    if (this.socket) {
-      this.socket.emit(event, data);
+  },
+  off: (event) => {
+    if (socket) {
+      socket.off(event);
     }
-  }
-
-  on(event, callback) {
-    if (this.socket) {
-      this.socket.on(event, callback);
-    }
-  }
-
-  off(event) {
-    if (this.socket) {
-      this.socket.off(event);
-    }
-  }
-}
-
-// Create a singleton instance
-const socketService = new SocketService();
+  },
+};
 
 export default socketService; 

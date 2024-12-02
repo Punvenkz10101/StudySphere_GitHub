@@ -13,9 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CORS_ORIGIN 
-      : ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -59,6 +57,9 @@ const roomTasks = new Map();
 const roomMembers = new Map();
 const roomPomodoros = new Map();
 const rooms = new Map();
+
+// Store whiteboard states for each room
+const whiteboardStates = new Map();
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
@@ -420,6 +421,34 @@ io.on("connection", (socket) => {
             tasks: updatedTasks
         });
     }
+  });
+
+  socket.on('join-whiteboard-room', (roomId) => {
+    socket.join(`whiteboard-${roomId}`);
+    
+    // Send existing whiteboard state if available
+    if (whiteboardStates.has(roomId)) {
+      socket.emit('canvasState', whiteboardStates.get(roomId));
+    }
+  });
+
+  socket.on('drawing', ({ roomId, x, y, drawing, color, size }) => {
+    socket.to(`whiteboard-${roomId}`).emit('drawing', { x, y, drawing, color, size });
+  });
+
+  socket.on('clearCanvas', ({ roomId }) => {
+    whiteboardStates.delete(roomId); // Clear stored state
+    socket.to(`whiteboard-${roomId}`).emit('clearCanvas');
+  });
+
+  socket.on('canvasState', ({ roomId, imageData }) => {
+    whiteboardStates.set(roomId, imageData); // Store the state
+    socket.to(`whiteboard-${roomId}`).emit('canvasState', imageData);
+  });
+
+  // Clean up when room is closed or all users leave
+  socket.on('leaveRoom', ({ roomKey }) => {
+    whiteboardStates.delete(roomKey);
   });
 });
 

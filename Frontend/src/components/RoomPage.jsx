@@ -6,6 +6,7 @@ import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
 import io from 'socket.io-client';
 import ProgressPage from './ProgressPage';
+import Whiteboard from './Whiteboard';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -40,6 +41,7 @@ export default function RoomPage() {
   const [selectedBreakMinutes, setSelectedBreakMinutes] = useState(5);
   const [breakSessionCount, setBreakSessionCount] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
 
   // Memoize tasks to prevent unnecessary re-renders
   const memoizedTasks = useMemo(() => {
@@ -572,6 +574,12 @@ export default function RoomPage() {
         </div>
         <div className="w-full sm:w-1/3 flex justify-center sm:justify-end gap-2">
           <button
+            onClick={() => setShowWhiteboard(true)}
+            className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+          >
+            Open Whiteboard
+          </button>
+          <button
             onClick={() => setShowProgress(true)}
             className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
           >
@@ -847,6 +855,13 @@ export default function RoomPage() {
       </div>
 
       <ProgressPage isOpen={showProgress} onClose={() => setShowProgress(false)} />
+
+      {showWhiteboard && (
+        <Whiteboard
+          roomId={roomKey}
+          onClose={() => setShowWhiteboard(false)}
+        />
+      )}
     </div>
   );
 }

@@ -16,6 +16,7 @@ import ContactUs from './components/ContactUs.jsx';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ProgressPage from './components/ProgressPage.jsx';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -49,24 +50,26 @@ function App() {
       {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} />}
       {showJoinRoom && <JoinRoomModal onClose={toggleJoinRoomModal} navigate={navigate} />}
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
-              <CTA_Section />
-              <Features />
-              <Team />
-              <FAQSection />
-              <Footer />
-            </>
-          }
-        />
-        <Route path="/rooms/:roomKey" element={<RoomPage />} />
-        <Route path="/contact-us" element={<ContactUs />} />
-        <Route path="/progress" element={<ProgressPage />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
+                <CTA_Section />
+                <Features />
+                <Team />
+                <FAQSection />
+                <Footer />
+              </>
+            }
+          />
+          <Route path="/rooms/:roomKey" element={<RoomPage />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/progress" element={<ProgressPage />} />
+        </Routes>
+      </ErrorBoundary>
     </div>
   );
 }
