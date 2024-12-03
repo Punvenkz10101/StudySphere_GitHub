@@ -6,6 +6,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const roomRoutes = require("./routes/roomRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const path = require("path");
 
 dotenv.config();
 
@@ -471,6 +472,9 @@ io.on("connection", (socket) => {
     whiteboardStates.delete(roomKey);
   });
 });
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../Frontend/public')));
 
 // Start the server
 const PORT = process.env.PORT || 5001;

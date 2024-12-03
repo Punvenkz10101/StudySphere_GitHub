@@ -144,12 +144,7 @@ export default function RoomPage() {
     socketService.emit("joinRoom", { roomKey, username });
 
     // Handle initial Pomodoro state when joining
-    const handlePomodoroState = ({
-      running,
-      timeLeft,
-      duration,
-      sessionCount,
-    }) => {
+    const handlePomodoroState = ({ running, timeLeft, duration, sessionCount }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -162,12 +157,7 @@ export default function RoomPage() {
     socket.on("pomodoroState", handlePomodoroState);
 
     // Handle timer start
-    const handlePomodoroStarted = ({
-      running,
-      timeLeft,
-      duration,
-      sessionCount,
-    }) => {
+    const handlePomodoroStarted = ({ running, timeLeft, duration, sessionCount }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -216,13 +206,6 @@ export default function RoomPage() {
     socket.on("pomodoroReset", handlePomodoroReset);
 
     // Handle timer completion
-    const playCompletionSound = () => {
-      const audio = new Audio('/sounds/timer-complete.mp3');
-      audio.play().catch((error) => {
-        console.warn("Audio play failed:", error);
-      });
-    };
-
     const handlePomodoroComplete = ({ sessionCount }) => {
       setPomodoroState((prev) => ({
         ...prev,
@@ -232,7 +215,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
-      playCompletionSound();
     };
     socket.on("pomodoroComplete", handlePomodoroComplete);
 
@@ -340,7 +322,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setBreakSessionCount(sessionCount);
       }
-      playCompletionSound();
     };
 
     // Listen for break duration updates from other users
