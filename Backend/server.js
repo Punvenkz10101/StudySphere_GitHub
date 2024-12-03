@@ -13,7 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173","https://study-sphere-git-hub.vercel.app"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -21,7 +21,7 @@ const io = socketIo(server, {
 
 app.set('io', io);
 const allowedOrigins = [
-  // 'https://study-sphere-git-hub.vercel.app',
+  'https://study-sphere-git-hub.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
   // Allow all Vercel preview deployments
