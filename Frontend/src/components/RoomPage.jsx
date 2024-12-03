@@ -391,6 +391,35 @@ export default function RoomPage() {
     };
   }, [roomKey, username]);
 
+  useEffect(() => {
+    const handleSocketError = (error) => {
+      console.error('Socket error:', error);
+      // Optionally show user-friendly error message
+    };
+
+    const handleSocketConnect = () => {
+      console.log('Socket connected successfully');
+    };
+
+    const handleSocketDisconnect = (reason) => {
+      console.log('Socket disconnected:', reason);
+      // Attempt to reconnect
+      socketService.connect();
+    };
+
+    const socket = socketService.connect();
+    socket.on('connect_error', handleSocketError);
+    socket.on('connect', handleSocketConnect);
+    socket.on('disconnect', handleSocketDisconnect);
+
+    return () => {
+      socket.off('connect_error', handleSocketError);
+      socket.off('connect', handleSocketConnect);
+      socket.off('disconnect', handleSocketDisconnect);
+      socketService.disconnect();
+    };
+  }, []);
+
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
     if (!document.fullscreenElement) {

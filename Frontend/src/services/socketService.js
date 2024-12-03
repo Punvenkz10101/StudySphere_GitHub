@@ -1,20 +1,38 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.VITE_SOCKET_URL 
-  : 'wss://studysphere-github.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://studysphere-github.onrender.com';
 
 const socket = io(SOCKET_URL, {
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'],
+  secure: true,
+  rejectUnauthorized: false,
   withCredentials: true,
+  autoConnect: true,
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  timeout: 10000
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Socket connection error:', error);
+});
+
+socket.on('error', (error) => {
+  console.error('Socket error:', error);
 });
 
 const socketService = {
   socket,
-  connect: () => socket.connect(),
+  connect: () => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+    return socket;
+  },
   disconnect: () => socket.disconnect(),
   emit: (event, data) => {
-    if (socket) {
+    if (socket && socket.connected) {
       socket.emit(event, data);
     }
   },
