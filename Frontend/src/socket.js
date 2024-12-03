@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const socket = io('https://studysphere-github.onrender.com'); // Backend server URL
+const socket = io('wss://studysphere-github.onrender.com'); // Backend server URL
 
 // Action function to emit events
 export const joinRoom = (roomKey, username) => {
