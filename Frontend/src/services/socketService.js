@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 const SOCKET_URL = process.env.NODE_ENV === 'production' 
   ? process.env.VITE_SOCKET_URL 
-  : 'http://localhost:5001';
+  : 'https://studysphere-github.onrender.com';
 
 const socket = io(SOCKET_URL, {
   transports: ['websocket', 'polling'],
