@@ -253,18 +253,14 @@ export default function RoomPage() {
     const handleTaskAdded = (taskData) => {
       try {
         if (typeof taskData === 'string') {
-          // If taskData is just a string, create a task object
           setTasks((prev) => [...(prev || []), {
             id: uuidv4(),
-            text: taskData,
-            completed: false
+            text: taskData
           }]);
         } else if (typeof taskData === 'object' && taskData.text) {
-          // If taskData is already an object with text property
           setTasks((prev) => [...(prev || []), {
             id: taskData.id || uuidv4(),
-            text: taskData.text,
-            completed: taskData.completed || false
+            text: taskData.text
           }]);
         }
       } catch (error) {
@@ -338,15 +334,6 @@ export default function RoomPage() {
       }));
     });
 
-    // Add this to your socket event listeners in useEffect
-    socket.on("taskToggled", ({ taskId, completed }) => {
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId ? { ...task, completed } : task
-        )
-      );
-    });
-
     // Listen for task updates
     socket.on("tasksUpdated", ({ tasks }) => {
       setTasks(tasks);
@@ -384,7 +371,6 @@ export default function RoomPage() {
       socket.off("breakTick", handleBreakTick);
       socket.off("breakComplete", handleBreakComplete);
       socket.off('breakDurationUpdated');
-      socket.off("taskToggled");
       socket.off("tasksUpdated");
 
       socketService.disconnect();
@@ -525,27 +511,6 @@ export default function RoomPage() {
       roomId: roomKey,
       duration: newDuration
     });
-  };
-
-  const toggleTaskCompletion = (taskId) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
-
-    const newCompleted = !task.completed;
-
-    // Emit to other users
-    socket.emit('toggleTask', {
-      roomKey,
-      taskId,
-      completed: newCompleted
-    });
-
-    // Update local state
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, completed: newCompleted } : t
-      )
-    );
   };
 
   return (
@@ -765,61 +730,17 @@ export default function RoomPage() {
                   key={task.id || uuidv4()}
                   className="flex items-center justify-between bg-gray-700/50 p-2 rounded-lg hover:bg-gray-700/70 transition-colors group"
                 >
-                  <div className="flex items-center gap-3 flex-grow">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={!!task.completed}
-                        onChange={() => {
-                          // Emit socket event first to ensure real-time sync
-                          socket.emit('toggleTask', {
-                            roomKey,
-                            taskId: task.id,
-                            completed: !task.completed
-                          });
-                          // Then update local state
-                          toggleTaskCompletion(task.id);
-                        }}
-                        className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-gray-500 bg-gray-700/50 
-                                 transition-colors checked:border-blue-500 checked:bg-blue-500 hover:border-blue-400
-                                 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                      />
-                      <svg
-                        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 
-                                 peer-checked:opacity-100 transition-opacity"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 3L4.5 8.5L2 6"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <span className={`flex-grow transition-all duration-200 ${
-                      task.completed 
-                        ? "text-gray-400 line-through italic" 
-                        : "text-white"
-                    }`}>
-                      {typeof task === 'string' ? task : task.text}
-                    </span>
-                  </div>
+                  <span className="flex-grow text-white">
+                    {typeof task === 'string' ? task : task.text}
+                  </span>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {!task.completed && (
-                      <button
-                        type="button"
-                        onClick={() => startEditingTask(task)}
-                        className="text-blue-400 hover:text-blue-300 transition-colors p-1"
-                      >
-                        <BiEdit size={18} />
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => startEditingTask(task)}
+                      className="text-blue-400 hover:text-blue-300 transition-colors p-1"
+                    >
+                      <BiEdit size={18} />
+                    </button>
                     <button
                       type="button"
                       onClick={() => deleteTask(task.id)}
