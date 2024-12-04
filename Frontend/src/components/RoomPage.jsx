@@ -527,7 +527,7 @@ export default function RoomPage() {
         <div className="w-full sm:w-1/3 flex justify-center sm:justify-start">
           <button
             onClick={copyToClipboard}
-            className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
           >
             Copy Room Key
           </button>
@@ -538,13 +538,13 @@ export default function RoomPage() {
         <div className="w-full sm:w-1/3 flex justify-center sm:justify-end gap-2">
           <button
             onClick={() => setShowWhiteboard(true)}
-            className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
           >
             Open Whiteboard
           </button>
           <button
             onClick={leaveRoom}
-            className="bg-red-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-red-600 transition-colors text-sm"
+            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
           >
             Leave Room
           </button>
@@ -563,12 +563,12 @@ export default function RoomPage() {
                 <li key={index} className="flex items-center justify-between">
                   <span>{memberUsername}</span>
                   {memberUsername === username && (
-                    <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-white text-[#00334D] px-2 py-1 rounded-full font-medium">
                       You
                     </span>
                   )}
                   {memberUsername === creator && (
-                    <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-white text-[#00334D] px-2 py-1 rounded-full font-medium">
                       Host
                     </span>
                   )}
@@ -622,7 +622,7 @@ export default function RoomPage() {
                 {!pomodoroState.isRunning ? (
                   <button
                     onClick={startPomodoro}
-                    className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                     disabled={pomodoroState.isRunning}
                   >
                     Start
@@ -630,14 +630,14 @@ export default function RoomPage() {
                 ) : (
                   <button
                     onClick={pausePomodoro}
-                    className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                   >
                     Pause
                   </button>
                 )}
                 <button
                   onClick={resetPomodoro}
-                  className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                 >
                   Reset
                 </button>
@@ -672,7 +672,7 @@ export default function RoomPage() {
                 {!breakState.isRunning ? (
                   <button
                     onClick={startBreak}
-                    className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                     disabled={breakState.isRunning}
                   >
                     Start Break
@@ -680,14 +680,14 @@ export default function RoomPage() {
                 ) : (
                   <button
                     onClick={pauseBreak}
-                    className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                   >
                     Pause Break
                   </button>
                 )}
                 <button
                   onClick={resetBreak}
-                  className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
                 >
                   Reset Break
                 </button>
@@ -719,7 +719,7 @@ export default function RoomPage() {
               />
               <button
                 type="submit"
-                className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600 transition-colors"
+                className="bg-white text-[#00334D] py-2 px-4 rounded-lg w-full hover:bg-gray-100 transition-colors text-[15px] font-medium"
               >
                 {editingTaskId !== null ? "Edit Task" : "Add Task"}
               </button>
@@ -760,7 +760,7 @@ export default function RoomPage() {
           <div ref={meetingContainerRef} className="w-full h-[245px] sm:h-[335px] mt-[2px]"></div>
           <button
             onClick={toggleFullscreen}
-            className="absolute top-2 sm:top-4 left-2 sm:left-4 text-white bg-[#00334D] py-1.5 sm:py-2 px-3 sm:px-4 rounded-md z-10 text-sm"
+            className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-white text-[#00334D] py-1.5 sm:py-2 px-3 sm:px-4 rounded-md z-10 text-[15px] font-medium hover:bg-gray-100 transition-colors"
           >
             ⛶ Full Screen
           </button>
