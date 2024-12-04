@@ -460,10 +460,19 @@ export default function RoomPage() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(roomKey);
-    toast.success("Room key copied to clipboard!");
+    toast.success();
+    toast.info("Room key copied to clipboard!", {
+      position: "top-right",
+      autoClose: 5000,
+      
+      closeOnClick: true,
+      pauseOnHover: false,
+      
+      });
 };
 
   const leaveRoom = () => {
+    
     try {
       // Disconnect from the socket room
       if (socketService.socket) {
@@ -480,6 +489,7 @@ export default function RoomPage() {
       if (meetingContainerRef.current) {
         meetingContainerRef.current.innerHTML = "";
       }
+
 
       // Navigate to home page
       navigate("/", { replace: true });
