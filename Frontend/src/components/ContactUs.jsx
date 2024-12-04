@@ -71,22 +71,22 @@ const ContactUs = () => {
 
   return (
     <div
-      className="bg-gray-100  py-12 px-6 sm:px-12 min-h-screen"
+      className="bg-gray-100 py-12 px-6 sm:px-12 min-h-screen"
       style={{
         backgroundImage: "url(Night5.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="max-w-4xl  mt-14 flex flex-col mx-auto rounded-lg shadow-md p-6 sm:p-8 backdrop-filter  bg-[#001022]/70">
+      <div className="max-w-4xl mt-14 flex flex-col mx-auto rounded-lg shadow-md p-6 sm:p-8 backdrop-filter bg-[#001022]/70">
         <div>
           <h2 className="text-2xl sm:text-4xl font-bold text-white text-center">
             Get in Touch
           </h2>
           <p ref={el} className="text-gray-300 text-center mt-2"></p>
         </div>
-        <div className="flex flex-col gap-10 justify-center items-center lg:flex-row">
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-8 justify-center items-stretch lg:flex-row">
+          <form className="mt-6 space-y-4 w-full lg:w-1/2" onSubmit={handleSubmit}>
             <div className="flex flex-col sm:flex-row sm:space-x-4">
               <div className="flex-1 relative">
                 <FontAwesomeIcon
@@ -161,66 +161,64 @@ const ContactUs = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+              className="w-full bg-white text-[#00334D] font-medium py-2 rounded-lg hover:bg-gray-100 transition duration-300 text-[15px]"
             >
               Send Message
             </button>
           </form>
 
-          <div className="text-center lg:text-left lg:pl-8 mt-8">
-            <h3 className="text-2xl font-bold text-white mb-6">
-              Or reach us at:
-            </h3>
-            <div className="space-y-3">
-              <p className="flex items-center justify-center lg:justify-start text-gray-300">
-                <span className="font-medium">Phone:</span>
-                <a
-                  href="tel:+1234567890"
-                  className="ml-2 text-blue-400 hover:text-blue-300"
-                >
-                  9059909791
-                </a>
-              </p>
-              <p className="flex items-center justify-center lg:justify-start text-gray-300">
-                <span className="font-medium">Email:</span>
-                <a
-                  href="mailto:StudySphere@gmail.com"
-                  className="ml-2 text-blue-400 hover:text-blue-300"
-                >
-                  StudySphere@gmail.com
-                </a>
-              </p>
-              <p className="flex items-center justify-center lg:justify-start text-gray-300">
-                <span className="font-medium">Address:</span>
-                <span className="ml-2">Reva University, Yelahanka</span>
-              </p>
+          <div className="w-full lg:w-1/2 flex flex-col lg:pl-8">
+            <div className="text-center lg:text-left mb-6">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                Or reach us at:
+              </h3>
+              <div className="space-y-4">
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium min-w-[80px]">Phone:</span>
+                  <a href="tel:+1234567890" className="ml-2 text-blue-400 hover:text-blue-300">
+                    9059909791
+                  </a>
+                </p>
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium min-w-[80px]">Email:</span>
+                  <a href="mailto:StudySphere@gmail.com" className="ml-2 text-blue-400 hover:text-blue-300 break-all">
+                    StudySphere@gmail.com
+                  </a>
+                </p>
+                <p className="flex items-center justify-center lg:justify-start text-gray-300">
+                  <span className="font-medium min-w-[80px]">Address:</span>
+                  <span className="ml-2">Reva University, Yelahanka</span>
+                </p>
+              </div>
             </div>
 
-            <div className="mt-6 flex justify-center lg:justify-start space-x-6">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <FontAwesomeIcon icon={faFacebook} size="2x" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <FontAwesomeIcon icon={faTwitter} size="2x" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <FontAwesomeIcon icon={faInstagram} size="2x" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors"
-              >
-                <FontAwesomeIcon icon={faLinkedin} size="2x" />
-              </a>
+            <div className="flex items-center justify-center mt-4">
+              <div className="grid grid-flow-col gap-8">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-[#00334D] transition-colors flex items-center justify-center"
+                >
+                  <FontAwesomeIcon icon={faFacebook} className="w-7 h-7" />
+                </a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-[#00334D] transition-colors flex items-center justify-center"
+                >
+                  <FontAwesomeIcon icon={faTwitter} className="w-7 h-7" />
+                </a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-[#00334D] transition-colors flex items-center justify-center"
+                >
+                  <FontAwesomeIcon icon={faInstagram} className="w-7 h-7" />
+                </a>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-[#00334D] transition-colors flex items-center justify-center"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} className="w-7 h-7" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
