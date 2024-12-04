@@ -6,6 +6,8 @@ import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
 import io from 'socket.io-client';
 import Whiteboard from './Whiteboard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -458,8 +460,8 @@ export default function RoomPage() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(roomKey);
-    alert("Room key copied to clipboard!");
-  };
+    toast.success("Room key copied to clipboard!");
+};
 
   const leaveRoom = () => {
     try {
@@ -852,6 +854,7 @@ export default function RoomPage() {
           onClose={() => setShowWhiteboard(false)}
         />
       )}
+      <ToastContainer />
     </div>
   );
 }
