@@ -15,7 +15,6 @@ import RoomPage from './components/RoomPage.jsx';
 import ContactUs from './components/ContactUs.jsx';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import ProgressPage from './components/ProgressPage.jsx';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -67,7 +66,6 @@ function App() {
           />
           <Route path="/rooms/:roomKey" element={<RoomPage />} />
           <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/progress" element={<ProgressPage />} />
         </Routes>
       </ErrorBoundary>
     </div>

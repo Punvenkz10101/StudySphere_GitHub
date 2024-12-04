@@ -57,7 +57,6 @@ const navigate =useNavigate();
     { name: "Home", path:"/",href:'' },
     { name: "Features", path:"/",href:'#features' },
     { name: "Contact Us", path:"/contact-us",href:''},
-    { name: "Progress", path:"/progress" },
 
   ];
   const pagehandler= ()=>{
@@ -76,12 +75,12 @@ const navigate =useNavigate();
         </div>
 
         {/* Navigation Links and Search Bar for Desktop */}
-        <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center mx-8">
+        <div className="hidden lg:flex items-center space-x-9 flex-1 justify-center -ml-20">
           {navigation.map((item) => (
              <button
              key={item.name}
              onClick={() => handleNavigate(item.path, item.href)}
-             className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105 ml-6"
+             className="text-base lg:text-[16px] font-semibold text-white hover:text-[#007A99] transition-colors duration-300 transform hover:scale-105"
            >
              {item.name}
            </button>
