@@ -189,7 +189,6 @@ io.on("connection", (socket) => {
     const taskData = {
       id: Date.now().toString(),
       text: task,
-      completed: false,
       createdBy: socket.id,
     };
 
@@ -404,22 +403,6 @@ io.on("connection", (socket) => {
           timeLeft: duration * 60
         });
       }
-    }
-  });
-
-  // Handle task toggling
-  socket.on('toggleTask', ({ roomKey, taskId, completed }) => {
-    if (roomTasks.has(roomKey)) {
-        const tasks = roomTasks.get(roomKey);
-        const updatedTasks = tasks.map(task => 
-            task.id === taskId ? { ...task, completed } : task
-        );
-        roomTasks.set(roomKey, updatedTasks);
-        
-        // Send updated tasks to all users in the room
-        io.to(roomKey).emit("tasksUpdated", {
-            tasks: updatedTasks
-        });
     }
   });
 
