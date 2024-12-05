@@ -16,6 +16,7 @@ import ContactUs from './components/ContactUs.jsx';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ToastContainer, toast } from 'react-toastify';
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -68,6 +69,7 @@ function App() {
           <Route path="/contact-us" element={<ContactUs />} />
         </Routes>
       </ErrorBoundary>
+      <ToastContainer />
     </div>
   );
 }

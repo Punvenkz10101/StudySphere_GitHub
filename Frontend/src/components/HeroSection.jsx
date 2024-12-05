@@ -29,8 +29,10 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
         backgroundColor: '#001D33',
       }}
     >
-      <div className="z-10 space-y-4 sm:space-y-6 max-w-4xl">
-        <h1 className="text-[40px] sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+
+      <div id='Home' className="z-10 space-y-4 sm:space-y-6 max-w-4xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+
           Welcome to StudySphere
         </h1>
         <p ref={el} className="text-xl sm:text-2xl md:text-3xl font-medium leading-snug">

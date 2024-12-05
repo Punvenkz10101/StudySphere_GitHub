@@ -39,23 +39,36 @@ const navigate =useNavigate();
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const handleNavigate=(path,href)=>{
+  const handleNavigate = (path, href) => {
     if (href.startsWith("#")) {
-      const section = document.querySelector(href);
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
+      if (window.location.pathname === "/") {
+        // If on the home page, scroll to the section
+        const section = document.querySelector(href);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        // Navigate to the home page first, then scroll
+        navigate(path);
+        setTimeout(() => {
+          const section = document.querySelector(href);
+          if (section) {
+            section.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100); // Slight delay to allow the DOM to load
       }
     } else {
-      navigate(path); // For normal page navigation
+      // For normal navigation
+      navigate(path);
     }
     setMenuOpen(false);
-  }
-
+  };
+  
   const navigation = [
 
-    { name: "Home", path:"/",href:'' },
+    { name: "Home", path:"/",href:'Home' },
     { name: "Features", path:"/",href:'#features' },
-    { name: "Contact Us", path:"/contact-us",href:''},
+    { name: "Contact Us", path:"/contact-us",href:'contactus'},
 
   ];
   const pagehandler= ()=>{
