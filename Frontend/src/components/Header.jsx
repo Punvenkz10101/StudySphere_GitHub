@@ -66,7 +66,7 @@ const navigate =useNavigate();
   
   const navigation = [
 
-    { name: "Home", path:"/",href:'Home' },
+    { name: "Home", path:"/",href:'#Home' },
     { name: "Features", path:"/",href:'#features' },
     { name: "Contact Us", path:"/contact-us",href:'contactus'},
 

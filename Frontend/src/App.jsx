@@ -56,7 +56,7 @@ function App() {
             path="/"
             element={
               <>
-                <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
+                <HeroSection  onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
                 <CTA_Section />
                 <Features />
                 <Team />
