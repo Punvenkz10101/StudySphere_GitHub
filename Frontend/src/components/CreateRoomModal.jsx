@@ -70,7 +70,16 @@ const CreateRoomModal = ({ onClose }) => {
       setLoading(false);
     }
   };
-   if (!user) {
+
+  const handleIncrement = () => {
+    setParticipantsLimit(prev => Math.min(10, prev + 1));
+  };
+
+  const handleDecrement = () => {
+    setParticipantsLimit(prev => Math.max(1, prev - 1));
+  };
+
+  if (!user) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
@@ -116,17 +125,36 @@ const CreateRoomModal = ({ onClose }) => {
             <label className="block font-medium text-gray-700">
               Participants Limit (1-10):
             </label>
-            <input
-              type="number"
-              value={participantsLimit}
-              onChange={(e) =>
-                setParticipantsLimit(
-                  Math.min(10, Math.max(1, parseInt(e.target.value) || 1))
-                )
-              }
-              required
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={handleDecrement}
+                className="px-3 py-2 bg-gray-200 rounded-l-md hover:bg-gray-300"
+              >
+                -
+              </button>
+              <input
+                type="number"
+                value={participantsLimit}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  if (!isNaN(value) && value >= 1 && value <= 10) {
+                    setParticipantsLimit(value);
+                  }
+                }}
+                required
+                className="w-full p-2 border-y border-gray-300 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                min="1"
+                max="10"
+              />
+              <button
+                type="button"
+                onClick={handleIncrement}
+                className="px-3 py-2 bg-gray-200 rounded-r-md hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
           </div>
           <button
             type="submit"
