@@ -1,4 +1,5 @@
 import AOS from "aos";
+
 AOS.init();
 
 // You can also pass an optional settings object
@@ -17,7 +18,7 @@ AOS.init({
   // Animation settings:
   offset: 120, 
   delay: 0,
-  duration: 400,
+  duration: 800,
   easing: "ease",
   once: false, // Allow animations to happen multiple times
   mirror: true, // Enable animations when scrolling past elements (backward)
