@@ -3,6 +3,8 @@ import { auth } from '../components/Firebase/firebase.js';
 import Header from '../components/Header.jsx';
 import SigninPage from '../components/SignInPage.jsx';
 import SignupPage from '../components/SignUpPage.jsx';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Overlay = () => {
   const [user, setUser] = useState(null); // User state
   const [showSignin, setShowSignin] = useState(false);
@@ -25,7 +27,8 @@ const Overlay = () => {
   const handleSignOut = async () => {
     try {
       await auth.signOut(); 
-      setUser(null); 
+      setUser(null);
+       toast.warning("Sign Out Successfully")
     } catch (error) {
       console.error("Error signing out:", error);
     }

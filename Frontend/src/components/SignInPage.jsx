@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth } from "./Firebase/firebase"; // Firebase configuration
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ImCross } from "react-icons/im";
+import { toast } from "react-toastify";
 
 const SigninPage = ({ onClose, toggleSignupOverlay }) => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,8 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       // Attempt to sign in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User signed in:", userCredential.user);
-      onClose(); // Close overlay after successful sign-in
+      onClose();
+      toast.success("Login Sucessfull") // Close overlay after successful sign-in
     } catch (error) {
       // Handle Firebase error codes
       if (error.code === 'auth/user-not-found') {

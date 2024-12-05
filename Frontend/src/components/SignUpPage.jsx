@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth } from "./Firebase/firebase";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Combined imports
 import { ImCross } from "react-icons/im";
+import { toast } from "react-toastify";
 
 const SignupPage = ({ onClose, toggleSigninOverlay }) => {
   const [name, setName] = useState("");
@@ -25,7 +26,8 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("User registered:", user);
-      onClose(); // Close overlay on successful signup
+      onClose(); 
+      toast.success("Account Created Sucssfully")// Close overlay on successful signup
     } catch (error) {
       setError(error.message);
     }
