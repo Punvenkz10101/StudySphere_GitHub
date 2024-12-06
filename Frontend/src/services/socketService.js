@@ -8,11 +8,13 @@ class SocketService {
   }
 
   connect() {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+    
     if (this.socket?.connected) {
       return this.socket;
     }
 
-    this.socket = io('http://localhost:5001', {
+    this.socket = io(SOCKET_URL, {
       reconnection: true,
       reconnectionAttempts: this.maxReconnectAttempts,
       reconnectionDelay: 1000,

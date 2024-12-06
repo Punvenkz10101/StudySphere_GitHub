@@ -606,7 +606,7 @@ export default function RoomPage() {
     <div
       className="room-page flex flex-col min-h-screen w-full text-white"
       style={{
-        backgroundImage: `url('/Night5.jpg')`,
+        backgroundImage: `url(${process.env.PUBLIC_URL}/Night5.jpg)`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundColor: "#001022", // Fallback background color
