@@ -109,17 +109,36 @@ export default function RoomPage() {
   }, [roomKey, username, topic]);
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('http://localhost:5001');
-    setSocket(newSocket);
+    // Establish socket connection only once
+    let socket;
+    try {
+      socket = io('http://localhost:5001', {
+        reconnection: true,
+        reconnectionAttempts: 3,
+        reconnectionDelay: 1000,
+      });
 
-    // Clean up socket connection when component unmounts
-    return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    };
-  }, []);
+      socket.on('connect', () => {
+        console.log('Socket connected successfully');
+        setConnectionError(null);
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+        setConnectionError('Failed to connect to server. Please try again.');
+      });
+
+      // Clean up socket connection
+      return () => {
+        if (socket) {
+          socket.disconnect();
+        }
+      };
+    } catch (error) {
+      console.error('Socket initialization error:', error);
+      setConnectionError('Failed to initialize connection');
+    }
+  }, []); // Empty dependency array ensures this runs only once
 
   useEffect(() => {
     // Use the existing socketService instead of creating a new socket
