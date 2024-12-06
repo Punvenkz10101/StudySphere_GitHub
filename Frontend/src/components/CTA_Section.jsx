@@ -7,7 +7,7 @@ const CTA_Section = () => {
       {/* Adjusted padding */}
       <div className="mx-auto max-w-5xl md:text-left md:w-1/2 px-4 md:px-0">
         <h2 className="text-[28px] sm:text-[32px] md:text-[34px] lg:text-[36px] font-bold text-[#00334D] animate-fadeIn leading-snug ml-8">
-          Transform Your Study Experience with <br />{" "}
+          Transform Your Study Experience with <br /> 
           <span className=" block">StudySphere!</span>
         </h2>
 
