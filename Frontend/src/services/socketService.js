@@ -8,7 +8,9 @@ class SocketService {
   }
 
   connect() {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
+    const SOCKET_URL = import.meta.env.PROD 
+      ? 'https://studysphere-github.onrender.com'  // Your production backend URL
+      : 'http://localhost:5001';  // Development backend URL
     
     if (this.socket?.connected) {
       return this.socket;
@@ -19,7 +21,8 @@ class SocketService {
       reconnectionAttempts: this.maxReconnectAttempts,
       reconnectionDelay: 1000,
       timeout: 10000,
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      withCredentials: true
     });
 
     this.socket.on('connect_error', (error) => {
