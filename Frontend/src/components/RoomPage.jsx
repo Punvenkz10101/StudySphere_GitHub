@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 import Whiteboard from './Whiteboard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import backgroundImage from '/Night5.jpg';
+import nightBg from '../assets/Night5.jpg';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -607,10 +607,10 @@ export default function RoomPage() {
     <div
       className="room-page flex flex-col min-h-screen w-full text-white"
       style={{
-        backgroundImage: 'url("/Night5.jpg")',
+        backgroundImage: `url(${nightBg})`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
-        backgroundColor: "#001022", // Fallback background color
+        backgroundColor: "#001022",
       }}
       onError={(e) => {
         e.currentTarget.style.backgroundImage = 'none';
