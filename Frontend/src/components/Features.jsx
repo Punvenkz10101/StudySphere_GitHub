@@ -17,13 +17,14 @@ AOS.init({
 
   // Animation settings:
   offset: 120, 
-  delay: 0,
-  duration: 1000,
-  easing: "ease",
+  delay: 200,  // Added slight delay for smoother transitions
+  duration: 7000,  // Increased duration to make animations slower (7 seconds)
+  easing: "cubic-bezier(0.25, 0.45, 0.45, 1)", // Smoother cubic bezier easing for slower animations
   once: false, // Allow animations to happen multiple times
   mirror: true, // Enable animations when scrolling past elements (backward)
   anchorPlacement: "top-bottom",
 });
+
 
 export default function FeaturesSection() {
   const features = [
