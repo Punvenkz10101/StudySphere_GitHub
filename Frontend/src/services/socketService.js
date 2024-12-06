@@ -3,50 +3,17 @@ import io from 'socket.io-client';
 class SocketService {
   constructor() {
     this.socket = null;
-    this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 5;
   }
 
   connect() {
-    const SOCKET_URL = import.meta.env.PROD 
-      ? 'https://studysphere-github.onrender.com'  // Your production backend URL
-      : 'http://localhost:5001';  // Development backend URL
-    
-    if (this.socket?.connected) {
-      return this.socket;
+    if (!this.socket) {
+      this.socket = io('http://localhost:5001', {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
+      });
     }
-
-    this.socket = io(SOCKET_URL, {
-      reconnection: true,
-      reconnectionAttempts: this.maxReconnectAttempts,
-      reconnectionDelay: 1000,
-      timeout: 10000,
-      transports: ['websocket', 'polling'],
-      withCredentials: true
-    });
-
-    this.socket.on('connect_error', (error) => {
-      console.warn('Socket connection error:', error);
-      if (this.reconnectAttempts < this.maxReconnectAttempts) {
-        this.reconnectAttempts++;
-        setTimeout(() => {
-          this.connect();
-        }, 2000);
-      }
-    });
-
-    this.socket.on('connect', () => {
-      console.log('Socket connected successfully');
-      this.reconnectAttempts = 0;
-    });
-
-    this.socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
-      if (reason === 'io server disconnect') {
-        this.connect();
-      }
-    });
-
     return this.socket;
   }
 
@@ -58,24 +25,11 @@ class SocketService {
   }
 
   emit(event, data) {
-    if (!this.socket?.connected) {
-      this.connect();
-    }
-    this.socket.emit(event, data);
-  }
-
-  on(event, callback) {
-    if (!this.socket?.connected) {
-      this.connect();
-    }
-    this.socket.on(event, callback);
-  }
-
-  off(event, callback) {
     if (this.socket) {
-      this.socket.off(event, callback);
+      this.socket.emit(event, data);
     }
   }
 }
 
-export default new SocketService(); 
+const socketService = new SocketService();
+export default socketService; 

@@ -109,40 +109,33 @@ export default function RoomPage() {
   }, [roomKey, username, topic]);
 
   useEffect(() => {
-    // Establish socket connection only once
-    let socket;
-    try {
-      socket = io('http://localhost:5001', {
-        reconnection: true,
-        reconnectionAttempts: 3,
-        reconnectionDelay: 1000,
-      });
-
-      socket.on('connect', () => {
-        console.log('Socket connected successfully');
-        setConnectionError(null);
-      });
-
-      socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-        setConnectionError('Failed to connect to server. Please try again.');
-      });
-
-      // Clean up socket connection
-      return () => {
-        if (socket) {
-          socket.disconnect();
-        }
-      };
-    } catch (error) {
-      console.error('Socket initialization error:', error);
-      setConnectionError('Failed to initialize connection');
-    }
-  }, []); // Empty dependency array ensures this runs only once
-
-  useEffect(() => {
-    // Use the existing socketService instead of creating a new socket
+    // Initialize socket connection
     const socket = socketService.connect();
+    
+    if (!socket) {
+      setConnectionError('Failed to establish connection');
+      return;
+    }
+
+    // Join room
+    socket.emit("joinRoom", { roomKey, username });
+
+    // Handle connection events
+    socket.on('connect', () => {
+      console.log('Socket connected successfully');
+      setConnectionError(null);
+      setIsConnecting(false);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+      setConnectionError('Failed to connect to server. Please try again.');
+      setIsConnecting(false);
+      toast.error('Connection error. Retrying...', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    });
 
     // Listen for duration updates from other users
     socket.on('durationUpdated', (data) => {
@@ -154,17 +147,6 @@ export default function RoomPage() {
         duration: data.duration * 60
       }));
     });
-
-    return () => {
-      socket.off('durationUpdated');
-    };
-  }, []);
-
-  useEffect(() => {
-    const socket = socketService.connect();
-
-    // Join room
-    socketService.emit("joinRoom", { roomKey, username });
 
     // Handle initial Pomodoro state when joining
     const handlePomodoroState = ({ running, timeLeft, duration, sessionCount }) => {
@@ -407,74 +389,6 @@ export default function RoomPage() {
     };
   }, [roomKey, username]);
 
-  useEffect(() => {
-    const handleSocketError = (error) => {
-      console.error('Socket error:', error);
-      // Optionally show user-friendly error message
-    };
-
-    const handleSocketConnect = () => {
-      console.log('Socket connected successfully');
-    };
-
-    const handleSocketDisconnect = (reason) => {
-      console.log('Socket disconnected:', reason);
-      // Attempt to reconnect
-      socketService.connect();
-    };
-
-    const socket = socketService.connect();
-    socket.on('connect_error', handleSocketError);
-    socket.on('connect', handleSocketConnect);
-    socket.on('disconnect', handleSocketDisconnect);
-
-    return () => {
-      socket.off('connect_error', handleSocketError);
-      socket.off('connect', handleSocketConnect);
-      socket.off('disconnect', handleSocketDisconnect);
-      socketService.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const socket = socketService.connect();
-    setIsConnecting(true);
-
-    socket.on('connect', () => {
-      setIsConnecting(false);
-      setConnectionError(null);
-    });
-
-    socket.on('connect_error', (error) => {
-      setIsConnecting(false);
-      setConnectionError('Unable to connect to server. Retrying...');
-      toast.error('Connection error. Retrying...', {
-        position: "top-right",
-        autoClose: 3000,
-      });
-    });
-
-    return () => {
-      socket.off('connect');
-      socket.off('connect_error');
-    };
-  }, []);
-
-  useEffect(() => {
-    const socket = socketService.connect();
-
-    const handleReconnect = () => {
-      // Re-join room and re-subscribe to events after reconnection
-      socket.emit("joinRoom", { roomKey, username });
-    };
-
-    socket.on('reconnect', handleReconnect);
-
-    return () => {
-      socket.off('reconnect', handleReconnect);
-    };
-  }, [roomKey, username]);
-
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
     if (!document.fullscreenElement) {
@@ -583,16 +497,11 @@ export default function RoomPage() {
   };
 
   const handleDurationChange = (newDuration) => {
-    // Update local state
     setDuration(newDuration);
-
-    // Emit duration change to all users in the room
-    if (socket) {
-      socket.emit('changeDuration', {
-        roomId: 'your-room-id', // Replace with actual room ID logic
-        duration: newDuration
-      });
-    }
+    socketService.socket?.emit('changeDuration', {
+      roomId: roomKey,
+      duration: newDuration
+    });
   };
 
   const startBreak = () => {
