@@ -42,6 +42,8 @@ export default function RoomPage() {
   const [selectedBreakMinutes, setSelectedBreakMinutes] = useState(5);
   const [breakSessionCount, setBreakSessionCount] = useState(0);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
 
   // Memoize tasks to prevent unnecessary re-renders
   const memoizedTasks = useMemo(() => {
@@ -415,6 +417,45 @@ export default function RoomPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const socket = socketService.connect();
+    setIsConnecting(true);
+
+    socket.on('connect', () => {
+      setIsConnecting(false);
+      setConnectionError(null);
+    });
+
+    socket.on('connect_error', (error) => {
+      setIsConnecting(false);
+      setConnectionError('Unable to connect to server. Retrying...');
+      toast.error('Connection error. Retrying...', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('connect_error');
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = socketService.connect();
+
+    const handleReconnect = () => {
+      // Re-join room and re-subscribe to events after reconnection
+      socket.emit("joinRoom", { roomKey, username });
+    };
+
+    socket.on('reconnect', handleReconnect);
+
+    return () => {
+      socket.off('reconnect', handleReconnect);
+    };
+  }, [roomKey, username]);
+
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
     if (!document.fullscreenElement) {
@@ -568,8 +609,18 @@ export default function RoomPage() {
         backgroundImage: `url('/Night5.jpg')`,
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
+        backgroundColor: "#001022", // Fallback background color
+      }}
+      onError={(e) => {
+        e.currentTarget.style.backgroundImage = 'none';
+        console.warn('Failed to load background image');
       }}
     >
+      {connectionError && (
+        <div className="bg-red-500/80 text-white px-4 py-2 text-center">
+          {connectionError}
+        </div>
+      )}
       {/* Navbar */}
       <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
         {/* Buttons row - always in one line */}

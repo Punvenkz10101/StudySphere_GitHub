@@ -1,52 +1,76 @@
-import { io } from 'socket.io-client';
+import io from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://studysphere-github.onrender.com';
+class SocketService {
+  constructor() {
+    this.socket = null;
+    this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = 5;
+  }
 
-const socket = io(SOCKET_URL, {
-  transports: ['polling', 'websocket'],
-  secure: true,
-  rejectUnauthorized: false,
-  withCredentials: true,
-  autoConnect: true,
-  reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-  timeout: 20000,
-  path: '/socket.io/'
-});
-
-socket.on('connect_error', (error) => {
-  console.error('Socket connection error:', error);
-});
-
-socket.on('error', (error) => {
-  console.error('Socket error:', error);
-});
-
-const socketService = {
-  socket,
-  connect: () => {
-    if (!socket.connected) {
-      socket.connect();
+  connect() {
+    if (this.socket?.connected) {
+      return this.socket;
     }
-    return socket;
-  },
-  disconnect: () => socket.disconnect(),
-  emit: (event, data) => {
-    if (socket && socket.connected) {
-      socket.emit(event, data);
-    }
-  },
-  on: (event, callback) => {
-    if (socket) {
-      socket.on(event, callback);
-    }
-  },
-  off: (event) => {
-    if (socket) {
-      socket.off(event);
-    }
-  },
-};
 
-export default socketService; 
+    this.socket = io('http://localhost:5001', {
+      reconnection: true,
+      reconnectionAttempts: this.maxReconnectAttempts,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ['websocket', 'polling']
+    });
+
+    this.socket.on('connect_error', (error) => {
+      console.warn('Socket connection error:', error);
+      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectAttempts++;
+        setTimeout(() => {
+          this.connect();
+        }, 2000);
+      }
+    });
+
+    this.socket.on('connect', () => {
+      console.log('Socket connected successfully');
+      this.reconnectAttempts = 0;
+    });
+
+    this.socket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
+      if (reason === 'io server disconnect') {
+        this.connect();
+      }
+    });
+
+    return this.socket;
+  }
+
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+  }
+
+  emit(event, data) {
+    if (!this.socket?.connected) {
+      this.connect();
+    }
+    this.socket.emit(event, data);
+  }
+
+  on(event, callback) {
+    if (!this.socket?.connected) {
+      this.connect();
+    }
+    this.socket.on(event, callback);
+  }
+
+  off(event, callback) {
+    if (this.socket) {
+      this.socket.off(event, callback);
+    }
+  }
+}
+
+export default new SocketService(); 
