@@ -535,31 +535,37 @@ export default function RoomPage() {
       }}
     >
       {/* Navbar */}
-      <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
-        <div className="w-full sm:w-1/3 flex justify-center sm:justify-start">
-          <button
-            onClick={copyToClipboard}
-            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
-          >
-            Copy Room Key
-          </button>
+      <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+        {/* Buttons row - always in one line */}
+        <div className="w-full flex justify-between sm:justify-between items-center gap-2">
+          <div className="sm:w-1/3 flex justify-start">
+            <button
+              onClick={copyToClipboard}
+              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+            >
+              Copy Room Key
+            </button>
+          </div>
+          
+          <div className="flex gap-2 sm:w-1/3 sm:justify-end">
+            <button
+              onClick={() => setShowWhiteboard(true)}
+              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+            >
+              Open Whiteboard
+            </button>
+            <button
+              onClick={leaveRoom}
+              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+            >
+              Leave Room
+            </button>
+          </div>
         </div>
-        <div className="w-full sm:w-1/3 text-center">
-          <span className="text-lg sm:text-xl font-bold">{topic || "Study Room"}</span>
-        </div>
-        <div className="w-full sm:w-1/3 flex justify-center sm:justify-end gap-2">
-          <button
-            onClick={() => setShowWhiteboard(true)}
-            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
-          >
-            Open Whiteboard
-          </button>
-          <button
-            onClick={leaveRoom}
-            className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
-          >
-            Leave Room
-          </button>
+
+        {/* Topic - centered below buttons on mobile, centered between them on desktop */}
+        <div className="w-full sm:absolute sm:left-1/2 sm:transform sm:-translate-x-1/2 text-center sm:w-auto">
+          <span className="text-2xl sm:text-2xl lg:text-3xl font-bold tracking-wide">{topic || "Study Room"}</span>
         </div>
       </nav>
 
@@ -768,8 +774,8 @@ export default function RoomPage() {
         </div>
 
         {/* Video Conference Section - Adjusted spacing */}
-        <div className="relative w-full h-[250px] sm:h-[338.6px] bg-[#001022]/50 rounded-lg mt-2 sm:mt-[-5px]">
-          <div ref={meetingContainerRef} className="w-full h-[245px] sm:h-[335px] mt-[2px]"></div>
+        <div className="relative w-full h-[250px] sm:h-[334px] bg-[#001022]/50 rounded-lg mt-2 sm:mt-[-5px]">
+          <div ref={meetingContainerRef} className="w-full h-[245px] sm:h-[335px] mt-[1px]"></div>
           <button
             onClick={toggleFullscreen}
             className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-white text-[#00334D] py-1.5 sm:py-2 px-3 sm:px-4 rounded-md z-10 text-[15px] font-medium hover:bg-gray-100 transition-colors"

@@ -37,9 +37,9 @@
     .contact-container {
       padding: 2rem 1rem;
     }
-    .flex {
+    /* .flex {
       flex-direction: column;
-    }
+    } */
     .sm\\:mt-0 {
       margin-top: 0 !important;
     }

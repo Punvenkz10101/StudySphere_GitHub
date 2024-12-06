@@ -18,7 +18,7 @@ AOS.init({
   // Animation settings:
   offset: 120, 
   delay: 0,
-  duration: 800,
+  duration: 1000,
   easing: "ease",
   once: false, // Allow animations to happen multiple times
   mirror: true, // Enable animations when scrolling past elements (backward)

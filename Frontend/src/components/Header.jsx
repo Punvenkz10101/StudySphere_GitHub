@@ -81,7 +81,7 @@ const navigate =useNavigate();
         
         {/* Logo Section */}
         <div className="flex items-center space-x-4 ml-6 flex-none">
-          <span  onClick={pagehandler} className="text-white text-3xl md:text-5xl lg:text-[34px] cursor-pointer font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
+          <span  onClick={pagehandler} className="text-white text-[30px] md:text-[32px] lg:text-[34px] cursor-pointer font-bold transition-transform duration-300 hover:scale-110 mt-1 ml-3.5">
             StudySphere
           </span>
         </div>
@@ -157,10 +157,28 @@ const navigate =useNavigate();
           </button>
           {user && (
             <div
-              className="w-10 h-10 rounded-full bg-[#00334D] text-white flex items-center justify-center font-semibold text-lg"
+              onClick={toggleDropdown}
+              className="w-10 h-10 rounded-full bg-[#00334D] text-white flex items-center justify-center font-semibold text-lg cursor-pointer"
               title={user.email}
             >
               {userNameInitial}
+            </div>
+          )}
+          {showDropdown && user && (
+            <div
+              ref={dropdownRef}
+              className="absolute right-4 top-20 w-64 bg-[#1A1A1A] rounded-lg shadow-xl py-4 z-50 border border-gray-700"
+            >
+              <div className="px-4 py-2 text-[#E6E6E6] text-lg font-semibold border-b border-gray-600">
+                <div>{user.displayName || "User"}</div>
+                <div className="text-sm text-gray-400 truncate max-w-full">{user.email}</div>
+              </div>
+              <button
+                onClick={onSignOut}
+                className="w-full px-4 py-2 text-left text-[#FF4D4F] font-semibold text-base hover:bg-[#3A3A3A] transition-colors duration-300 mt-2"
+              >
+                Sign Out
+              </button>
             </div>
           )}
         </div>
@@ -180,11 +198,6 @@ const navigate =useNavigate();
 
            </button>
             ))}
-            <input
-              type="text"
-              placeholder="Search for rooms..."
-              className="w-full max-w-xs px-4 py-2 rounded-md bg-[#1A1A1A]/80 text-white focus:outline-none focus:ring-2 focus:ring-[#00CCCC] transition duration-300 mt-2"
-            />
             {user ? (
               <button
                 onClick={onSignOut}
