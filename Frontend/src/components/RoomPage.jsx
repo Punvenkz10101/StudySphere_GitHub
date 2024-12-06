@@ -8,7 +8,6 @@ import io from 'socket.io-client';
 import Whiteboard from './Whiteboard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import backgroundImage from '../assets/images/Night5.jpg';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -535,7 +534,7 @@ export default function RoomPage() {
     <div
       className="room-page flex flex-col min-h-screen w-full text-white"
       style={{
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: 'url("/images/Night5.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
