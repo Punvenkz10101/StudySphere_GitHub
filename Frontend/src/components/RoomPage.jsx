@@ -4,11 +4,8 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
 import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
-import io from "socket.io-client";
-import Whiteboard from "./Whiteboard";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../styles/toast.css";
+import io from 'socket.io-client';
+import Whiteboard from './Whiteboard';
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -43,8 +40,6 @@ export default function RoomPage() {
   const [selectedBreakMinutes, setSelectedBreakMinutes] = useState(5);
   const [breakSessionCount, setBreakSessionCount] = useState(0);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionError, setConnectionError] = useState(null);
 
   // Memoize tasks to prevent unnecessary re-renders
   const memoizedTasks = useMemo(() => {
@@ -86,9 +81,18 @@ export default function RoomPage() {
       showMyCameraToggleButton: true,
       showMyMicrophoneToggleButton: true,
       showAudioVideoSettingsButton: true,
+      onJoinRoom: () => {
+        // Request permissions after joining
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+          .then(() => {
+            console.log('Permissions granted');
+          })
+          .catch((err) => {
+            console.warn('Media permissions denied:', err);
+          });
+      }
     });
 
-    // Cleanup function
     return () => {
       try {
         if (meetingContainerRef.current) {
@@ -102,47 +106,42 @@ export default function RoomPage() {
 
   useEffect(() => {
     // Initialize socket connection
+    const newSocket = io('http://localhost:5001');
+    setSocket(newSocket);
+
+    // Clean up socket connection when component unmounts
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    // Use the existing socketService instead of creating a new socket
     const socket = socketService.connect();
 
-    if (!socket) {
-      setConnectionError("Failed to establish connection");
-      return;
-    }
-
-    // Join room
-    socket.emit("joinRoom", { roomKey, username });
-
-    // Handle connection events
-    socket.on("connect", () => {
-      console.log("Socket connected successfully");
-      setConnectionError(null);
-      setIsConnecting(false);
-    });
-
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-      setConnectionError("Failed to connect to server. Please try again.");
-      setIsConnecting(false);
-      toast.error("Connection error. Retrying...", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        className: 'bg-[#00334D] text-white'
-      });
-    });
-
     // Listen for duration updates from other users
-    socket.on("durationUpdated", (data) => {
+    socket.on('durationUpdated', (data) => {
       // Update duration for all users except the one who made the change
       setSelectedMinutes(data.duration);
-      setPomodoroState((prev) => ({
+      setPomodoroState(prev => ({
         ...prev,
         timeLeft: data.duration * 60,
-        duration: data.duration * 60,
+        duration: data.duration * 60
       }));
     });
+
+    return () => {
+      socket.off('durationUpdated');
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = socketService.connect();
+
+    // Join room
+    socketService.emit("joinRoom", { roomKey, username });
 
     // Handle initial Pomodoro state when joining
     const handlePomodoroState = ({
@@ -217,6 +216,13 @@ export default function RoomPage() {
     socket.on("pomodoroReset", handlePomodoroReset);
 
     // Handle timer completion
+    const playCompletionSound = () => {
+      const audio = new Audio('/sounds/timer-complete.mp3');
+      audio.play().catch((error) => {
+        console.warn("Audio play failed:", error);
+      });
+    };
+
     const handlePomodoroComplete = ({ sessionCount }) => {
       setPomodoroState((prev) => ({
         ...prev,
@@ -226,9 +232,7 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
-      // Play completion sound
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
+      playCompletionSound();
     };
     socket.on("pomodoroComplete", handlePomodoroComplete);
 
@@ -249,38 +253,38 @@ export default function RoomPage() {
 
     const handleUserJoined = ({ username, members = [] }) => {
       console.log(`New user joined: ${username}`);
-      setMembers(members);
+      if (Array.isArray(members)) {
+        setMembers(members);
+      } else {
+        console.warn('Invalid members data received:', members);
+      }
     };
 
     const handleUserLeft = ({ username }) => {
       console.log(`User left the room: ${username}`);
-      setMembers((prev) =>
-        (prev || []).filter((member) => member !== username)
-      );
+      setMembers((prev) => prev.filter(member => member !== username));
     };
 
     // Task event handlers
     const handleTaskAdded = (taskData) => {
       try {
-        if (typeof taskData === "string") {
-          setTasks((prev) => [
-            ...(prev || []),
-            {
-              id: uuidv4(),
-              text: taskData,
-            },
-          ]);
-        } else if (typeof taskData === "object" && taskData.text) {
-          setTasks((prev) => [
-            ...(prev || []),
-            {
-              id: taskData.id || uuidv4(),
-              text: taskData.text,
-            },
-          ]);
+        if (typeof taskData === 'string') {
+          // If taskData is just a string, create a task object
+          setTasks((prev) => [...(prev || []), {
+            id: uuidv4(),
+            text: taskData,
+            completed: false
+          }]);
+        } else if (typeof taskData === 'object' && taskData.text) {
+          // If taskData is already an object with text property
+          setTasks((prev) => [...(prev || []), {
+            id: taskData.id || uuidv4(),
+            text: taskData.text,
+            completed: taskData.completed || false
+          }]);
         }
       } catch (error) {
-        console.error("Error adding task:", error);
+        console.error('Error adding task:', error);
       }
     };
 
@@ -297,12 +301,7 @@ export default function RoomPage() {
     };
 
     // Break timer event handlers
-    const handleBreakState = ({
-      running,
-      timeLeft,
-      duration,
-      sessionCount,
-    }) => {
+    const handleBreakState = ({ running, timeLeft, duration, sessionCount }) => {
       setBreakState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -313,12 +312,7 @@ export default function RoomPage() {
       }
     };
 
-    const handleBreakStarted = ({
-      running,
-      timeLeft,
-      duration,
-      sessionCount,
-    }) => {
+    const handleBreakStarted = ({ running, timeLeft, duration, sessionCount }) => {
       setBreakState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -346,18 +340,26 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setBreakSessionCount(sessionCount);
       }
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
+      playCompletionSound();
     };
 
     // Listen for break duration updates from other users
-    socket.on("breakDurationUpdated", (data) => {
+    socket.on('breakDurationUpdated', (data) => {
       setSelectedBreakMinutes(data.duration);
-      setBreakState((prev) => ({
+      setBreakState(prev => ({
         ...prev,
         timeLeft: data.duration * 60,
-        duration: data.duration * 60,
+        duration: data.duration * 60
       }));
+    });
+
+    // Add this to your socket event listeners in useEffect
+    socket.on("taskToggled", ({ taskId, completed }) => {
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, completed } : task
+        )
+      );
     });
 
     // Listen for task updates
@@ -376,6 +378,15 @@ export default function RoomPage() {
     socket.on("breakStarted", handleBreakStarted);
     socket.on("breakTick", handleBreakTick);
     socket.on("breakComplete", handleBreakComplete);
+
+    // Add error handling
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
+
+    socket.on("error", (error) => {
+      console.error("Socket error:", error);
+    });
 
     // Cleanup function
     return () => {
@@ -396,12 +407,44 @@ export default function RoomPage() {
       socket.off("breakStarted", handleBreakStarted);
       socket.off("breakTick", handleBreakTick);
       socket.off("breakComplete", handleBreakComplete);
-      socket.off("breakDurationUpdated");
+      socket.off('breakDurationUpdated');
+      socket.off("taskToggled");
       socket.off("tasksUpdated");
+      socket.off("connect_error");
+      socket.off("error");
 
       socketService.disconnect();
     };
   }, [roomKey, username]);
+
+  useEffect(() => {
+    const handleSocketError = (error) => {
+      console.error('Socket error:', error);
+      // Optionally show user-friendly error message
+    };
+
+    const handleSocketConnect = () => {
+      console.log('Socket connected successfully');
+    };
+
+    const handleSocketDisconnect = (reason) => {
+      console.log('Socket disconnected:', reason);
+      // Attempt to reconnect
+      socketService.connect();
+    };
+
+    const socket = socketService.connect();
+    socket.on('connect_error', handleSocketError);
+    socket.on('connect', handleSocketConnect);
+    socket.on('disconnect', handleSocketDisconnect);
+
+    return () => {
+      socket.off('connect_error', handleSocketError);
+      socket.off('connect', handleSocketConnect);
+      socket.off('disconnect', handleSocketDisconnect);
+      socketService.disconnect();
+    };
+  }, []);
 
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
@@ -449,7 +492,7 @@ export default function RoomPage() {
       } else {
         socketService.socket.emit("addTask", {
           roomKey,
-          task: currentTask.trim(), // Send just the text
+          task: currentTask.trim() // Send just the text
         });
       }
       setCurrentTask("");
@@ -465,19 +508,12 @@ export default function RoomPage() {
 
   const startEditingTask = (task) => {
     setEditingTaskId(task.id);
-    setCurrentTask(typeof task === "string" ? task : task.text);
+    setCurrentTask(typeof task === 'string' ? task : task.text);
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(roomKey);
-    toast.success();
-    toast.info("Room key copied to clipboard!", {
-      position: "top-right",
-      autoClose: 5000,
-      closeOnClick: true,
-      pauseOnHover: false,
-      className: 'bg-[#00334D] text-white'
-    });
+    alert("Room key copied to clipboard!");
   };
 
   const leaveRoom = () => {
@@ -508,19 +544,23 @@ export default function RoomPage() {
   };
 
   const handleDurationChange = (newDuration) => {
+    // Update local state
     setDuration(newDuration);
-    socketService.socket?.emit("changeDuration", {
-      roomId: roomKey,
-      duration: newDuration,
-    });
+
+    // Emit duration change to all users in the room
+    if (socket) {
+      socket.emit('changeDuration', {
+        roomId: 'your-room-id', // Replace with actual room ID logic
+        duration: newDuration
+      });
+    }
   };
 
   const startBreak = () => {
-    const duration =
-      breakState.timeLeft > 0 && !breakState.isRunning
-        ? breakState.timeLeft
-        : selectedBreakMinutes * 60;
-
+    const duration = breakState.timeLeft > 0 && !breakState.isRunning 
+      ? breakState.timeLeft 
+      : selectedBreakMinutes * 60;
+      
     socketService.socket.emit("startBreak", {
       roomKey,
       duration: duration,
@@ -536,66 +576,68 @@ export default function RoomPage() {
   };
 
   const handleBreakDurationChange = (newDuration) => {
-    socketService.socket.emit("changeBreakDuration", {
+    socketService.socket.emit('changeBreakDuration', {
       roomId: roomKey,
-      duration: newDuration,
+      duration: newDuration
     });
+  };
+
+  const toggleTaskCompletion = (taskId) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    const newCompleted = !task.completed;
+
+    // Emit to other users
+    socket.emit('toggleTask', {
+      roomKey,
+      taskId,
+      completed: newCompleted
+    });
+
+    // Update local state
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, completed: newCompleted } : t
+      )
+    );
   };
 
   return (
     <div
       className="room-page flex flex-col min-h-screen w-full text-white"
       style={{
-        backgroundImage: 'url("/Night5.jpg")',
+        backgroundImage: `url('/Night5.jpg')`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        backgroundColor: "#001022",
-      }}
-      onError={(e) => {
-        console.error("Background image failed to load");
-        e.currentTarget.style.backgroundImage = "none";
       }}
     >
-      {connectionError && (
-        <div className="bg-red-500/80 text-white px-4 py-2 text-center">
-          {connectionError}
-        </div>
-      )}
       {/* Navbar */}
-      <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-        {/* Buttons row - always in one line */}
-        <div className="w-full flex justify-between sm:justify-between items-center gap-2">
-          <div className="sm:w-1/3 flex justify-start">
-            <button
-              onClick={copyToClipboard}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
-            >
-              Copy Room Key
-            </button>
-          </div>
-
-          <div className="flex gap-2 sm:w-1/3 sm:justify-end">
-            <button
-              onClick={() => setShowWhiteboard(true)}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
-            >
-              Open Whiteboard
-            </button>
-            <button
-              onClick={leaveRoom}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
-            >
-              Leave Room
-            </button>
-          </div>
+      <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
+        <div className="w-full sm:w-1/3 flex justify-center sm:justify-start">
+          <button
+            onClick={copyToClipboard}
+            className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+          >
+            Copy Room Key
+          </button>
         </div>
-
-        {/* Topic - centered below buttons on mobile, centered between them on desktop */}
-        <div className="w-full sm:absolute sm:left-1/2 sm:transform sm:-translate-x-1/2 text-center sm:w-auto">
-          <span className="text-2xl sm:text-2xl lg:text-3xl font-bold tracking-wide">
-            {topic || "Study Room"}
-          </span>
+        <div className="w-full sm:w-1/3 text-center">
+          <span className="text-lg sm:text-xl font-bold">{topic || "Study Room"}</span>
+        </div>
+        <div className="w-full sm:w-1/3 flex justify-center sm:justify-end gap-2">
+          <button
+            onClick={() => setShowWhiteboard(true)}
+            className="bg-blue-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+          >
+            Open Whiteboard
+          </button>
+          <button
+            onClick={leaveRoom}
+            className="bg-red-500 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-red-600 transition-colors text-sm"
+          >
+            Leave Room
+          </button>
         </div>
       </nav>
 
@@ -611,12 +653,12 @@ export default function RoomPage() {
                 <li key={index} className="flex items-center justify-between">
                   <span>{memberUsername}</span>
                   {memberUsername === username && (
-                    <span className="text-xs bg-white text-[#00334D] px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-green-500 px-2 py-1 rounded-full">
                       You
                     </span>
                   )}
                   {memberUsername === creator && (
-                    <span className="text-xs bg-white text-[#00334D] px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs bg-blue-500 px-2 py-1 rounded-full">
                       Host
                     </span>
                   )}
@@ -640,14 +682,14 @@ export default function RoomPage() {
                 onChange={(e) => {
                   const newDuration = Number(e.target.value);
                   setSelectedMinutes(newDuration);
-                  socketService.socket.emit("changeDuration", {
+                  socketService.socket.emit('changeDuration', {
                     roomId: roomKey,
-                    duration: newDuration,
+                    duration: newDuration
                   });
                   setPomodoroState({
                     isRunning: false,
                     timeLeft: newDuration * 60,
-                    duration: newDuration * 60,
+                    duration: newDuration * 60
                   });
                 }}
                 className="bg-gray-700 text-white px-4 py-2 rounded-lg w-full"
@@ -670,7 +712,7 @@ export default function RoomPage() {
                 {!pomodoroState.isRunning ? (
                   <button
                     onClick={startPomodoro}
-                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                    className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                     disabled={pomodoroState.isRunning}
                   >
                     Start
@@ -678,14 +720,14 @@ export default function RoomPage() {
                 ) : (
                   <button
                     onClick={pausePomodoro}
-                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                    className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
                   >
                     Pause
                   </button>
                 )}
                 <button
                   onClick={resetPomodoro}
-                  className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                  className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Reset
                 </button>
@@ -708,9 +750,7 @@ export default function RoomPage() {
               </div>
               <select
                 value={selectedBreakMinutes}
-                onChange={(e) =>
-                  handleBreakDurationChange(Number(e.target.value))
-                }
+                onChange={(e) => handleBreakDurationChange(Number(e.target.value))}
                 className="bg-gray-700 text-white px-4 py-2 rounded-lg w-full"
                 disabled={breakState.isRunning}
               >
@@ -722,7 +762,7 @@ export default function RoomPage() {
                 {!breakState.isRunning ? (
                   <button
                     onClick={startBreak}
-                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                    className="bg-green-500 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                     disabled={breakState.isRunning}
                   >
                     Start Break
@@ -730,14 +770,14 @@ export default function RoomPage() {
                 ) : (
                   <button
                     onClick={pauseBreak}
-                    className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                    className="bg-yellow-500 px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
                   >
                     Pause Break
                   </button>
                 )}
                 <button
                   onClick={resetBreak}
-                  className="bg-white text-[#00334D] px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                  className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Reset Break
                 </button>
@@ -751,11 +791,11 @@ export default function RoomPage() {
           {/* To-Do Section */}
           <div className="bg-[#001022]/50 p-3 rounded-lg flex flex-col h-[280px]">
             <h2 className="text-xl font-semibold mb-4">To-Do List</h2>
-            <form
+            <form 
               onSubmit={(e) => {
                 e.preventDefault();
                 addTask();
-              }}
+              }} 
               className="space-y-2"
             >
               <input
@@ -769,22 +809,64 @@ export default function RoomPage() {
               />
               <button
                 type="submit"
-                className="bg-white text-[#00334D] py-2 px-4 rounded-lg w-full hover:bg-gray-100 transition-colors text-[15px] font-medium"
+                className="bg-green-500 text-white py-2 px-4 rounded-lg w-full hover:bg-green-600 transition-colors"
               >
                 {editingTaskId !== null ? "Edit Task" : "Add Task"}
               </button>
             </form>
             <ul className="mt-2 space-y-2 overflow-y-auto flex-grow">
-              {Array.isArray(memoizedTasks) &&
-                memoizedTasks.map((task) => (
-                  <li
-                    key={task.id || uuidv4()}
-                    className="flex items-center justify-between bg-gray-700/50 p-2 rounded-lg hover:bg-gray-700/70 transition-colors group"
-                  >
-                    <span className="flex-grow text-white">
-                      {typeof task === "string" ? task : task.text}
+              {Array.isArray(memoizedTasks) && memoizedTasks.map((task) => (
+                <li
+                  key={task.id || uuidv4()}
+                  className="flex items-center justify-between bg-gray-700/50 p-2 rounded-lg hover:bg-gray-700/70 transition-colors group"
+                >
+                  <div className="flex items-center gap-3 flex-grow">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={!!task.completed}
+                        onChange={() => {
+                          // Emit socket event first to ensure real-time sync
+                          socket.emit('toggleTask', {
+                            roomKey,
+                            taskId: task.id,
+                            completed: !task.completed
+                          });
+                          // Then update local state
+                          toggleTaskCompletion(task.id);
+                        }}
+                        className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-gray-500 bg-gray-700/50 
+                                 transition-colors checked:border-blue-500 checked:bg-blue-500 hover:border-blue-400
+                                 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                      />
+                      <svg
+                        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 
+                                 peer-checked:opacity-100 transition-opacity"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 3L4.5 8.5L2 6"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                    <span className={`flex-grow transition-all duration-200 ${
+                      task.completed 
+                        ? "text-gray-400 line-through italic" 
+                        : "text-white"
+                    }`}>
+                      {typeof task === 'string' ? task : task.text}
                     </span>
-                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {!task.completed && (
                       <button
                         type="button"
                         onClick={() => startEditingTask(task)}
@@ -792,29 +874,27 @@ export default function RoomPage() {
                       >
                         <BiEdit size={18} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => deleteTask(task.id)}
-                        className="text-red-400 hover:text-red-300 transition-colors p-1"
-                      >
-                        <BiTrash size={18} />
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => deleteTask(task.id)}
+                      className="text-red-400 hover:text-red-300 transition-colors p-1"
+                    >
+                      <BiTrash size={18} />
+                    </button>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
         {/* Video Conference Section - Adjusted spacing */}
-        <div className="relative w-full h-[250px] sm:h-[334px] bg-[#001022]/50 rounded-lg mt-2 sm:mt-[-5px]">
-          <div
-            ref={meetingContainerRef}
-            className="w-full h-[245px] sm:h-[335px] mt-[1px]"
-          ></div>
+        <div className="relative w-full h-[250px] sm:h-[338.6px] bg-[#001022]/50 rounded-lg mt-2 sm:mt-[-5px]">
+          <div ref={meetingContainerRef} className="w-full h-[245px] sm:h-[335px] mt-[2px]"></div>
           <button
             onClick={toggleFullscreen}
-            className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-white text-[#00334D] py-1.5 sm:py-2 px-3 sm:px-4 rounded-md z-10 text-[15px] font-medium hover:bg-gray-100 transition-colors"
+            className="absolute top-2 sm:top-4 left-2 sm:left-4 text-white bg-[#00334D] py-1.5 sm:py-2 px-3 sm:px-4 rounded-md z-10 text-sm"
           >
             ⛶ Full Screen
           </button>
@@ -822,9 +902,11 @@ export default function RoomPage() {
       </div>
 
       {showWhiteboard && (
-        <Whiteboard roomId={roomKey} onClose={() => setShowWhiteboard(false)} />
+        <Whiteboard
+          roomId={roomKey}
+          onClose={() => setShowWhiteboard(false)}
+        />
       )}
-      <ToastContainer />
     </div>
   );
 }
