@@ -73,7 +73,7 @@ const ContactUs = () => {
     <div
       className="bg-gray-100 py-12 px-6 sm:px-12 min-h-screen"
       style={{
-        backgroundImage: "url(Night5.jpg)",
+        backgroundImage: "url(/Night5.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
