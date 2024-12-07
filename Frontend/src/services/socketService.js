@@ -1,38 +1,39 @@
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-<<<<<<< HEAD
-class SocketService {
-  constructor() {
-    this.socket = null;
-  }
-
-  connect() {
-    if (!this.socket) {
-      this.socket = io('http://localhost:5001', {
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        timeout: 10000,
-      });
-    }
-    return this.socket;
-  }
-=======
-const SOCKET_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.VITE_SOCKET_URL 
-  : 'http://localhost:5001';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://studysphere-github.onrender.com';
 
 const socket = io(SOCKET_URL, {
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'],
+  secure: true,
+  rejectUnauthorized: false,
   withCredentials: true,
+  autoConnect: true,
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  timeout: 20000,
+  path: '/socket.io/'
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Socket connection error:', error);
+});
+
+socket.on('error', (error) => {
+  console.error('Socket error:', error);
 });
 
 const socketService = {
   socket,
-  connect: () => socket.connect(),
+  connect: () => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+    return socket;
+  },
   disconnect: () => socket.disconnect(),
   emit: (event, data) => {
-    if (socket) {
+    if (socket && socket.connected) {
       socket.emit(event, data);
     }
   },
@@ -47,21 +48,5 @@ const socketService = {
     }
   },
 };
->>>>>>> parent of 580afce (Merge branch 'atul-check')
 
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-    }
-  }
-
-  emit(event, data) {
-    if (this.socket) {
-      this.socket.emit(event, data);
-    }
-  }
-}
-
-const socketService = new SocketService();
 export default socketService; 
