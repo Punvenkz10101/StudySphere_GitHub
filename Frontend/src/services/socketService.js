@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://studysphere-github.onrender.com';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://studysphere-w27w.onrender.com';
 
 const socket = io(SOCKET_URL, {
   transports: ['polling', 'websocket'],
