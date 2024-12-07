@@ -4,7 +4,6 @@ import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { v4 as uuidv4 } from "uuid";
 import { BiTrash, BiEdit, BiFullscreen } from "react-icons/bi";
 import socketService from "../services/socketService";
-import io from "socket.io-client";
 import Whiteboard from "./Whiteboard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -564,27 +563,29 @@ export default function RoomPage() {
       )}
       {/* Navbar */}
       <nav className="w-full bg-[#001022]/50 p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-        {/* Buttons row - always in one line */}
-        <div className="w-full flex justify-between sm:justify-between items-center gap-2">
-          <div className="sm:w-1/3 flex justify-start">
+        {/* Buttons row - vertical on mobile, horizontal on desktop */}
+        <div className="w-full flex flex-col sm:flex-row justify-between sm:justify-between items-center gap-2">
+          {/* Left side button */}
+          <div className="w-full sm:w-1/3 sm:flex sm:justify-start">
             <button
               onClick={copyToClipboard}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+              className="w-full sm:w-auto bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
             >
               Copy Room Key
             </button>
           </div>
 
-          <div className="flex gap-2 sm:w-1/3 sm:justify-end">
+          {/* Right side buttons - stacked on mobile */}
+          <div className="w-full sm:w-1/3 flex flex-col sm:flex-row sm:justify-end gap-2">
             <button
               onClick={() => setShowWhiteboard(true)}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+              className="w-full sm:w-auto bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
             >
               Open Whiteboard
             </button>
             <button
               onClick={leaveRoom}
-              className="bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
+              className="w-full sm:w-auto bg-white text-[#00334D] px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-[14px] sm:text-[15px] font-medium whitespace-nowrap"
             >
               Leave Room
             </button>
