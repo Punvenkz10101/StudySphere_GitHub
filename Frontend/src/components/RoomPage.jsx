@@ -85,18 +85,9 @@ export default function RoomPage() {
       showMyCameraToggleButton: true,
       showMyMicrophoneToggleButton: true,
       showAudioVideoSettingsButton: true,
-      onJoinRoom: () => {
-        // Request permissions after joining
-        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-          .then(() => {
-            console.log('Permissions granted');
-          })
-          .catch((err) => {
-            console.warn('Media permissions denied:', err);
-          });
-      }
     });
 
+    // Cleanup function
     return () => {
       try {
         if (meetingContainerRef.current) {
@@ -149,7 +140,12 @@ export default function RoomPage() {
     });
 
     // Handle initial Pomodoro state when joining
-    const handlePomodoroState = ({ running, timeLeft, duration, sessionCount }) => {
+    const handlePomodoroState = ({
+      running,
+      timeLeft,
+      duration,
+      sessionCount,
+    }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -162,7 +158,12 @@ export default function RoomPage() {
     socket.on("pomodoroState", handlePomodoroState);
 
     // Handle timer start
-    const handlePomodoroStarted = ({ running, timeLeft, duration, sessionCount }) => {
+    const handlePomodoroStarted = ({
+      running,
+      timeLeft,
+      duration,
+      sessionCount,
+    }) => {
       setPomodoroState({
         isRunning: running,
         timeLeft: timeLeft,
@@ -220,6 +221,9 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
+      // Play completion sound
+      const audio = new Audio("/timer-complete.mp3");
+      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
     socket.on("pomodoroComplete", handlePomodoroComplete);
 
@@ -240,16 +244,14 @@ export default function RoomPage() {
 
     const handleUserJoined = ({ username, members = [] }) => {
       console.log(`New user joined: ${username}`);
-      if (Array.isArray(members)) {
-        setMembers(members);
-      } else {
-        console.warn('Invalid members data received:', members);
-      }
+      setMembers(members);
     };
 
     const handleUserLeft = ({ username }) => {
       console.log(`User left the room: ${username}`);
-      setMembers((prev) => prev.filter(member => member !== username));
+      setMembers((prev) =>
+        (prev || []).filter((member) => member !== username)
+      );
     };
 
     // Task event handlers
@@ -323,6 +325,8 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setBreakSessionCount(sessionCount);
       }
+      const audio = new Audio("/timer-complete.mp3");
+      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
 
     // Listen for break duration updates from other users
@@ -352,15 +356,6 @@ export default function RoomPage() {
     socket.on("breakTick", handleBreakTick);
     socket.on("breakComplete", handleBreakComplete);
 
-    // Add error handling
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-    });
-
-    socket.on("error", (error) => {
-      console.error("Socket error:", error);
-    });
-
     // Cleanup function
     return () => {
       socket.off("pomodoroState", handlePomodoroState);
@@ -382,8 +377,6 @@ export default function RoomPage() {
       socket.off("breakComplete", handleBreakComplete);
       socket.off('breakDurationUpdated');
       socket.off("tasksUpdated");
-      socket.off("connect_error");
-      socket.off("error");
 
       socketService.disconnect();
     };

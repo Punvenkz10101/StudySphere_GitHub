@@ -6,7 +6,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const roomRoutes = require("./routes/roomRoutes");
 const contactRoutes = require("./routes/contactRoutes");
-const path = require("path");
 
 dotenv.config();
 
@@ -14,43 +13,23 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["https://study-sphere-git-hub.vercel.app", "http://localhost:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  },
-  transports: ['polling', 'websocket'],
-  allowEIO3: true,
-  pingTimeout: 60000,
-  pingInterval: 25000
+    credentials: true
+  }
 });
 
 app.set('io', io);
-const allowedOrigins = [
-  'https://study-sphere-git-hub.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:3000',
-  // Allow all Vercel preview deployments
-  // /^https:\/\/study-sphere-git-.*\.vercel\.app$/
-];
 
-// Update CORS middleware
+// Middleware
 app.use(cors({
-  origin: ["https://study-sphere-git-hub.vercel.app", "http://localhost:5173"],
+  origin: process.env.NODE_ENV === 'development' 
+    ? true 
+    : process.env.CORS_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-// Middleware
-// app.use(cors({
-//   origin: process.env.NODE_ENV === 'development' 
-//     ? true 
-//     : process.env.CORS_ORIGIN,
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   credentials: true,
-//   allowedHeaders: ["Content-Type", "Authorization"]
-// }));
 app.use(express.json());
 
 // Add before your routes
@@ -455,9 +434,6 @@ io.on("connection", (socket) => {
     whiteboardStates.delete(roomKey);
   });
 });
-
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../Frontend/public')));
 
 // Start the server
 const PORT = process.env.PORT || 5001;

@@ -13,9 +13,9 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
-    "express": "^4.18.2",
-    "mongoose": "^6.12.0",
-    "socket.io": "^4.7.2"
+    "express": "^4.21.1",
+    "mongoose": "^6.13.5",
+    "socket.io": "^4.5.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
