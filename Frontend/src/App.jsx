@@ -17,7 +17,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastContainer, toast } from 'react-toastify';
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -70,7 +70,7 @@ function App() {
         </Routes>
       </ErrorBoundary>
       <ToastContainer />
-      <SpeedInsights />
+      <Analytics />
     </div>
   );
 }
