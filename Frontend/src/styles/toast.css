@@ -1,0 +1,12 @@
+/* Custom toast styles */
+.Toastify__toast--error,
+.Toastify__toast--info,
+.Toastify__toast--success {
+  background-color: #00334D !important;
+  color: white !important;
+}
+
+/* Progress bar color */
+.Toastify__progress-bar {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+} 

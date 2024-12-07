@@ -8,6 +8,7 @@ import io from "socket.io-client";
 import Whiteboard from "./Whiteboard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../styles/toast.css";
 
 export default function RoomPage() {
   const { roomKey } = useParams();
@@ -125,6 +126,10 @@ export default function RoomPage() {
       toast.error("Connection error. Retrying...", {
         position: "top-right",
         autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: 'bg-[#00334D] text-white'
       });
     });
 
@@ -469,9 +474,9 @@ export default function RoomPage() {
     toast.info("Room key copied to clipboard!", {
       position: "top-right",
       autoClose: 5000,
-
       closeOnClick: true,
       pauseOnHover: false,
+      className: 'bg-[#00334D] text-white'
     });
   };
 
