@@ -11,8 +11,7 @@ const socket = io(SOCKET_URL, {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-  timeout: 20000,
-  path: '/socket.io/'
+  timeout: 10000
 });
 
 socket.on('connect_error', (error) => {

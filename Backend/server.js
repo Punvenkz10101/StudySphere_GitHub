@@ -6,30 +6,60 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const roomRoutes = require("./routes/roomRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const path = require("path");
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = [
+    'https://study-sphere-git-hub.vercel.app',
+    'https://study-sphere-git-hub-git-pune-1fff25-puneeths-projects-f34775d1.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+];
+
 const io = socketIo(server, {
-  cors: {
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true
+    },
+    transports: ['polling', 'websocket'],
+    allowEIO3: true,
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 app.set('io', io);
 
-// Middleware
+// Update Express CORS middleware
 app.use(cors({
-  origin: process.env.NODE_ENV === 'development' 
-    ? true 
-    : process.env.CORS_ORIGIN,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"]
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Add OPTIONS preflight handler
+app.options('*', cors());
+
+// Middleware
+// app.use(cors({
+//   origin: process.env.NODE_ENV === 'development' 
+//     ? true 
+//     : process.env.CORS_ORIGIN,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   credentials: true,
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
 app.use(express.json());
 
 // Add before your routes
@@ -189,6 +219,7 @@ io.on("connection", (socket) => {
     const taskData = {
       id: Date.now().toString(),
       text: task,
+      completed: false,
       createdBy: socket.id,
     };
 
@@ -406,6 +437,22 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Handle task toggling
+  socket.on('toggleTask', ({ roomKey, taskId, completed }) => {
+    if (roomTasks.has(roomKey)) {
+        const tasks = roomTasks.get(roomKey);
+        const updatedTasks = tasks.map(task => 
+            task.id === taskId ? { ...task, completed } : task
+        );
+        roomTasks.set(roomKey, updatedTasks);
+        
+        // Send updated tasks to all users in the room
+        io.to(roomKey).emit("tasksUpdated", {
+            tasks: updatedTasks
+        });
+    }
+  });
+
   socket.on('join-whiteboard-room', (roomId) => {
     socket.join(`whiteboard-${roomId}`);
     
@@ -434,6 +481,9 @@ io.on("connection", (socket) => {
     whiteboardStates.delete(roomKey);
   });
 });
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../Frontend/public')));
 
 // Start the server
 const PORT = process.env.PORT || 5001;

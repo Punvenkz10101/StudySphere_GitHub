@@ -20,7 +20,7 @@
     "@tailwindcss/typography": "^0.5.15",
     "@zegocloud/zego-uikit-prebuilt": "^2.12.3",
     "aos": "^3.0.0-beta.6",
-    "axios": "^1.7.7",
+    "axios": "^1.x.x",
     "bootstrap": "^5.3.3",
     "firebase": "^11.0.1",
     "icons": "^1.0.0",
@@ -33,9 +33,10 @@
     "react-router-dom": "^6.28.0",
     "react-toastify": "^10.0.6",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
+    "socket.io-client": "^4.x.x",
     "typed.js": "^2.1.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
