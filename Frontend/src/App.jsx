@@ -17,6 +17,9 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastContainer, toast } from 'react-toastify';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -43,34 +46,10 @@ function App() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
-      {!isRoomPage && <Overlay />}
-      
-      {/* Render Modals */}
-      {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} />}
-      {showJoinRoom && <JoinRoomModal onClose={toggleJoinRoomModal} navigate={navigate} />}
-
-      <ErrorBoundary>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <HeroSection  onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
-                <CTA_Section />
-                <Features />
-                <Team />
-                <FAQSection />
-                <Footer />
-              </>
-            }
-          />
-          <Route path="/rooms/:roomKey" element={<RoomPage />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-        </Routes>
-      </ErrorBoundary>
-      <ToastContainer />
-    </div>
+    <Router>
+      <AppRoutes />
+      <SpeedInsights />
+    </Router>
   );
 }
 
