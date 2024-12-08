@@ -23,6 +23,7 @@ function App() {
   const [showJoinRoom, setShowJoinRoom] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [reconnecting, setReconnecting] = useState(false);
 
   const toggleCreateRoomModal = () => {
     setShowCreateRoom(!showCreateRoom);
@@ -41,6 +42,45 @@ function App() {
       once: true,
     });
   }, []);
+
+  useEffect(() => {
+    // Handle page refresh and reconnection
+    const handleBeforeUnload = () => {
+      const currentRoom = localStorage.getItem('currentRoom');
+      if (currentRoom) {
+        localStorage.setItem('needsReconnect', 'true');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Check if we need to reconnect on component mount
+    const needsReconnect = localStorage.getItem('needsReconnect');
+    if (needsReconnect === 'true') {
+      setReconnecting(true);
+      // Clear the reconnect flag
+      localStorage.removeItem('needsReconnect');
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  const handleRoomCreated = (roomId) => {
+    localStorage.setItem('currentRoom', roomId);
+    // Your existing room creation logic...
+  };
+
+  const handleRoomJoined = (roomId) => {
+    localStorage.setItem('currentRoom', roomId);
+    // Your existing room joining logic...
+  };
+
+  const handleLeaveRoom = () => {
+    localStorage.removeItem('currentRoom');
+    // Your existing room leaving logic...
+  };
 
   return (
     <div className="overflow-x-hidden">
