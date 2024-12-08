@@ -17,6 +17,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastContainer, toast } from 'react-toastify';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -34,7 +35,6 @@ function App() {
 
   const isRoomPage = location.pathname.startsWith('/rooms/');
 
-  // Initialize AOS in useEffect
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -44,7 +44,6 @@ function App() {
 
   return (
     <div className="overflow-x-hidden">
-      {!isRoomPage && <Overlay />}
       
       {/* Render Modals */}
       {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} navigate={navigate} />}
@@ -56,8 +55,10 @@ function App() {
             path="/"
             element={
               <>
-                <HeroSection  onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
-                <CTA_Section />
+                <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
+                {!isRoomPage && <Overlay /> }
+      
+              
                 <Features />
                 <Team />
                 <FAQSection />
@@ -70,6 +71,7 @@ function App() {
         </Routes>
       </ErrorBoundary>
       <ToastContainer />
+      <Analytics />
     </div>
   );
 }

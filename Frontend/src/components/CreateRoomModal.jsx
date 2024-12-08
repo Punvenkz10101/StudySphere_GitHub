@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { auth } from '../components/Firebase/firebase.js';
 import SigninPage from "./SignInPage.jsx";
+import Overlay from "./Overlay.jsx";
 
 
 const CreateRoomModal = ({ onClose }) => {
@@ -84,6 +85,8 @@ const CreateRoomModal = ({ onClose }) => {
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
           onClose={onClose}
+          toggleSignupOverlay={() => console.log("Open Signup Overlay")}
+          
           
         />
       </div>

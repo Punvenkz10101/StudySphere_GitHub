@@ -54,6 +54,7 @@ export default function HeroSection({ onCreateRoomClick, onJoinRoomClick }) {
           </button>
         </div>
       </div>
+      
     </section>
   );
 }

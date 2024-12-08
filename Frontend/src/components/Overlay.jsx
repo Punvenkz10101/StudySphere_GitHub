@@ -5,6 +5,7 @@ import SigninPage from '../components/SignInPage.jsx';
 import SignupPage from '../components/SignUpPage.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CTA_Section from './CTA_Section.jsx';
 const Overlay = () => {
   const [user, setUser] = useState(null); // User state
   const [showSignin, setShowSignin] = useState(false);
@@ -57,7 +58,7 @@ const Overlay = () => {
           <SignupPage onClose={toggleSignupOverlay} toggleSigninOverlay={toggleSigninOverlay} />
         </div>
       )}
-
+      <CTA_Section onSignInClick={toggleSigninOverlay} />
     </div>
   )
 }
