@@ -65,11 +65,8 @@ const Overlay = () => {
   return (
     <div>
       <Header 
-        onLoginClick={toggleSigninOverlay} 
-        onSignUpClick={toggleSignupOverlay} 
-        user={user} // Pass the user state to Header
-        onSignOut={handleSignOut} 
-      />
+        onLoginClick={toggleSigninOverlay} onSignUpClick={toggleSignupOverlay} 
+        user={user} onSignOut={handleSignOut} />
       {/* Render Modals */}
       {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
       {showJoinRoom && <JoinRoomModal onClose={toggleJoinRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
