@@ -70,7 +70,7 @@ const Overlay = () => {
       {/* Render Modals */}
       {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
       {showJoinRoom && <JoinRoomModal onClose={toggleJoinRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
-
+{/*  */}
 
       {/* Hero section */}
       <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
