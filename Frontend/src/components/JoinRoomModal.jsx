@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from '../components/Firebase/firebase.js';
 import SigninPage from "./SignInPage.jsx";
 
-const JoinRoomModal = ({ onClose }) => {
+const JoinRoomModal = ({ onClose,toggleSignupOverlay }) => {
   const [roomKey, setRoomKey] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -67,6 +67,7 @@ const JoinRoomModal = ({ onClose }) => {
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
           onClose={onClose}
+          toggleSignupOverlay={toggleSignupOverlay}
         />
       </div>
     );
