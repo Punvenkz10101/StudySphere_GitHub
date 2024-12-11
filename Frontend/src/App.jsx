@@ -19,7 +19,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Analytics } from "@vercel/analytics/react"
 
 function App() {
+
  
+
 
   return (
     <div className="overflow-x-hidden">
@@ -32,9 +34,11 @@ function App() {
             path="/"
             element={
               <>
+s
              { <Overlay /> }
       
               
+
                 <Features />
                 <Team />
                 <FAQSection />

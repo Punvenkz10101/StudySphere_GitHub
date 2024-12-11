@@ -94,7 +94,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+        className="w-full py-3 mt-4 bg-[#00334D] text-white font-semibold rounded-md hover:[#002836]"
       >
         Sign Up
       </button>
@@ -115,7 +115,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
             onClose(); // Close the sign-up overlay
             toggleSigninOverlay(); // Open the sign-in overlay
           }}
-          className="text-blue-500 hover:underline"
+          className="text-[#00334D] hover:underline"
         >
           Sign In
         </button>

@@ -75,12 +75,13 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+        className="w-full py-3 mt-4 bg-[#00334D] text-white font-semibold rounded-md hover:bg-[#002836]"
       >
         Sign In
       </button>
 
       <p className="text-center mt-4">
+
   Don't have an account?{" "}
   <button
     onClick={() => {
@@ -92,6 +93,7 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
     Create Account
   </button>
 </p>
+
 
 
 
