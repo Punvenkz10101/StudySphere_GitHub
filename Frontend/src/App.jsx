@@ -9,7 +9,7 @@ import Team from './components/Team.jsx';
 import FAQSection from './components/FAQSection.jsx';
 import Footer from './components/Footer.jsx';
 import Overlay from './components/Overlay.jsx';
-import Header from './components/Header.jsx';
+
 
 import RoomPage from './components/RoomPage.jsx';
 import ContactUs from './components/ContactUs.jsx';
@@ -36,9 +36,6 @@ function App() {
             element={
               <>
              { <Overlay /> }
-      
-              
-
                 <Features />
                 <Team />
                 <FAQSection />
@@ -46,13 +43,11 @@ function App() {
               </>
             }
           />
-          <Route path="/rooms/:roomKey" element={
-            <RoomPage />
-          
-            } />
+          <Route path="/rooms/:roomKey" element={<RoomPage />} />
           <Route path="/contact-us" element={
-             <>{ <Header /> }
+             <>
             <ContactUs />
+            { <Overlay /> }
             </>} />
         </Routes>
       </ErrorBoundary>
