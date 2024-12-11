@@ -9,6 +9,7 @@ import Team from './components/Team.jsx';
 import FAQSection from './components/FAQSection.jsx';
 import Footer from './components/Footer.jsx';
 import Overlay from './components/Overlay.jsx';
+import Header from './components/Header.jsx';
 
 import RoomPage from './components/RoomPage.jsx';
 import ContactUs from './components/ContactUs.jsx';
@@ -34,7 +35,6 @@ function App() {
             path="/"
             element={
               <>
-s
              { <Overlay /> }
       
               
@@ -46,8 +46,14 @@ s
               </>
             }
           />
-          <Route path="/rooms/:roomKey" element={<RoomPage />} />
-          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/rooms/:roomKey" element={
+            <RoomPage />
+          
+            } />
+          <Route path="/contact-us" element={
+             <>{ <Header /> }
+            <ContactUs />
+            </>} />
         </Routes>
       </ErrorBoundary>
       <ToastContainer />
