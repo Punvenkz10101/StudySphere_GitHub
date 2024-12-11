@@ -3,9 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { auth } from '../components/Firebase/firebase.js';
 import SigninPage from "./SignInPage.jsx";
+import Overlay from "./Overlay.jsx";
 
 
-const CreateRoomModal = ({ onClose }) => {
+const CreateRoomModal = ({ onClose,toggleSignupOverlay }) => {
   const [creator, setCreator] = useState("");
   const [topic, setTopic] = useState("");
   const [participantsLimit, setParticipantsLimit] = useState(1);
@@ -84,6 +85,8 @@ const CreateRoomModal = ({ onClose }) => {
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <SigninPage
           onClose={onClose}
+          toggleSignupOverlay={toggleSignupOverlay}
+          
           
         />
       </div>

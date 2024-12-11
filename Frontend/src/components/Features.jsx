@@ -1,27 +1,35 @@
 import AOS from "aos";
-import "aos/dist/aos.css";
 
-// Initialize AOS with smooth animations
+import "aos/dist/aos.css"; // Ensure you include the AOS CSS
+
+// Initialize AOS with optional settings
+
 AOS.init({
   // Global settings:
-  disable: false,
-  startEvent: "DOMContentLoaded",
-  initClassName: "aos-init",
-  animatedClassName: "aos-animate",
-  useClassNames: false,
-  disableMutationObserver: false,
-  debounceDelay: 50,
-  throttleDelay: 99,
+  disable: false, // Set to true to disable AOS on certain devices (use function or breakpoint)
+  startEvent: "DOMContentLoaded", // Event that triggers AOS initialization
+  initClassName: "aos-init", // CSS class added to the element on initialization
+  animatedClassName: "aos-animate", // CSS class added after animation
+  useClassNames: false, // If true, adds `data-aos` values as classes on scroll
+  disableMutationObserver: false, // If true, disables mutation observing
+  debounceDelay: 50, // Delay for debounce in milliseconds
+  throttleDelay: 99, // Delay for throttle in milliseconds
 
   // Animation settings:
-  offset: 100, // Reduced offset for smoother animations
-  delay: 100, // Reduced delay for a more natural effect
-  duration: 1000, // Smooth animation duration
-  easing: "ease-in-out", // Smooth easing curve
-  once: true, // Trigger animations only once
-  mirror: false, // Disable mirror effect for cleaner animations
-  anchorPlacement: "top-center", // Focused trigger point
+
+  offset: 120, // Offset (in px) from the original trigger point
+  delay: 200, // Delay (in ms) between trigger and animation
+  duration: 2000, // Duration (in ms) for the animation
+  easing: "ease", // Easing function for animations
+  once: false, // If true, animation only happens once
+  mirror: true, // If true, animations happen when scrolling past elements (backward)
+  anchorPlacement: "top-bottom", // Defines which position of the element triggers animation
 });
+
+// Refresh animations on content updates
+AOS.refresh();
+
+
 
 export default function FeaturesSection() {
   const features = [

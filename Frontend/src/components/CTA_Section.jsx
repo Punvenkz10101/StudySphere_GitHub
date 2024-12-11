@@ -1,7 +1,7 @@
 import React from "react";
 import SigninPage from "./SignInPage";
 
-const CTA_Section = () => {
+const CTA_Section = ({ onSignInClick }) => {
   return (
     <div className="bg-[#F2F2F2] py-10 md:py-0 flex flex-col md:flex-row items-center justify-center">
       {/* Adjusted padding */}
@@ -21,6 +21,7 @@ const CTA_Section = () => {
 
         <div className="mt-6 flex flex-col md:flex-row items-start md:justify-start gap-2 ml-12 md:ml-8">
           <button
+           onClick={onSignInClick}
             href="#"
             className="rounded-md bg-[#00334D] px-6 py-2 md:px-7 md:py-2 text-[16px] font-semibold text-white shadow-md hover:bg-[#004466] transition duration-300 transform hover:scale-105"
           >

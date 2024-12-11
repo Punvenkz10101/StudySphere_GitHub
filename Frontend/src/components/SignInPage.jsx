@@ -81,17 +81,22 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       </button>
 
       <p className="text-center mt-4">
-        Don't have an account?{" "}
-        <button
-          onClick={() => {
-            onClose(); // Close the sign-in overlay
-            toggleSignupOverlay(); // Open the sign-up overlay
-          }}
-          className="text-[#00334D] hover:underline"
-        >
-          Create Account
-        </button>
-      </p>
+
+  Don't have an account?{" "}
+  <button
+    onClick={() => {
+      onClose(); // Close the Sign-In overlay
+      toggleSignupOverlay(); // Open the Sign-Up overlay
+    }}
+    className="text-blue-500 hover:underline"
+  >
+    Create Account
+  </button>
+</p>
+
+
+
+
     </div>
   );
 };
