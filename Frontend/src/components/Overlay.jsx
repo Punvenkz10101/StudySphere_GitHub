@@ -20,6 +20,7 @@ const Overlay = () => {
   const [showJoinRoom, setShowJoinRoom] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const homePage=location.pathname === '/';
 
   const toggleCreateRoomModal = () => {
     setShowCreateRoom(!showCreateRoom);
@@ -83,7 +84,6 @@ const Overlay = () => {
       {showCreateRoom && <CreateRoomModal onClose={toggleCreateRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
       {showJoinRoom && <JoinRoomModal onClose={toggleJoinRoomModal} toggleSignupOverlay={toggleSignupOverlay} navigate={navigate} />}
       
-      <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
       
       {showSignin && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -97,8 +97,13 @@ const Overlay = () => {
         </div>
       )}
       
-      <CTA_Section onSignInClick={toggleSigninOverlay} onSignUpClick={toggleSignupOverlay} />
-      <ToastContainer />
+      {homePage && (
+        <>
+              <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
+          <CTA_Section onSignInClick={toggleSigninOverlay} onSignUpClick={toggleSignupOverlay} />
+          <ToastContainer />
+        </>
+      )}
     </div>
   );
 };

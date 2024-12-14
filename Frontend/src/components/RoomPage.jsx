@@ -479,32 +479,38 @@ export default function RoomPage() {
     });
   };
 
-  const leaveRoom = () => {
-    try {
-      // Disconnect from the socket room
-      if (socketService.socket) {
-        socketService.socket.emit("leaveRoom", { roomKey, username });
-        socketService.disconnect();
+    const leaveRoom = async () => {
+      try {
+        // If a Zego instance exists, leave the room
+        if (meetingContainerRef.current) {
+          const zgInstance = ZegoUIKitPrebuilt.getInstance();
+          if (zgInstance) {
+            await zgInstance.leaveRoom();
+            console.log("Successfully logged out of the room.");
+          }
+        }
+    
+        // Disconnect from the socket room
+        if (socketService.socket) {
+          socketService.socket.emit("leaveRoom", { roomKey, username });
+          socketService.disconnect();
+        }
+    
+        // Reset timers if running
+        if (pomodoroState.isRunning) {
+          resetPomodoro();
+        }
+    
+        // Navigate to the home page
+        navigate("/", { replace: true });
+      } catch (error) {
+        console.error("Error leaving the room:", error);
+    
+        // Navigate to the home page even if there’s an error
+        navigate("/", { replace: true });
       }
-
-      // Clear any timers if they're running
-      if (pomodoroState.isRunning) {
-        resetPomodoro();
-      }
-
-      // Clear the video conference container
-      if (meetingContainerRef.current) {
-        meetingContainerRef.current.innerHTML = "";
-      }
-
-      // Navigate to home page
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error("Error leaving room:", error);
-      // Still navigate even if there's an error
-      navigate("/", { replace: true });
-    }
-  };
+    };
+    
 
   const handleDurationChange = (newDuration) => {
     setDuration(newDuration);

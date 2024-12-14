@@ -46,7 +46,9 @@ function App() {
           <Route path="/rooms/:roomKey" element={<RoomPage />} />
           <Route path="/contact-us" element={
              <>
+             
             <ContactUs />
+           
             { <Overlay /> }
             </>} />
         </Routes>
