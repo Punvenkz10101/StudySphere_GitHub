@@ -478,31 +478,64 @@ export default function RoomPage() {
       className: 'bg-[#00334D] text-white'
     });
   };
-
-  const leaveRoom = () => {
+  const leaveRoom = async () => {
     try {
-      // Disconnect from the socket room
+      // Get the Zego instance
+      const zgInstance = ZegoUIKitPrebuilt.getInstance();
+      
+      if (zgInstance) {
+        try {
+          // First, stop all local streams
+          await zgInstance.turnCameraOff();
+          await zgInstance.turnMicrophoneOff();
+          
+          // Stop screen sharing if active
+          await zgInstance.stopScreenSharing();
+          
+          // Leave the room explicitly
+          await zgInstance.leaveRoom();
+          
+          // destroy() will automatically:
+          // 1. Leave the room
+          // 2. Stop all streams
+          // 3. Clean up resources
+          // 4. Destroy the instance
+          await zgInstance.destroy();
+          console.log("Successfully destroyed Zego instance and left room");
+        } catch (zegoError) {
+          console.error("Error cleaning up Zego:", zegoError);
+        }
+      }
+  
+      // Clear the video container
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+  
+      // Handle socket cleanup
       if (socketService.socket) {
         socketService.socket.emit("leaveRoom", { roomKey, username });
         socketService.disconnect();
       }
-
-      // Clear any timers if they're running
+  
+      // Reset timers if running
       if (pomodoroState.isRunning) {
         resetPomodoro();
       }
-
-      // Clear the video conference container
-      if (meetingContainerRef.current) {
-        meetingContainerRef.current.innerHTML = "";
-      }
-
-      // Navigate to home page
-      navigate("/", { replace: true });
+  
+      // Add a small delay before navigation to ensure cleanup is complete
+      setTimeout(() => {
+        // Force reload the page before navigation to ensure complete cleanup
+        window.location.href = '/';
+      }, 100);
+  
     } catch (error) {
-      console.error("Error leaving room:", error);
-      // Still navigate even if there's an error
-      navigate("/", { replace: true });
+      console.error("Error leaving the room:", error);
+      // If there's an error, force cleanup and reload
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+      window.location.href = '/';
     }
   };
 
