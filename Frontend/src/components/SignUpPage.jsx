@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { auth } from "./Firebase/firebase";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Combined imports
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { ImCross } from "react-icons/im";
 import { toast } from "react-toastify";
 
@@ -22,28 +22,54 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
     }
 
     try {
-      setError(""); 
+      setError("");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("User registered:", user);
-      onClose(); 
-      toast.success("Account Created Sucssfully")// Close overlay on successful signup
+      toast.success("Account created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: "bg-[#00334D] text-white",
+      });
+      onClose();
     } catch (error) {
       setError(error.message);
+      toast.error("Failed to create account. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: "bg-[#00334D] text-white",
+      });
     }
   };
 
-  // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Google User:", user);
-      onClose(); // Close overlay after successful Google sign-in
+      toast.success("Signed in with Google successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: "bg-[#00334D] text-white",
+      });
+      onClose();
     } catch (error) {
       console.error("Error signing in with Google:", error);
       setError(error.message);
+      toast.error("Failed to sign in with Google. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: "bg-[#00334D] text-white",
+      });
     }
   };
 
@@ -94,7 +120,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+        className="w-full py-3 mt-4 bg-[#00334D] text-white font-semibold rounded-md hover:bg-[#002836]"
       >
         Sign Up
       </button>
@@ -104,7 +130,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         onClick={handleGoogleSignIn}
         className="w-full py-3 mt-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 flex items-center justify-center"
       >
-        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" /> {/* Updated to use direct URL path */}
+        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" />
         Sign up with Google
       </button>
 
@@ -112,10 +138,10 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         Already have an account?{" "}
         <button
           onClick={() => {
-            onClose(); // Close the sign-up overlay
-            toggleSigninOverlay(); // Open the sign-in overlay
+            onClose();
+            toggleSigninOverlay();
           }}
-          className="text-blue-500 hover:underline"
+          className="text-[#00334D] hover:underline"
         >
           Sign In
         </button>

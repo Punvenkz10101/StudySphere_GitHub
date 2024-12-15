@@ -41,7 +41,7 @@ const Team = () => {
             name="Harsha Kumar"
             profession="UI/UX Designer"
             description="Harsha's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
-            imageSrc=""
+            imageSrc="/HarshaKumarSM.jpeg"
           />
         </div>
       </div>
@@ -54,7 +54,7 @@ export default Team;
 const TeamCard = ({ imageSrc, name, profession, description }) => {
   return (
     <div className="w-full max-w-[300px] transform transition-transform duration-300 hover:scale-105">
-      <div className="mx-auto mb-0 rounded-lg overflow-hidden shadow-md group">
+      <div className="mx-auto mb-0 rounded-lg overflow-hidden shadow-md group ">
         <img
           src={imageSrc}
           alt={name}

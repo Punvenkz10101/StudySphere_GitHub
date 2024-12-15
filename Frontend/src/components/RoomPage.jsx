@@ -543,6 +543,7 @@ export default function RoomPage() {
       className: 'bg-[#00334D] text-white'
     });
   };
+
   const leaveRoom = async () => {
     try {
       // Get the Zego instance
@@ -603,6 +604,10 @@ export default function RoomPage() {
       window.location.href = '/';
     }
   };
+
+   
+    
+
 
   const handleDurationChange = (newDuration) => {
     setDuration(newDuration);

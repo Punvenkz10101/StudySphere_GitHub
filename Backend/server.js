@@ -12,35 +12,44 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = [
+    'https://study-sphere-git-hub.vercel.app',
+    'https://study-sphere-git-hub-git-pune-1fff25-puneeths-projects-f34775d1.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+];
+
 const io = socketIo(server, {
-  cors: {
-    origin: ["https://study-sphere-git-hub.vercel.app", "http://localhost:5173"],
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  },
-  transports: ['polling', 'websocket'],
-  allowEIO3: true,
-  pingTimeout: 60000,
-  pingInterval: 25000
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true
+    },
+    transports: ['polling', 'websocket'],
+    allowEIO3: true,
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 app.set('io', io);
-const allowedOrigins = [
-  'https://study-sphere-git-hub.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:3000',
-  // Allow all Vercel preview deployments
-  // /^https:\/\/study-sphere-git-.*\.vercel\.app$/
-];
 
-// Update CORS middleware
+// Update Express CORS middleware
 app.use(cors({
-  origin: ["https://study-sphere-git-hub.vercel.app", "http://localhost:5173"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"]
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Add OPTIONS preflight handler
+app.options('*', cors());
 
 // Middleware
 // app.use(cors({

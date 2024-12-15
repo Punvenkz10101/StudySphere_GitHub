@@ -10,6 +10,7 @@ import FAQSection from './components/FAQSection.jsx';
 import Footer from './components/Footer.jsx';
 import Overlay from './components/Overlay.jsx';
 
+
 import RoomPage from './components/RoomPage.jsx';
 import ContactUs from './components/ContactUs.jsx';
 
@@ -19,7 +20,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Analytics } from "@vercel/analytics/react"
 
 function App() {
+
  
+
 
   return (
     <div className="overflow-x-hidden">
@@ -33,8 +36,6 @@ function App() {
             element={
               <>
              { <Overlay /> }
-      
-              
                 <Features />
                 <Team />
                 <FAQSection />
@@ -43,7 +44,13 @@ function App() {
             }
           />
           <Route path="/rooms/:roomKey" element={<RoomPage />} />
-          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/contact-us" element={
+             <>
+             
+            <ContactUs />
+           
+            { <Overlay /> }
+            </>} />
         </Routes>
       </ErrorBoundary>
       <ToastContainer />

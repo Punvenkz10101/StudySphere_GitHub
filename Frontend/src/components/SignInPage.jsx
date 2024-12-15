@@ -9,7 +9,6 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Handle email/password login
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -24,28 +23,53 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       return;
     }
 
-    setError(""); // Clear previous errors
+    setError("");
 
     try {
-      // Attempt to sign in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User signed in:", userCredential.user);
+      toast.success("Login Successful!", {
+        position: "top-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: false,
+        className: "bg-[#00334D] text-white",
+      });
       onClose();
-      toast.success("Login Sucessfull") // Close overlay after successful sign-in
     } catch (error) {
-      // Handle Firebase error codes
-      if (error.code === 'auth/user-not-found') {
+      if (error.code === "auth/user-not-found") {
         setError("Your account is not registered.");
-      } else if (error.code === 'auth/wrong-password') {
+        toast.error("Account not found. Please register first.", {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          pauseOnHover: false,
+          className: "bg-[#00334D] text-white",
+        });
+      } else if (error.code === "auth/wrong-password") {
         setError("Incorrect password. Please try again.");
+        toast.error("Incorrect password. Try again!", {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          pauseOnHover: false,
+          className: "bg-[#00334D] text-white",
+        });
       } else {
         setError("An error occurred. Please try again.");
+        toast.error("An error occurred. Please try again.", {
+          position: "top-right",
+          autoClose: 3000,
+          closeOnClick: true,
+          pauseOnHover: false,
+          className: "bg-[#00334D] text-white",
+        });
       }
     }
   };
 
   return (
-    <div id='signIn' className="bg-white relative rounded-lg p-8 shadow-lg w-80 max-w-md">
+    <div id="signIn" className="bg-white relative rounded-lg p-8 shadow-lg w-80 max-w-md">
       <button
         onClick={onClose}
         className="absolute top-3 right-3 text-gray-500 hover:text-black"
@@ -75,26 +99,23 @@ const SigninPage = ({ onClose, toggleSignupOverlay }) => {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+        className="w-full py-3 mt-4 bg-[#00334D] text-white font-semibold rounded-md hover:bg-[#002836]"
       >
         Sign In
       </button>
 
       <p className="text-center mt-4">
-  Don't have an account?{" "}
-  <button
-    onClick={() => {
-      onClose(); // Close the Sign-In overlay
-      toggleSignupOverlay(); // Open the Sign-Up overlay
-    }}
-    className="text-blue-500 hover:underline"
-  >
-    Create Account
-  </button>
-</p>
-
-
-
+        Don't have an account?{" "}
+        <button
+          onClick={() => {
+            onClose();
+            toggleSignupOverlay();
+          }}
+          className="text-blue-500 hover:underline"
+        >
+          Create Account
+        </button>
+      </p>
     </div>
   );
 };
