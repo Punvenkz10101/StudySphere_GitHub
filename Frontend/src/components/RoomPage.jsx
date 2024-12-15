@@ -225,9 +225,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
-      // Play completion sound
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
     socket.on("pomodoroComplete", handlePomodoroComplete);
 
@@ -345,8 +342,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setBreakSessionCount(sessionCount);
       }
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
 
     // Listen for break duration updates from other users
@@ -401,6 +396,76 @@ export default function RoomPage() {
       socketService.disconnect();
     };
   }, [roomKey, username]);
+
+  useEffect(() => {
+    let zgInstance = null;
+
+    const handleVisibilityChange = async () => {
+      if (document.hidden) {
+        // Page is hidden (user switched tabs or minimized)
+        if (zgInstance) {
+          try {
+            await zgInstance.turnCameraOff();
+            await zgInstance.turnMicrophoneOff();
+          } catch (error) {
+            console.error("Error handling visibility change:", error);
+          }
+        }
+      } else {
+        // Page is visible again
+        zgInstance = ZegoUIKitPrebuilt.getInstance();
+        if (zgInstance) {
+          try {
+            // Reinitialize the room
+            const appId = 1876705794;
+            const serverSecret = "99cf0d1e05d48b4324ddc3e28a03301f";
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+              appId,
+              serverSecret,
+              roomKey,
+              uuidv4(),
+              username
+            );
+
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            await zp.joinRoom({
+              container: meetingContainerRef.current,
+              scenario: {
+                mode: ZegoUIKitPrebuilt.VideoConference,
+                config: {
+                  role: ZegoUIKitPrebuilt.Host,
+                },
+              },
+              showPreJoinView: false,
+              showScreenSharingButton: true,
+              showUserList: true,
+              showPreviewTitle: true,
+              previewViewConfig: {
+                title: topic || "Study Room",
+                video: false,
+                audio: false,
+              },
+              turnOnMicrophoneWhenJoining: false,
+              turnOnCameraWhenJoining: false,
+              showMyCameraToggleButton: true,
+              showMyMicrophoneToggleButton: true,
+              showAudioVideoSettingsButton: true,
+            });
+          } catch (error) {
+            console.error("Error reinitializing room:", error);
+          }
+        }
+      }
+    };
+
+    // Add visibility change listener
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [roomKey, username, topic]);
 
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
@@ -479,38 +544,70 @@ export default function RoomPage() {
     });
   };
 
-    const leaveRoom = async () => {
-      try {
-        // If a Zego instance exists, leave the room
-        if (meetingContainerRef.current) {
-          const zgInstance = ZegoUIKitPrebuilt.getInstance();
-          if (zgInstance) {
-            await zgInstance.leaveRoom();
-            console.log("Successfully logged out of the room.");
-          }
+  const leaveRoom = async () => {
+    try {
+      // Get the Zego instance
+      const zgInstance = ZegoUIKitPrebuilt.getInstance();
+      
+      if (zgInstance) {
+        try {
+          // First, stop all local streams
+          await zgInstance.turnCameraOff();
+          await zgInstance.turnMicrophoneOff();
+          
+          // Stop screen sharing if active
+          await zgInstance.stopScreenSharing();
+          
+          // Leave the room explicitly
+          await zgInstance.leaveRoom();
+          
+          // destroy() will automatically:
+          // 1. Leave the room
+          // 2. Stop all streams
+          // 3. Clean up resources
+          // 4. Destroy the instance
+          await zgInstance.destroy();
+          console.log("Successfully destroyed Zego instance and left room");
+        } catch (zegoError) {
+          console.error("Error cleaning up Zego:", zegoError);
         }
-    
-        // Disconnect from the socket room
-        if (socketService.socket) {
-          socketService.socket.emit("leaveRoom", { roomKey, username });
-          socketService.disconnect();
-        }
-    
-        // Reset timers if running
-        if (pomodoroState.isRunning) {
-          resetPomodoro();
-        }
-    
-        // Navigate to the home page
-        navigate("/", { replace: true });
-      } catch (error) {
-        console.error("Error leaving the room:", error);
-    
-        // Navigate to the home page even if there’s an error
-        navigate("/", { replace: true });
       }
-    };
+  
+      // Clear the video container
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+  
+      // Handle socket cleanup
+      if (socketService.socket) {
+        socketService.socket.emit("leaveRoom", { roomKey, username });
+        socketService.disconnect();
+      }
+  
+      // Reset timers if running
+      if (pomodoroState.isRunning) {
+        resetPomodoro();
+      }
+  
+      // Add a small delay before navigation to ensure cleanup is complete
+      setTimeout(() => {
+        // Force reload the page before navigation to ensure complete cleanup
+        window.location.href = '/';
+      }, 100);
+  
+    } catch (error) {
+      console.error("Error leaving the room:", error);
+      // If there's an error, force cleanup and reload
+      if (meetingContainerRef.current) {
+        meetingContainerRef.current.innerHTML = '';
+      }
+      window.location.href = '/';
+    }
+  };
+
+   
     
+
 
   const handleDurationChange = (newDuration) => {
     setDuration(newDuration);
