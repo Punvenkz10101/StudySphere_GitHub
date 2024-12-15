@@ -225,9 +225,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setSessionCount(sessionCount);
       }
-      // Play completion sound
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
     socket.on("pomodoroComplete", handlePomodoroComplete);
 
@@ -345,8 +342,6 @@ export default function RoomPage() {
       if (typeof sessionCount === "number") {
         setBreakSessionCount(sessionCount);
       }
-      const audio = new Audio("/timer-complete.mp3");
-      audio.play().catch((error) => console.warn("Audio play failed:", error));
     };
 
     // Listen for break duration updates from other users
@@ -401,6 +396,76 @@ export default function RoomPage() {
       socketService.disconnect();
     };
   }, [roomKey, username]);
+
+  useEffect(() => {
+    let zgInstance = null;
+
+    const handleVisibilityChange = async () => {
+      if (document.hidden) {
+        // Page is hidden (user switched tabs or minimized)
+        if (zgInstance) {
+          try {
+            await zgInstance.turnCameraOff();
+            await zgInstance.turnMicrophoneOff();
+          } catch (error) {
+            console.error("Error handling visibility change:", error);
+          }
+        }
+      } else {
+        // Page is visible again
+        zgInstance = ZegoUIKitPrebuilt.getInstance();
+        if (zgInstance) {
+          try {
+            // Reinitialize the room
+            const appId = 1876705794;
+            const serverSecret = "99cf0d1e05d48b4324ddc3e28a03301f";
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+              appId,
+              serverSecret,
+              roomKey,
+              uuidv4(),
+              username
+            );
+
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            await zp.joinRoom({
+              container: meetingContainerRef.current,
+              scenario: {
+                mode: ZegoUIKitPrebuilt.VideoConference,
+                config: {
+                  role: ZegoUIKitPrebuilt.Host,
+                },
+              },
+              showPreJoinView: false,
+              showScreenSharingButton: true,
+              showUserList: true,
+              showPreviewTitle: true,
+              previewViewConfig: {
+                title: topic || "Study Room",
+                video: false,
+                audio: false,
+              },
+              turnOnMicrophoneWhenJoining: false,
+              turnOnCameraWhenJoining: false,
+              showMyCameraToggleButton: true,
+              showMyMicrophoneToggleButton: true,
+              showAudioVideoSettingsButton: true,
+            });
+          } catch (error) {
+            console.error("Error reinitializing room:", error);
+          }
+        }
+      }
+    };
+
+    // Add visibility change listener
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [roomKey, username, topic]);
 
   const toggleFullscreen = () => {
     const element = meetingContainerRef.current;
