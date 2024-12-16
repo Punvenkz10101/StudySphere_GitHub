@@ -928,7 +928,7 @@ export default function RoomPage() {
       {showWhiteboard && (
         <Whiteboard roomId={roomKey} onClose={() => setShowWhiteboard(false)} />
       )}
-      <ToastContainer />
+      
     </div>
   );
 }

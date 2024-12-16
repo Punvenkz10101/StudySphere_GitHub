@@ -101,7 +101,7 @@ const Overlay = () => {
         <>
               <HeroSection onCreateRoomClick={toggleCreateRoomModal} onJoinRoomClick={toggleJoinRoomModal} />
           <CTA_Section onSignInClick={toggleSigninOverlay} onSignUpClick={toggleSignupOverlay} />
-          <ToastContainer />
+       
         </>
       )}
     </div>
