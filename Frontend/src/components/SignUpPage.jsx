@@ -130,7 +130,7 @@ const SignupPage = ({ onClose, toggleSigninOverlay }) => {
         onClick={handleGoogleSignIn}
         className="w-full py-3 mt-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 flex items-center justify-center"
       >
-        <img src="/gmail.jpeg" alt="Google Logo" className="w-5 h-5 mr-2" />
+        <img src="images.jpg" alt="Google Logo" className="w-5 h-5 mr-2" />
         Sign up with Google
       </button>
 
