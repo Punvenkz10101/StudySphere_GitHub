@@ -44,7 +44,7 @@ const Team = () => {
           <TeamCard
             name="Harsha Kumar"
             profession="UI/UX Designer"
-            description="Harsha's expertise in frontend development transforms complex ideas into seamless and interactive user experiences. He excels at building visually stunning and responsive interfaces that enhance usability and captivate users."
+            description="Harsha's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement give."
             imageSrc="/HarshaKumarSM.jpeg"
             linkedin=""
             github=""
