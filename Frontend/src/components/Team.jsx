@@ -30,18 +30,24 @@ const Team = () => {
             profession="Team Lead/Web Developer"
             description="Puneeth is a dedicated developer specializing in crafting intuitive and responsive web applications. His technical expertise ensures a smooth user experience."
             imageSrc="/Puneeth.jpg"
+            linkedin="https://www.linkedin.com/in/puneeth-venkat-7731b5293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+            github="https://github.com/Punvenkz10101"
           />
           <TeamCard
             name="Bharath"
             profession="Web Developer"
             description="Bharath keeps everything on track with his keen organizational skills and strategic planning. His dedication ensures that each project meets its goals efficiently."
             imageSrc="/bharath.jpeg"
+            linkedin="https://www.linkedin.com/in/bharath-pothula/"
+            github="https://github.com/Bharathpothula205"
           />
           <TeamCard
             name="Harsha Kumar"
             profession="UI/UX Designer"
             description="Harsha's eye for design transforms complex ideas into user-friendly interfaces. He excels in creating visually appealing and functional designs that enhance engagement."
             imageSrc="/HarshaKumarSM.jpeg"
+            linkedin=""
+            github=""
           />
         </div>
       </div>
@@ -51,7 +57,7 @@ const Team = () => {
 
 export default Team;
 
-const TeamCard = ({ imageSrc, name, profession, description }) => {
+const TeamCard = ({ imageSrc, name, profession, description,linkedin,github }) => {
   return (
     <div className="w-full max-w-[300px] transform transition-transform duration-300 hover:scale-105">
       <div className="mx-auto mb-0 rounded-lg overflow-hidden shadow-md group ">
@@ -75,7 +81,8 @@ const TeamCard = ({ imageSrc, name, profession, description }) => {
           {/* Social Icons - Using grid for consistent spacing */}
           <div className="grid grid-flow-col gap-6 justify-center mt-3">
             <a
-              href=""
+              href={linkedin}
+              target="_blank"
               className="text-white hover:text-gray-400 inline-flex items-center justify-center"
               aria-label="LinkedIn"
             >
@@ -90,7 +97,8 @@ const TeamCard = ({ imageSrc, name, profession, description }) => {
               </svg>
             </a>
             <a
-              href="#"
+              href={github}
+              target="_blank"
               className="text-white hover:text-gray-400 inline-flex items-center justify-center"
               aria-label="GitHub"
             >
