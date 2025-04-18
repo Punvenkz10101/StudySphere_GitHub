@@ -51,8 +51,8 @@ export default function RoomPage() {
   }, [tasks]);
 
   useEffect(() => {
-    const appId = 1562684776;
-    const serverSecret = "2993260e03ba0c5f0f6fed3290c514ee";
+    const appId = 949590299;
+    const serverSecret = "f71bce5b0ece2bf859e98e7c3f71e189";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appId,
       serverSecret,
@@ -104,6 +104,8 @@ export default function RoomPage() {
     const socket = socketService.connect();
 
     if (!socket) {
+      console.error('Failed to establish connection');
+      
       setConnectionError("Failed to establish connection");
       return;
     }
