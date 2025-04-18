@@ -37,7 +37,7 @@ function App() {
               <>
              { <Overlay /> }
                 <Features />
-                <Team />
+                {/* <Team /> */}
                 <FAQSection />
                 <Footer />
               </>

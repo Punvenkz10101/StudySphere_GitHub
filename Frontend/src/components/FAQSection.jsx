@@ -16,7 +16,7 @@ export default function FAQSection() {
     {
       question: "Can I join or create group study sessions?",
       answer:
-        "Yes! StudySphere’s Group Study Meet feature allows you to join or create virtual study groups with other students who share similar study goals. It’s perfect for group projects, revision sessions, and tackling challenging subjects.",
+        "Yes! StudySphere's Group Study Meet feature allows you to join or create virtual study groups with other students who share similar study goals. It's perfect for group projects, revision sessions, and tackling challenging subjects.",
     },
     {
       question: "How does the Progress Tracker work?",
@@ -32,12 +32,12 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="product" className="bg-[#00334D] py-10 px-4 md:px-10">
+    <section id="product" className="bg-white py-10 px-4 md:px-10">
       <div className="max-w-5xl mx-auto text-center mb-8">
-        <h2 className="text-[30px] sm:text-[28px] font-bold text-white mb-2">
+        <h2 className="text-[30px] sm:text-[28px] font-bold text-[#00334D] mb-2">
           Frequently Asked Questions
         </h2>
-        <p className="text-[17px] sm:text-[16px] font-medium text-white">
+        <p className="text-[17px] sm:text-[16px] font-medium text-[#00334D]">
           Find answers to common questions about StudySphere and how to make the
           most of its features.
         </p>
@@ -47,16 +47,16 @@ export default function FAQSection() {
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className="bg-white p-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
+            className="bg-[#00334D] p-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
           >
             <div
               onClick={() => toggleFAQ(index)}
               className="flex items-center justify-between cursor-pointer"
             >
-              <h3 className="text-[17.5px] sm:text-[16px] font-semibold text-[#00334D] flex-grow">
+              <h3 className="text-[17.5px] sm:text-[16px] font-semibold text-white flex-grow">
                 {faq.question}
               </h3>
-              <div className="text-[#00334D] ml-auto transition-transform duration-200 transform hover:scale-110">
+              <div className="text-white ml-auto transition-transform duration-200 transform hover:scale-110">
                 {activeIndex === index ? (
                   <FiMinus size={20} />
                 ) : (
@@ -65,7 +65,7 @@ export default function FAQSection() {
               </div>
             </div>
             {activeIndex === index && (
-              <p className="mt-3 text-[15px] sm:text-[14px] font-medium text-gray-900 leading-relaxed">
+              <p className="mt-3 text-[15px] sm:text-[14px] font-medium text-white leading-relaxed">
                 {faq.answer}
               </p>
             )}
