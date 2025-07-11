@@ -2,6 +2,11 @@
 
 **StudySphere** is a collaborative platform designed to enhance productivity and engagement among study groups. It mimics the feel of physical study sessions, augmented with powerful digital tools to make learning more organized, interactive, and effective.
 
+<!-- Demo Video -->
+<p align="center">
+  <video src="Frontend/public/assets/StudySphere%20(1).mp4" controls width="600"></video>
+</p>
+
 ---
 
 ## 🚀 Features
