@@ -1,11 +1,26 @@
-# StudySphere - Virtual Study Room with Integrated Tools
+# 🎓 StudySphere - Virtual Study Room with Integrated Tools
 
 **StudySphere** is a collaborative platform designed to enhance productivity and engagement among study groups. It mimics the feel of physical study sessions, augmented with powerful digital tools to make learning more organized, interactive, and effective.
 
-<!-- Demo Video -->
+---
+
 <p align="center">
-  <video src="Frontend/public/assets/StudySphere%20(1).mp4" controls width="600"></video>
+  <a href="https://drive.google.com/file/d/106nMTVl1eqGOmFxjsVqDCMEBsej9Q2qD/view?usp=drive_link" target="_blank">
+    <img src="https://img.shields.io/badge/🎥 Watch%20App%20Demo-blue?style=for-the-badge" alt="App Demo">
+  </a>
+  &nbsp;
+  <a href="https://study-sphere-git-hub.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚀 Live%20App-green?style=for-the-badge" alt="Live App">
+  </a>
 </p>
+
+> 🎥 **Watch the StudySphere app in action:** Click the **Watch App Demo** badge to view a video demo.  
+> 🌐 **Try it yourself:** Visit the **Live App** to explore the platform hands-on.
+
+---
+
+**StudySphere** is a collaborative platform designed to enhance productivity and engagement among study groups. It mimics the feel of physical study sessions, augmented with powerful digital tools to make learning more organized, interactive, and effective.
+
 
 ---
 
