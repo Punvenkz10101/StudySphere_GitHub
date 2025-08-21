@@ -51,8 +51,8 @@ export default function RoomPage() {
   }, [tasks]);
 
   useEffect(() => {
-    const appId = 949590299;
-    const serverSecret = "f71bce5b0ece2bf859e98e7c3f71e189";
+    const appId = 286391654;
+    const serverSecret = "81cecf3e8693f33fa19ab4ecb167d16d";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appId,
       serverSecret,
